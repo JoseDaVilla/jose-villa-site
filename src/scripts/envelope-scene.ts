@@ -1,46 +1,57 @@
-// Contact 3D: an envelope whose flap opens to let a letter rise, with a paper
-// plane circling it. When the form sends successfully ("contact:sent"), the
-// plane takes off and comes back a few seconds later.
-import {
-  BoxGeometry, BufferGeometry, DoubleSide, EdgesGeometry, ExtrudeGeometry, Float32BufferAttribute,
-  Group, LineBasicMaterial, LineSegments, Mesh, Shape, Vector3,
-} from 'three';
+// Contact 3D: a thick, chunky envelope whose flap opens to let a letter rise,
+// with a solid paper plane circling it. When the form sends successfully
+// ("contact:sent"), the plane takes off and comes back a few seconds later.
+import { BoxGeometry, ExtrudeGeometry, Group, Mesh, Shape, Vector3 } from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { PALETTE, blobGeometry, createStage, easeOut, swayer } from './scene-kit';
 
-const W = 2.8, H = 1.8;
+const W = 2.9, H = 1.9;
 
-function slab(shape: Shape, depth: number) {
-  const g = new ExtrudeGeometry(shape, { depth, bevelEnabled: true, bevelThickness: 0.02, bevelSize: 0.02, bevelSegments: 2, curveSegments: 8 });
+/** Extrude a flat shape into a rounded slab centred on z = 0. */
+function slab(shape: Shape, depth: number, bevel = 0.05) {
+  const g = new ExtrudeGeometry(shape, {
+    depth, bevelEnabled: true, bevelThickness: bevel, bevelSize: bevel, bevelSegments: 4, curveSegments: 12,
+  });
   g.translate(0, 0, -depth / 2);
   return g;
 }
 
+function triangle(a: [number, number], b: [number, number], c: [number, number]) {
+  const s = new Shape();
+  s.moveTo(...a);
+  s.lineTo(...b);
+  s.lineTo(...c);
+  s.closePath();
+  return s;
+}
+
 export function mountEnvelopeScene(host: HTMLElement) {
-  const stage = createStage(host, { cameraZ: 9.2 });
+  const stage = createStage(host, { cameraZ: 8.7 });
   const { scene, toon, inked, track } = stage;
 
   const rig = new Group();
-  rig.position.y = -0.45;
   scene.add(rig);
+  const orange = toon(PALETTE.orange);
 
-  // Back panel
-  const back = inked(new RoundedBoxGeometry(W, H, 0.12, 3, 0.06), toon(PALETTE.sun));
-  back.position.z = -0.14;
+  // Back panel: a chunky rounded slab.
+  const back = inked(new RoundedBoxGeometry(W, H, 0.32, 5, 0.12), toon(PALETTE.sun), 0.04);
+  back.position.z = -0.3;
   rig.add(back);
 
   // Letter: sits between back and pocket, rises out of the top.
   const letter = new Group();
-  letter.add(inked(new RoundedBoxGeometry(W - 0.4, H - 0.3, 0.04, 2, 0.03), toon(PALETTE.paper), 0.03));
-  const lineGeo = track(new BoxGeometry(1, 0.08, 0.02));
+  letter.add(inked(new RoundedBoxGeometry(W - 0.45, H - 0.35, 0.1, 3, 0.04), toon(PALETTE.paper), 0.03));
+  const lineGeo = track(new BoxGeometry(1, 0.09, 0.03));
   const inkMat = toon(PALETTE.ink);
   const blueMat = toon(PALETTE.blue);
-  [[0.8, 0.5, -0.55, blueMat], [1.7, 0.22, 0, inkMat], [1.7, 0, 0, inkMat], [1.2, -0.22, -0.25, inkMat]].forEach(([w, y, x, m]) => {
-    const l = new Mesh(lineGeo, m as typeof inkMat);
-    l.scale.x = w as number;
-    l.position.set(x as number, y as number, 0.035);
-    letter.add(l);
-  });
+  ([[0.8, 0.52, -0.55, blueMat], [1.75, 0.24, 0, inkMat], [1.75, 0.02, 0, inkMat], [1.2, -0.2, -0.27, inkMat]] as const)
+    .forEach(([w, y, x, m]) => {
+      const l = new Mesh(lineGeo, m);
+      l.scale.x = w;
+      l.position.set(x, y, 0.06);
+      letter.add(l);
+    });
+  letter.position.z = -0.04;
   rig.add(letter);
 
   // Front pocket with the classic V notch.
@@ -48,45 +59,40 @@ export function mountEnvelopeScene(host: HTMLElement) {
   pocket.moveTo(-W / 2, -H / 2);
   pocket.lineTo(W / 2, -H / 2);
   pocket.lineTo(W / 2, H * 0.22);
-  pocket.lineTo(0, -H * 0.12);
+  pocket.lineTo(0, -H * 0.1);
   pocket.lineTo(-W / 2, H * 0.22);
   pocket.closePath();
-  const front = inked(slab(pocket, 0.06), toon(PALETTE.orange), 0.02);
-  front.position.z = 0.1;
+  const front = inked(slab(pocket, 0.14), orange, 0.03);
+  front.position.z = 0.16;
   rig.add(front);
 
   // Top flap, hinged along the top edge.
-  const flapShape = new Shape();
-  flapShape.moveTo(-W / 2, 0);
-  flapShape.lineTo(W / 2, 0);
-  flapShape.lineTo(0, -H * 0.58);
-  flapShape.closePath();
   const hinge = new Group();
-  hinge.position.set(0, H / 2, 0.12);
-  hinge.add(inked(slab(flapShape, 0.05), toon(PALETTE.orange), 0.02));
+  const FLAP_Z = 0.32;
+  hinge.position.set(0, H / 2, FLAP_Z);
+  hinge.add(inked(slab(triangle([-W / 2, 0], [W / 2, 0], [0, -H * 0.58]), 0.12), orange, 0.03));
   rig.add(hinge);
 
-  // Paper plane: two folded wings and a keel, nose along +z, with ink edges.
-  const nose = [0, 0, 0.9], tailL = [-0.62, 0.12, -0.55], tailR = [0.62, 0.12, -0.55];
-  const tailC = [0, 0.02, -0.55], keel = [0, -0.26, -0.55];
-  const planeGeo = track(new BufferGeometry());
-  planeGeo.setAttribute('position', new Float32BufferAttribute([
-    ...nose, ...tailL, ...tailC,
-    ...nose, ...tailC, ...tailR,
-    ...nose, ...keel, ...tailC,
-  ], 3));
-  planeGeo.computeVertexNormals();
-  const planeMat = toon(PALETTE.sky);
-  planeMat.side = DoubleSide;
-  const edges = track(new EdgesGeometry(planeGeo));
-  const edgeMat = new LineBasicMaterial({ color: PALETTE.ink });
+  // Solid paper plane: two wings with a slight dihedral and a keel, nose +z.
   const plane = new Group();
-  plane.add(new Mesh(planeGeo, planeMat), new LineSegments(edges, edgeMat));
-  plane.scale.setScalar(1.15);
+  const paper = toon(PALETTE.sky);
+  for (const side of [-1, 1]) {
+    // Wing shape in its own XY plane (y = forward), laid flat into XZ.
+    const geo = slab(triangle([0, 1.0], [side * 0.7, -0.6], [0, -0.6]), 0.05, 0.02);
+    geo.rotateX(Math.PI / 2);
+    const wing = inked(geo, paper, 0.05);
+    wing.rotation.z = side * -0.28; // tips up
+    plane.add(wing);
+  }
+  // Keel: shape in XY (x = forward, y = up), stood upright along z.
+  const keelGeo = slab(triangle([1.0, 0], [-0.6, 0], [-0.6, -0.32]), 0.05, 0.02);
+  keelGeo.rotateY(-Math.PI / 2);
+  plane.add(inked(keelGeo, paper, 0.05));
+  plane.scale.setScalar(0.95);
   scene.add(plane);
 
-  const blob = inked(blobGeometry(0.36, 7.7), toon(PALETTE.leaf), 0.06);
-  blob.position.set(-2.4, -1.3, -0.8);
+  const blob = inked(blobGeometry(0.38, 7.7), toon(PALETTE.leaf), 0.06);
+  blob.position.set(-2.5, -1.35, -0.8);
   scene.add(blob);
 
   // Take-off when the contact form reports a successful send.
@@ -94,19 +100,21 @@ export function mountEnvelopeScene(host: HTMLElement) {
   const onSent = () => { launchAt = performance.now(); };
   window.addEventListener('contact:sent', onSent);
 
-  const orbit = (t: number) => new Vector3(Math.cos(t) * 2.5, 1.15 + Math.sin(t * 2) * 0.35, Math.sin(t) * 1.4);
+  const orbit = (t: number) => new Vector3(Math.cos(t) * 2.55, 1.2 + Math.sin(t * 2) * 0.35, Math.sin(t) * 1.5);
+  const BASE_Y = -0.4;
   const sway = swayer({ idle: 0.7 });
   const CYCLE = 6;
   stage.run((t) => {
     sway.apply(rig, t, stage.pointer);
-    rig.position.y = -0.45 + Math.sin(t * 0.8) * 0.07;
+    rig.position.y = BASE_Y + Math.sin(t * 0.8) * 0.07;
 
     const c = (t % CYCLE) / CYCLE;
     // flap opens 0-0.15, letter up 0.15-0.32, hold, letter down 0.62-0.76, flap closes 0.76-0.9
     const flap = c < 0.15 ? easeOut(c / 0.15) : c < 0.76 ? 1 : c < 0.9 ? 1 - easeOut((c - 0.76) / 0.14) : 0;
     hinge.rotation.x = -flap * Math.PI * 0.98;
-    // Once past vertical the flap tucks behind the letter so they never cross.
-    hinge.position.z = 0.12 - Math.max(0, flap - 0.5) * 2 * 0.36;
+    // Once past vertical the flap tucks behind the back panel so it never
+    // crosses the rising letter.
+    hinge.position.z = FLAP_Z - Math.max(0, flap - 0.5) * 2 * 0.96;
     const up = c < 0.15 ? 0 : c < 0.32 ? easeOut((c - 0.15) / 0.17) : c < 0.62 ? 1 : c < 0.76 ? 1 - easeOut((c - 0.62) / 0.14) : 0;
     letter.position.y = -0.05 + up * 1.15;
     letter.rotation.z = up * 0.06 * Math.sin(t * 2);
@@ -126,13 +134,12 @@ export function mountEnvelopeScene(host: HTMLElement) {
     plane.lookAt(ahead);
     plane.rotateZ(Math.sin(t * 1.4) * 0.35); // bank
 
-    blob.position.y = -1.3 + Math.sin(t * 0.9) * 0.2;
+    blob.position.y = -1.35 + Math.sin(t * 0.9) * 0.2;
     blob.rotation.set(t * 0.3, t * 0.2, 0);
   });
 
   return () => {
     window.removeEventListener('contact:sent', onSent);
-    edgeMat.dispose();
     stage.dispose();
   };
 }

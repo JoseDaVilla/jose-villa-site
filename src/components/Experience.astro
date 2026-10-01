@@ -19,11 +19,11 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
             <rect x="150" y="40" width="120" height="70" rx="10" fill="var(--paper, #FFFDF8)" transform="rotate(-8 210 75)" />
             <rect x="185" y="30" width="120" height="70" rx="10" fill="var(--sky)" transform="rotate(7 245 65)" />
             <path d="M172 92 a28 28 0 0 1 56 0" fill="none" stroke-width="12" stroke="var(--ink)" />
-            <path d="M172 92 a28 28 0 0 1 56 0" fill="none" stroke-width="6" stroke="var(--blue)" />
-            <rect x="90" y="92" width="220" height="150" rx="18" fill="var(--orange)" />
-            <rect x="88" y="172" width="224" height="18" rx="6" fill="var(--blue)" />
-            <rect x="130" y="112" width="26" height="20" rx="4" fill="var(--sun)" />
-            <rect x="244" y="112" width="26" height="20" rx="4" fill="var(--sun)" />
+            <path d="M172 92 a28 28 0 0 1 56 0" fill="none" stroke-width="6" stroke="var(--sun)" />
+            <rect x="90" y="92" width="220" height="150" rx="18" fill="var(--blue)" />
+            <rect x="88" y="172" width="224" height="18" rx="6" fill="var(--sun)" />
+            <rect x="130" y="112" width="26" height="20" rx="4" fill="var(--orange)" />
+            <rect x="244" y="112" width="26" height="20" rx="4" fill="var(--orange)" />
           </g>
           <circle cx="58" cy="70" r="22" fill="var(--sky)" stroke="var(--ink)" stroke-width="5" />
         </svg>
@@ -65,25 +65,51 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
         </ul>
       </div>
 
-      <div class="side">
-        <div class="panel edu">
-          <h3>Education</h3>
-          <p class="e-role">Coderhouse</p>
-          <p class="e-meta">Aug 2023 — Sep 2024</p>
-          <ul class="plain">
-            <li>Full Stack Development Career</li>
-            <li>React Frontend Development Career</li>
-            <li>JavaScript</li>
-            <li>Web Development</li>
-          </ul>
-        </div>
-        <div class="panel lang">
-          <h3>Languages</h3>
-          <dl>
-            <div><dt>Spanish</dt><dd>Native</dd></div>
-            <div><dt>English</dt><dd>Advanced</dd></div>
-          </dl>
-        </div>
+      <div class="panel lang" aria-labelledby="lang-title">
+        <h3 id="lang-title">Languages</h3>
+        <ul class="langs">
+          <li class="lang-card">
+            <svg class="flag" viewBox="0 0 60 40" role="img" aria-label="Flag of Colombia">
+              <clipPath id="flag-co"><rect width="60" height="40" rx="7" /></clipPath>
+              <g clip-path="url(#flag-co)">
+                <rect width="60" height="20" fill="#FCD116" />
+                <rect y="20" width="60" height="10" fill="#003893" />
+                <rect y="30" width="60" height="10" fill="#CE1126" />
+              </g>
+              <rect x="1.25" y="1.25" width="57.5" height="37.5" rx="6" fill="none" stroke="var(--ink)" stroke-width="2.5" />
+            </svg>
+            <div class="lang-text">
+              <p class="lang-name">Spanish</p>
+              <p class="lang-note">First language</p>
+            </div>
+            <div class="level">
+              <p class="lvl">Native</p>
+              <span class="meter" aria-hidden="true">{[1, 2, 3, 4, 5].map(() => <i class="on"></i>)}</span>
+            </div>
+          </li>
+          <li class="lang-card">
+            <svg class="flag" viewBox="0 0 60 40" role="img" aria-label="Flag of the United States">
+              <clipPath id="flag-us"><rect width="60" height="40" rx="7" /></clipPath>
+              <g clip-path="url(#flag-us)">
+                <rect width="60" height="40" fill="#FFFFFF" />
+                {Array.from({ length: 7 }, (_, i) => <rect y={i * 6.16} width="60" height="3.08" fill="#B22234" />)}
+                <rect width="26" height="21.5" fill="#3C3B6E" />
+                {Array.from({ length: 4 }, (_, r) => Array.from({ length: 5 }, (_, c) => (
+                  <circle cx={3.4 + c * 4.8 + (r % 2) * 2.4} cy={3.2 + r * 5} r="1.05" fill="#FFFFFF" />
+                )))}
+              </g>
+              <rect x="1.25" y="1.25" width="57.5" height="37.5" rx="6" fill="none" stroke="var(--ink)" stroke-width="2.5" />
+            </svg>
+            <div class="lang-text">
+              <p class="lang-name">English</p>
+              <p class="lang-note">Daily work with US clients and teams</p>
+            </div>
+            <div class="level">
+              <p class="lvl">Advanced</p>
+              <span class="meter" aria-hidden="true">{[1, 2, 3, 4, 5].map((n) => <i class={n <= 4 ? 'on' : ''}></i>)}</span>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </div>
@@ -92,7 +118,7 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
 <style>
   .exp-head { display: grid; gap: 8px; align-items: center; }
   .exp-head .section-head { margin-bottom: 0; }
-  .scene { position: relative; height: clamp(220px, 50vw, 300px); }
+  .scene { position: relative; height: clamp(260px, 66vw, 420px); }
   .scene .poster, .scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   .scene .poster { padding: 4%; transition: opacity 400ms ease-out; }
   .scene canvas { opacity: 0; transition: opacity 500ms ease-out; }
@@ -125,15 +151,27 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
   .e-meta { color: var(--muted); font-size: var(--step-small); }
   .e-desc { color: var(--muted); font-size: var(--step-small); max-width: 70ch; margin-top: 4px; }
   .e-desc :global(p) { margin: 0; }
-  .side { display: grid; gap: 20px; align-content: start; }
-  .edu { background: var(--sun); border-radius: 32px 60px 28px 56px / 56px 30px 60px 36px; }
-  .edu .e-meta { color: var(--ink); }
-  .plain { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 4px; }
-  .lang { background: var(--leaf); border-radius: 48px 28px 52px 32px / 30px 52px 28px 48px; }
-  dl { margin: 0; display: grid; gap: 8px; }
-  dl div { display: flex; justify-content: space-between; gap: 16px; }
-  dt { font-weight: 600; }
-  dd { margin: 0; }
+  .lang { background: var(--leaf); border-radius: 48px 28px 52px 32px / 30px 52px 28px 48px; align-self: start; }
+  .langs { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+  .lang-card {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 14px 18px;
+    padding: 18px 20px; background: var(--bg);
+    border-radius: 28px 18px 30px 16px / 18px 30px 16px 28px;
+  }
+  .flag { width: 64px; height: auto; flex: none; transform: rotate(-4deg); transition: transform 300ms var(--ease-out); }
+  .lang-card:nth-child(2) .flag { transform: rotate(3deg); }
+  .lang-card:hover .flag { transform: rotate(0deg) scale(1.06); }
+  .lang-name { font-family: var(--font-display); font-weight: 600; font-size: 1.5rem; line-height: 1.1; letter-spacing: -0.02em; }
+  .lang-note { color: var(--muted); font-size: var(--step-small); }
+  .level { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding-top: 12px; border-top: 1px solid var(--line); }
+  .lvl { font-weight: 600; }
+  .meter { display: inline-flex; gap: 6px; }
+  .meter i {
+    width: 16px; height: 16px; border: 2px solid var(--ink);
+    border-radius: 52% 48% 40% 60% / 60% 42% 58% 40%;
+  }
+  .meter i.on { background: var(--blue); }
 
   @media (min-width: 860px) {
     .role { grid-template-columns: 220px minmax(0, 1fr); }
@@ -143,7 +181,7 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
     .extra { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
   }
   @media (min-width: 860px) {
-    .exp-head { grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); }
+    .exp-head { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }
   }
 </style>
 

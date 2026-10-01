@@ -1,74 +1,95 @@
 // Experience 3D: a briefcase ("portafolio") whose lid swings open on a loop
-// and lets three role cards float out, then tucks them back in.
+// and lets three role cards float out of it, then tucks them back in.
+// The body is a real open box (floor + four walls) so the cards rise out of
+// a cavity instead of slicing through a solid top, and the lid swings past
+// vertical so the cards pass in front of it.
 import { BoxGeometry, Group, Mesh, TorusGeometry } from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { PALETTE, blobGeometry, createStage, easeOut, swayer } from './scene-kit';
 
-const W = 2.8, BODY_H = 1.55, D = 1.0, LID_H = 0.42;
+const W = 2.9, H = 1.6, D = 1.1, WALL = 0.14, LID_H = 0.4;
+const DEEP_BLUE = '#1E3F8A';
 
 export function mountBriefcaseScene(host: HTMLElement) {
-  const stage = createStage(host, { cameraZ: 9.4 });
+  const stage = createStage(host, { cameraZ: 8.4 });
   const { scene, toon, inked, track } = stage;
 
   const rig = new Group();
-  rig.position.y = -0.35;
   scene.add(rig);
 
-  // Body
-  const body = inked(new RoundedBoxGeometry(W, BODY_H, D, 5, 0.18), toon(PALETTE.orange));
-  body.position.y = -BODY_H / 2;
+  const shell = toon(PALETTE.blue);
+  const inside = toon(DEEP_BLUE);
+
+  // --- Hollow body: floor and four walls, top at y = 0 ---
+  const body = new Group();
+  const piece = (w: number, h: number, d: number, x: number, y: number, z: number) => {
+    const p = inked(new RoundedBoxGeometry(w, h, d, 3, Math.min(w, h, d) * 0.45), shell, 0.02);
+    p.position.set(x, y, z);
+    body.add(p);
+  };
+  piece(W, WALL, D, 0, -H + WALL / 2, 0);                         // floor
+  piece(W, H, WALL, 0, -H / 2, D / 2 - WALL / 2);                 // front
+  piece(W, H, WALL, 0, -H / 2, -D / 2 + WALL / 2);                // back
+  piece(WALL, H, D - 2 * WALL, -W / 2 + WALL / 2, -H / 2, 0);     // left
+  piece(WALL, H, D - 2 * WALL, W / 2 - WALL / 2, -H / 2, 0);      // right
+  // Darker lining so the cavity reads as depth when the lid is open.
+  const lining = new Mesh(track(new BoxGeometry(W - 2 * WALL - 0.02, 0.02, D - 2 * WALL - 0.02)), inside);
+  lining.position.y = -H + WALL + 0.02;
+  body.add(lining);
   rig.add(body);
-  // Belt across the front
-  const belt = inked(new RoundedBoxGeometry(W + 0.04, 0.22, D + 0.04, 3, 0.08), toon(PALETTE.blue), 0.03);
-  belt.position.y = -BODY_H * 0.62;
+
+  // Belt across the front.
+  const sunMat = toon(PALETTE.sun);
+  const belt = inked(new RoundedBoxGeometry(W + 0.06, 0.26, 0.12, 3, 0.06), sunMat, 0.03);
+  belt.position.set(0, -H * 0.6, D / 2 + 0.02);
   rig.add(belt);
 
-  // Lid hinged along the back top edge: the pivot sits at the hinge.
+  // --- Lid, hinged on the back top edge ---
   const hinge = new Group();
   hinge.position.set(0, 0, -D / 2);
   rig.add(hinge);
   const lid = new Group();
   lid.position.set(0, LID_H / 2, D / 2);
   hinge.add(lid);
-  lid.add(inked(new RoundedBoxGeometry(W, LID_H, D, 5, 0.16), toon(PALETTE.orange)));
-  // Handle on the lid
-  const handle = inked(new TorusGeometry(0.38, 0.09, 14, 40, Math.PI), toon(PALETTE.blue), 0.05);
+  lid.add(inked(new RoundedBoxGeometry(W + 0.04, LID_H, D + 0.04, 4, 0.16), shell));
+  const handle = inked(new TorusGeometry(0.4, 0.1, 16, 44, Math.PI), sunMat, 0.05);
   handle.position.y = LID_H / 2 + 0.02;
   lid.add(handle);
-  // Clasps on the front of the lid
-  const claspGeo = new RoundedBoxGeometry(0.34, 0.26, 0.12, 3, 0.05);
-  for (const x of [-0.85, 0.85]) {
-    const c = inked(claspGeo, toon(PALETTE.sun), 0.06);
-    c.position.set(x, -0.02, D / 2 + 0.04);
+  const claspGeo = new RoundedBoxGeometry(0.38, 0.3, 0.14, 3, 0.06);
+  const orangeMat = toon(PALETTE.orange);
+  for (const x of [-0.9, 0.9]) {
+    const c = inked(claspGeo, orangeMat, 0.05);
+    c.position.set(x, -0.02, D / 2 + 0.06);
     lid.add(c);
   }
 
-  // Role cards: start inside the body, rise when the lid opens.
-  const cardGeo = new RoundedBoxGeometry(1.7, 1.05, 0.05, 2, 0.04);
-  const lineGeo = track(new BoxGeometry(1, 0.07, 0.02));
+  // --- Role cards ---
+  const cardGeo = new RoundedBoxGeometry(1.75, 1.1, 0.06, 2, 0.03);
+  const lineGeo = track(new BoxGeometry(1, 0.08, 0.02));
   const inkMat = toon(PALETTE.ink);
   const headMat = toon(PALETTE.orange);
   const cards = [PALETTE.paper, PALETTE.sky, PALETTE.leaf].map((color, i) => {
     const card = new Group();
     card.add(inked(cardGeo, toon(color), 0.03));
     // A heading bar and two text lines, like a résumé card.
-    [[0.9, 0.28, -0.25], [1.25, 0.06, 0], [1.0, -0.14, -0.12]].forEach(([w, y, x], j) => {
+    [[0.9, 0.3, -0.27], [1.3, 0.07, 0], [1.0, -0.15, -0.14]].forEach(([w, y, x], j) => {
       const l = new Mesh(lineGeo, j === 0 ? headMat : inkMat);
       l.scale.set(w, j === 0 ? 1.6 : 1, 1);
-      l.position.set(x, y, 0.04);
+      l.position.set(x, y, 0.045);
       card.add(l);
     });
-    card.position.set((i - 1) * 0.42, -0.6, (i - 1) * 0.18);
-    card.rotation.z = (i - 1) * -0.18;
-    card.userData = { phase: i * 0.18, x: (i - 1) * 0.42, rz: (i - 1) * -0.18 };
+    // Slightly forward of centre so the open lid (behind) never meets them.
+    const z = 0.12 + (i - 1) * 0.12;
+    card.userData = { phase: i * 0.16, x: (i - 1) * 0.4, rz: (i - 1) * -0.2, z };
+    card.position.set(card.userData.x, -1.0, z);
     rig.add(card);
     return card;
   });
 
-  // A couple of drifting blobs to tie it to the hero.
+  // Drifting blobs tie it to the hero.
   const blobs = [
-    { r: 0.42, color: PALETTE.sky, pos: [-2.4, 1.4, -1], seed: 5.1 },
-    { r: 0.32, color: PALETTE.sun, pos: [2.4, -1.1, -0.4], seed: 6.3 },
+    { r: 0.42, color: PALETTE.sky, pos: [-2.5, 1.5, -1], seed: 5.1 },
+    { r: 0.34, color: PALETTE.sun, pos: [2.5, -1.3, -0.4], seed: 6.3 },
   ].map((b, i) => {
     const m = inked(blobGeometry(b.r, b.seed), toon(b.color), 0.06);
     m.position.set(b.pos[0], b.pos[1], b.pos[2]);
@@ -77,22 +98,27 @@ export function mountBriefcaseScene(host: HTMLElement) {
     return m;
   });
 
-  const sway = swayer({ idle: 0.8 });
-  const CYCLE = 6; // seconds: open, show cards, close, rest
+  const BASE_Y = -0.4;
+  const sway = swayer({ idle: 0.75 });
+  const CYCLE = 6.5; // seconds: open, show cards, close, rest
   stage.run((t) => {
     sway.apply(rig, t, stage.pointer);
-    rig.position.y = -0.35 + Math.sin(t * 0.8) * 0.08;
+    rig.position.y = BASE_Y + Math.sin(t * 0.8) * 0.08;
 
     const c = (t % CYCLE) / CYCLE;
-    // 0-0.15 opening, 0.15-0.65 open, 0.65-0.8 closing, then rest
-    const open = c < 0.15 ? easeOut(c / 0.15) : c < 0.65 ? 1 : c < 0.8 ? 1 - easeOut((c - 0.65) / 0.15) : 0;
-    hinge.rotation.x = -open * 1.15;
+    // 0-0.14 opening, hold, 0.66-0.8 closing, then rest closed.
+    const open = c < 0.14 ? easeOut(c / 0.14) : c < 0.66 ? 1 : c < 0.8 ? 1 - easeOut((c - 0.66) / 0.14) : 0;
+    hinge.rotation.x = -open * 1.95; // past vertical, leaning back
 
     cards.forEach((card) => {
-      const lift = easeOut((open - card.userData.phase) / (1 - card.userData.phase));
-      card.position.y = -0.6 + lift * (1.3 + card.userData.phase * 1.3) + Math.sin(t * 2 + card.userData.phase * 10) * 0.04 * lift;
-      card.position.x = card.userData.x * (1 + lift * 0.9);
-      card.rotation.z = card.userData.rz * (1 + lift);
+      const { phase, x, rz } = card.userData;
+      // Cards only start rising once the lid is well out of the way.
+      const lift = easeOut((open - 0.35 - phase) / (0.65 - phase));
+      const clear = Math.max(0, lift - 0.45) / 0.55; // spread only above the rim
+      card.position.y = -1.0 + lift * (1.7 + phase * 0.9) + Math.sin(t * 2 + phase * 10) * 0.04 * lift;
+      // Straight while inside the walls; fan out and tilt once above the rim.
+      card.position.x = x * (1 + clear * 1.2);
+      card.rotation.z = rz * clear * 2;
       card.visible = lift > 0.01;
     });
 

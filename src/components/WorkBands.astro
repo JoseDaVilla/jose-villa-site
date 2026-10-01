@@ -1,0 +1,85 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { wavePath } from '../lib/shapes';
+import { projectColors } from '../data/site';
+
+interface Props { projects: CollectionEntry<'projects'>[] }
+const { projects } = Astro.props;
+const label = (p: CollectionEntry<'projects'>) => p.data.when ?? String(p.data.year);
+---
+<section id="work" class="work section" aria-labelledby="work-title">
+  <div class="container">
+    <div class="section-head">
+      <h2 id="work-title">Selected work</h2>
+      <p>Production systems I led from architecture to launch. Open any project for the full story and screenshots.</p>
+    </div>
+
+    <ol class="bands">
+      {projects.map((p, i) => (
+        <li class="band" style={`--b: ${projectColors[p.data.color]}`}>
+          {i > 0 && (
+            <svg class="edge" viewBox="0 0 1000 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+              <path d={wavePath(20 + i * 3, 1000, 40, 16, 11, 5)} fill={projectColors[p.data.color]} />
+            </svg>
+          )}
+          <a class="band-link" href={`#project-${p.id}`} data-open={p.id}>
+            <span class="head">
+              <span class="when">{label(p)} · {p.data.role}</span>
+              <span class="title">{p.data.title}</span>
+            </span>
+            <span class="body">
+              <span class="summary">{p.data.summary}</span>
+              <span class="open">
+                Open project
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </span>
+          </a>
+          <ul class="tags" aria-label={`${p.data.title} stack`}>
+            {p.data.tags.map((t) => <li>{t}</li>)}
+          </ul>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .work { background: var(--surface); padding-top: clamp(24px, 5vw, 56px); padding-bottom: clamp(32px, 4vw, 56px); }
+  .bands { list-style: none; margin: 0; padding: 0; display: grid; }
+  .band {
+    position: relative; display: grid; gap: 18px;
+    background: var(--b);
+    padding: clamp(28px, 4vw, 44px) clamp(22px, 5vw, 56px) clamp(64px, 8vw, 96px);
+    margin-top: -40px;
+  }
+  .band:first-child { margin-top: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+  .band:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding-bottom: clamp(32px, 5vw, 56px); }
+  .edge { position: absolute; left: 0; top: -38px; width: 100%; height: 40px; }
+
+  .band-link { display: grid; gap: 16px; text-decoration: none; border-radius: 12px; }
+  /* Whole band is clickable; the link's box is stretched over it. */
+  .band-link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+  .band-link:focus-visible { outline: none; }
+  .band:has(.band-link:focus-visible) { outline: 3px solid var(--ink); outline-offset: -6px; }
+  .tags { position: relative; z-index: 0; }
+
+  .head { display: grid; gap: 10px; }
+  .when { font-weight: 600; font-size: var(--step-small); }
+  .title {
+    font-family: var(--font-display); font-weight: 600; letter-spacing: -0.03em;
+    font-size: clamp(2.25rem, 1.4rem + 4.2vw, 4.75rem); line-height: 1; text-wrap: balance;
+  }
+  .body { display: grid; gap: 16px; align-content: end; }
+  .summary { font-size: var(--step-lead); max-width: 40ch; }
+  .open { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+  .open svg { transition: transform 200ms var(--ease-out); }
+  .band:hover .open svg { transform: translateX(4px); }
+  .band { transition: transform 260ms var(--ease-out); }
+
+  @media (min-width: 860px) {
+    .band { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); column-gap: 48px; }
+    .band-link { grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: 48px; align-items: end; }
+    .tags { grid-column: 2; }
+  }
+</style>

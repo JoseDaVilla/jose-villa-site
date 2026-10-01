@@ -1,0 +1,15 @@
+---
+import { blobPath } from '../lib/shapes';
+
+interface Props {
+  seed: number;
+  fill: string;
+  points?: number;
+  vary?: number;
+  class?: string;
+}
+const { seed, fill, points = 7, vary = 0.3, class: className } = Astro.props;
+---
+<svg class={className} viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  <path d={blobPath(seed, points, vary)} fill={fill} />
+</svg>

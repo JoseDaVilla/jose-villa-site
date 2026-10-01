@@ -1,0 +1,22 @@
+---
+import Base from '../layouts/Base.astro';
+import Blob from '../components/Blob.astro';
+---
+<Base title="Page not found · Jose Villa">
+  <main id="main" class="nf container">
+    <Blob class="nf-shape" seed={404} fill="var(--sun)" points={7} vary={0.3} />
+    <div class="nf-in">
+      <h1>This page wandered off.</h1>
+      <p>The link may be old or mistyped. Everything lives on the home page.</p>
+      <a class="btn" href="/">Back to the home page</a>
+    </div>
+  </main>
+</Base>
+
+<style>
+  .nf { min-height: 100dvh; display: grid; place-items: center; position: relative; isolation: isolate; overflow: hidden; }
+  .nf :global(.nf-shape) { position: absolute; width: min(80vw, 640px); height: min(70vw, 560px); z-index: -1; }
+  .nf-in { display: grid; gap: 18px; justify-items: start; max-width: 32ch; }
+  h1 { font-size: var(--step-h2); }
+  p { font-size: var(--step-lead); }
+</style>

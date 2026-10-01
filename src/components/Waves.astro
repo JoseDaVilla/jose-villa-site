@@ -1,0 +1,20 @@
+---
+import { wavePath } from '../lib/shapes';
+
+/** Haikei-style layered waves. Layers are drawn back to front. */
+interface Props {
+  seed: number;
+  layers: { fill: string; base: number; amp: number; steps?: number }[];
+  height?: number;
+  class?: string;
+}
+const { seed, layers, height = 140, class: className } = Astro.props;
+const W = 1000;
+---
+<svg class:list={['waves', className]} viewBox={`0 0 ${W} ${height}`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
+  {layers.map((l, i) => <path d={wavePath(seed + i * 7, W, height, l.base, l.amp, l.steps ?? 6)} fill={l.fill} />)}
+</svg>
+
+<style>
+  .waves { display: block; width: 100%; height: clamp(56px, 10vw, 140px); }
+</style>

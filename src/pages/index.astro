@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import WorkBands from '../components/WorkBands.astro';
+import WorkIndex from '../components/WorkIndex.astro';
+import Waves from '../components/Waves.astro';
+import Experience from '../components/Experience.astro';
+import About from '../components/About.astro';
+import Contact from '../components/Contact.astro';
+import Footer from '../components/Footer.astro';
+import ProjectDialog from '../components/ProjectDialog.astro';
+
+const projects = (await getCollection('projects')).sort((a, b) => a.data.order - b.data.order);
+const featured = projects.filter((p) => p.data.group === 'featured');
+const more = projects.filter((p) => p.data.group === 'more');
+---
+<Base>
+  <Nav />
+  <main id="main">
+    <Hero />
+    <WorkBands projects={featured} />
+    <div class="seam" aria-hidden="true">
+      <Waves seed={33} layers={[{ fill: 'var(--bg)', base: 70, amp: 22 }]} />
+    </div>
+    <WorkIndex projects={more} />
+    <Experience />
+    <About />
+    <Contact />
+  </main>
+  <Footer />
+
+  {projects.map((p) => <ProjectDialog project={p} />)}
+</Base>
+
+<script>
+  import '../scripts/projects';
+</script>
+
+<style>
+  .seam { background: var(--surface); }
+  :global(#more) { padding-top: clamp(24px, 4vw, 48px); }
+</style>

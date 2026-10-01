@@ -1,0 +1,158 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import { render } from 'astro:content';
+import { projectColors } from '../data/site';
+
+interface Props { project: CollectionEntry<'projects'> }
+const { project } = Astro.props;
+const { data, id } = project;
+const { Content } = await render(project);
+
+const shots = [
+  ...(data.cover ? [data.cover] : []),
+  ...(data.gallery ?? []),
+];
+const when = data.when ?? String(data.year);
+const titleId = `project-${id}-title`;
+---
+<dialog id={`project-${id}`} class="pd" aria-labelledby={titleId} data-project={id} style={`--b: ${projectColors[data.color]}`}>
+  <div class="pd-in">
+    <header class="pd-head">
+      <div>
+        <p class="pd-meta"><span class="pd-dot" aria-hidden="true"></span>{when} · {data.role}</p>
+        <h2 id={titleId}>{data.title}</h2>
+      </div>
+      <button class="pd-close" type="button" data-close aria-label="Close project">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </header>
+
+    <div class="pd-media">
+      {data.embedUrl ? (
+        <div class="pd-frame pd-live">
+          <iframe
+            data-src={data.embedUrl}
+            title={`${data.title}, live demo`}
+            loading="lazy"
+            allow="accelerometer; gyroscope; fullscreen; xr-spatial-tracking"
+            sandbox="allow-scripts allow-same-origin allow-popups"
+            referrerpolicy="no-referrer"
+          ></iframe>
+          <p class="pd-live-note">Live demo. Drag to explore.</p>
+        </div>
+      ) : shots.length > 0 ? (
+        <div class="pd-carousel" data-carousel>
+          <div class="pd-track" data-track tabindex="0" aria-label={`${data.title} screenshots`} role="region">
+            {shots.map((src, i) => (
+              <figure class="pd-slide">
+                <Image
+                  src={src}
+                  alt={`${data.title}, screenshot ${i + 1} of ${shots.length}`}
+                  widths={[640, 960, 1400]}
+                  sizes="(min-width: 1100px) 1000px, 100vw"
+                  format="webp"
+                  quality={82}
+                  loading="lazy"
+                />
+              </figure>
+            ))}
+          </div>
+          {shots.length > 1 && (
+            <div class="pd-controls">
+              <button type="button" data-step="-1" aria-label="Previous screenshot">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6"/></svg>
+              </button>
+              <span class="pd-count" data-count aria-live="polite">1 / {shots.length}</span>
+              <button type="button" data-step="1" aria-label="Next screenshot">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </button>
+            </div>
+          )}
+        </div>
+      ) : null}
+    </div>
+
+    <div class="pd-body">
+      <p class="pd-summary">{data.summary}</p>
+      <div class="pd-text"><Content /></div>
+      <ul class="tags" aria-label="Stack">{data.tags.map((t) => <li>{t}</li>)}</ul>
+      {(data.liveUrl || data.repoUrl) && (
+        <div class="pd-links">
+          {data.liveUrl && (
+            <a class="btn" href={data.liveUrl} target="_blank" rel="noopener">
+              Visit live site
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>
+            </a>
+          )}
+          {data.repoUrl && <a class="btn btn--ghost" href={data.repoUrl} target="_blank" rel="noopener">View code</a>}
+        </div>
+      )}
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .pd {
+    width: min(1080px, calc(100vw - 48px)); max-width: none;
+    max-height: calc(100dvh - 48px);
+    padding: 0; border: 0; border-radius: var(--radius-lg);
+    background: var(--bg); color: var(--ink);
+    overflow: auto; overscroll-behavior: contain;
+  }
+  .pd::backdrop { background: color-mix(in srgb, var(--ink) 62%, transparent); }
+  .pd[open] { animation: pd-in 320ms var(--ease-out); }
+  @keyframes pd-in { from { opacity: 0; transform: translateY(24px) scale(0.985); } to { opacity: 1; transform: none; } }
+
+  .pd-in { display: grid; gap: clamp(20px, 3vw, 32px); padding: clamp(20px, 3.4vw, 40px); }
+  .pd-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .pd-head h2 { font-size: clamp(2rem, 1.4rem + 3vw, 3.5rem); }
+  .pd-meta { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--muted); margin-bottom: 10px; font-size: var(--step-small); }
+  .pd-dot { width: 14px; height: 14px; background: var(--b); border-radius: 52% 48% 40% 60% / 60% 42% 58% 40%; }
+  .pd-close {
+    flex: none; width: 48px; height: 48px; border-radius: 50%; border: 0; cursor: pointer;
+    display: grid; place-items: center; background: var(--surface); color: var(--ink);
+    transition: background-color 160ms ease-out, transform 160ms var(--ease-out);
+  }
+  .pd-close:hover { background: var(--line); transform: rotate(90deg); }
+
+  .pd-frame { position: relative; border-radius: 20px; overflow: hidden; background: var(--surface); }
+  .pd-live { aspect-ratio: 16 / 10; }
+  .pd-live iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .pd-live-note {
+    position: absolute; left: 14px; bottom: 14px; padding: 6px 12px; border-radius: 999px;
+    background: var(--bg); font-size: 0.875rem; font-weight: 600; pointer-events: none;
+  }
+
+  .pd-carousel { display: grid; gap: 12px; }
+  .pd-track {
+    display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory;
+    border-radius: 20px; scrollbar-width: none;
+  }
+  .pd-track::-webkit-scrollbar { display: none; }
+  .pd-slide { flex: 0 0 100%; margin: 0; scroll-snap-align: start; border-radius: 20px; overflow: hidden; background: var(--surface); }
+  .pd-slide :global(img) { width: 100%; height: auto; display: block; }
+  .pd-controls { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
+  .pd-controls button {
+    width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;
+    display: grid; place-items: center; background: var(--surface); color: var(--ink);
+  }
+  .pd-controls button:hover { background: var(--line); }
+  .pd-controls button:disabled { opacity: 0.4; cursor: default; }
+  .pd-count { font-variant-numeric: tabular-nums; color: var(--muted); font-size: var(--step-small); min-width: 4ch; text-align: center; }
+
+  .pd-body { display: grid; gap: 20px; max-width: 68ch; }
+  .pd-summary { font-family: var(--font-display); font-weight: 500; font-size: var(--step-h3); line-height: 1.25; letter-spacing: -0.015em; }
+  .pd-text { display: grid; gap: 14px; color: var(--muted); }
+  .pd-text :global(p), .pd-text :global(ul) { margin: 0; }
+  .pd-text :global(ul) { padding-left: 1.2em; display: grid; gap: 6px; }
+  .pd-text :global(strong) { color: var(--ink); }
+  .pd-links { display: flex; flex-wrap: wrap; gap: 12px; }
+
+  /* Phones: the dialog becomes a full-screen sheet. */
+  @media (max-width: 640px) {
+    .pd { width: 100vw; max-height: 100dvh; height: 100dvh; border-radius: 0; margin: 0; }
+    .pd-head { position: sticky; top: 0; z-index: 2; background: var(--bg); margin: -20px -20px 0; padding: 20px; }
+    .pd-live { aspect-ratio: 3 / 4; }
+  }
+</style>

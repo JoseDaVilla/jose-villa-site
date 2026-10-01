@@ -1,0 +1,203 @@
+---
+import Waves from './Waves.astro';
+import { site } from '../data/site';
+
+const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying hi'];
+---
+<section id="contact" class="contact" aria-labelledby="contact-title">
+  <Waves
+    seed={51}
+    layers={[
+      { fill: 'var(--sky)', base: 44, amp: 20 },
+      { fill: 'var(--leaf)', base: 78, amp: 18 },
+      { fill: 'var(--surface)', base: 110, amp: 12, steps: 7 },
+    ]}
+  />
+  <div class="contact-in">
+    <div class="container grid">
+      <div class="intro">
+        <h2 id="contact-title">Let's build something that runs your business.</h2>
+        <p>
+          I'm taking on a small number of new engagements: product builds, technical leadership,
+          or process automation. Send a note and I'll reply within a day or two.
+        </p>
+        <div class="direct">
+          <p>Or email me directly</p>
+          <div class="email-row">
+            <a href={`mailto:${site.email}`}>{site.email}</a>
+            <button type="button" class="copy" data-copy={site.email}>Copy</button>
+          </div>
+        </div>
+      </div>
+
+      <form class="form" data-contact-form novalidate>
+        <input type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <div class="row2">
+          <label class="field">
+            <span>Name</span>
+            <input id="c-name" name="name" type="text" autocomplete="name" required maxlength="120" />
+          </label>
+          <label class="field">
+            <span>Email</span>
+            <input id="c-email" name="email" type="email" autocomplete="email" required maxlength="160" />
+          </label>
+        </div>
+        <fieldset class="topics">
+          <legend>What is it about?</legend>
+          <div class="chips">
+            {topics.map((t, i) => (
+              <label class="chip">
+                <input type="radio" name="topic" value={t} checked={i === 0} />
+                <span>{t}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
+        <label class="field">
+          <span>Message</span>
+          <textarea id="c-message" name="message" rows="5" required maxlength="4000" placeholder="The project, the timeline, anything you'd like me to know."></textarea>
+        </label>
+        <p class="status" data-status role="status" aria-live="polite"></p>
+        <button class="btn submit" type="submit" data-submit>
+          Send message
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact { position: relative; margin-top: clamp(32px, 6vw, 72px); }
+  .contact-in { background: var(--surface); padding-block: clamp(32px, 6vw, 72px) clamp(64px, 10vw, 120px); }
+  .grid { display: grid; gap: clamp(36px, 6vw, 72px); }
+  .intro { display: grid; gap: 18px; align-content: start; }
+  .intro h2 { font-size: var(--step-h2); max-width: 14ch; }
+  .intro > p { color: var(--muted); font-size: var(--step-lead); max-width: 46ch; }
+  .direct { margin-top: 12px; display: grid; gap: 6px; }
+  .direct > p { color: var(--muted); font-size: var(--step-small); }
+  .email-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+  .email-row a { font-family: var(--font-display); font-weight: 500; font-size: clamp(1.25rem, 1rem + 1vw, 1.625rem); text-decoration-color: var(--orange); overflow-wrap: anywhere; }
+  .copy {
+    font: 600 0.875rem/1 var(--font-body); padding: 9px 14px; border-radius: 999px; cursor: pointer;
+    border: 0; background: var(--bg); color: var(--ink);
+  }
+  .copy:hover { background: var(--line); }
+
+  .form {
+    display: grid; gap: 20px; padding: clamp(24px, 4vw, 40px);
+    background: var(--bg); border-radius: 40px 28px 44px 24px / 28px 44px 24px 40px;
+  }
+  .row2 { display: grid; gap: 20px; }
+  .field { display: grid; gap: 8px; }
+  .field > span, legend { font-weight: 600; font-size: var(--step-small); }
+  input[type="text"], input[type="email"], textarea {
+    width: 100%; font: inherit; color: var(--ink); background: var(--bg);
+    border: 2px solid var(--line); border-radius: 16px; padding: 14px 16px;
+    transition: border-color 160ms ease-out;
+  }
+  textarea { resize: vertical; min-height: 140px; }
+  input::placeholder, textarea::placeholder { color: color-mix(in srgb, var(--muted) 80%, transparent); }
+  input:hover, textarea:hover { border-color: color-mix(in srgb, var(--ink) 30%, transparent); }
+  input:focus-visible, textarea:focus-visible { outline: none; border-color: var(--blue); }
+  [aria-invalid="true"] { border-color: #B3261E !important; }
+  .topics { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip { position: relative; cursor: pointer; }
+  .chip input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+  .chip span {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 18px; border-radius: 999px;
+    background: var(--surface); font-weight: 500; transition: background-color 160ms ease-out, color 160ms ease-out;
+  }
+  .chip:hover span { background: var(--line); }
+  .chip input:checked + span { background: var(--ink); color: var(--bg); }
+  .chip input:focus-visible + span { outline: 3px solid var(--blue); outline-offset: 3px; }
+  .status { font-weight: 500; }
+  .status:empty { display: none; }
+  .status[data-state="error"] { color: #B3261E; }
+  .status[data-state="ok"] { color: #1F6B3A; }
+  .submit { justify-self: start; }
+  .submit[disabled] { opacity: 0.6; cursor: progress; }
+
+  @media (min-width: 640px) { .row2 { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1000px) { .grid { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); } }
+</style>
+
+<script>
+  const ACCESS_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY as string | undefined;
+
+  document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) =>
+    b.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(b.dataset.copy ?? '');
+        b.textContent = 'Copied';
+      } catch {
+        b.textContent = 'Press Ctrl+C';
+      }
+      setTimeout(() => (b.textContent = 'Copy'), 1600);
+    }),
+  );
+
+  document.querySelectorAll<HTMLFormElement>('[data-contact-form]').forEach((form) => {
+    const status = form.querySelector<HTMLElement>('[data-status]')!;
+    const submit = form.querySelector<HTMLButtonElement>('[data-submit]')!;
+    const say = (state: 'ok' | 'error' | '', text: string) => {
+      status.dataset.state = state;
+      status.textContent = text;
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const data = new FormData(form);
+      if (data.get('botcheck')) return;
+
+      // Validate next to the fields, not only at the top.
+      const fields = ['name', 'email', 'message'] as const;
+      let firstBad: HTMLInputElement | HTMLTextAreaElement | null = null;
+      for (const name of fields) {
+        const el = form.elements.namedItem(name) as HTMLInputElement | HTMLTextAreaElement;
+        const ok = el.checkValidity() && String(el.value).trim() !== '';
+        el.setAttribute('aria-invalid', String(!ok));
+        if (!ok && !firstBad) firstBad = el;
+      }
+      if (firstBad) {
+        say('error', 'Please add your name, a valid email and a short message.');
+        firstBad.focus();
+        return;
+      }
+
+      if (!ACCESS_KEY) {
+        say('error', "The form isn't connected yet. Please email me directly at josedvilla18@gmail.com.");
+        return;
+      }
+
+      submit.disabled = true;
+      say('', 'Sending…');
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({
+            access_key: ACCESS_KEY,
+            subject: `[${data.get('topic')}] Portfolio message from ${data.get('name')}`,
+            from_name: 'Portfolio contact form',
+            name: data.get('name'),
+            email: data.get('email'),
+            replyto: data.get('email'),
+            topic: data.get('topic'),
+            message: data.get('message'),
+          }),
+        });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || !json.success) throw new Error(json.message || 'Request failed');
+        form.reset();
+        fields.forEach((n) => (form.elements.namedItem(n) as HTMLElement).removeAttribute('aria-invalid'));
+        say('ok', "Thanks, your message is on its way. I'll reply within a day or two.");
+      } catch {
+        say('error', "Your message couldn't be sent. Please try again or email me directly.");
+      } finally {
+        submit.disabled = false;
+      }
+    });
+  });
+</script>

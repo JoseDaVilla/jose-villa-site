@@ -1,0 +1,82 @@
+---
+import { getCollection, render } from 'astro:content';
+
+const all = (await getCollection('experience')).sort((a, b) => a.data.order - b.data.order);
+const current = await Promise.all(
+  all.filter((e) => e.data.group === 'current').map(async (e) => ({ ...e, Content: (await render(e)).Content })),
+);
+const earlier = await Promise.all(
+  all.filter((e) => e.data.group === 'earlier').map(async (e) => ({ ...e, Content: (await render(e)).Content })),
+);
+---
+<section id="experience" class="section" aria-labelledby="exp-title">
+  <div class="container">
+    <div class="section-head">
+      <h2 id="exp-title">Experience</h2>
+      <p>Leading engineering for client platforms, and implementing IT automation for MSPs.</p>
+    </div>
+
+    <ol class="roles">
+      {current.map(({ data, Content }) => (
+        <li class="role">
+          <p class="period">{data.period}</p>
+          <div class="role-body">
+            <h3>
+              {data.role}
+              <span class="at">
+                at {data.url ? <a href={data.url} target="_blank" rel="noopener">{data.company}</a> : data.company}
+              </span>
+            </h3>
+            <div class="desc"><Content /></div>
+          </div>
+        </li>
+      ))}
+    </ol>
+
+    <div class="earlier">
+      <h3 class="earlier-title">Bilingual client-facing roles</h3>
+      <p class="earlier-sub">Four years working directly with customers in English and Spanish, alongside learning and shipping software.</p>
+      <ul>
+        {earlier.map(({ data, Content }) => (
+          <li>
+            <p class="e-role"><b>{data.role}</b>, {data.company}</p>
+            <p class="e-period">{data.period}</p>
+            <div class="e-desc"><Content /></div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .roles { list-style: none; margin: 0; padding: 0; display: grid; }
+  .role { display: grid; gap: 8px 40px; padding: clamp(24px, 3vw, 36px) 0; border-top: 1px solid var(--line); }
+  .role:last-child { border-bottom: 1px solid var(--line); }
+  .period { color: var(--muted); font-weight: 500; font-variant-numeric: tabular-nums; }
+  h3 { font-size: var(--step-h3); line-height: 1.15; }
+  .at { color: var(--muted); font-weight: 500; }
+  .at a { color: var(--ink); text-decoration-color: var(--orange); }
+  .at a:hover { text-decoration-color: var(--ink); }
+  .desc { margin-top: 12px; max-width: 64ch; }
+  .desc :global(p) { margin: 0; }
+
+  .earlier {
+    margin-top: clamp(40px, 6vw, 72px); padding: clamp(24px, 4vw, 44px);
+    background: var(--surface);
+    border-radius: 56px 32px 64px 28px / 36px 60px 30px 56px;
+  }
+  .earlier-title { font-size: var(--step-h3); }
+  .earlier-sub { color: var(--muted); margin-top: 6px; }
+  .earlier ul { list-style: none; margin: 24px 0 0; padding: 0; display: grid; gap: 24px; }
+  .earlier li { display: grid; gap: 2px; }
+  .e-period { color: var(--muted); font-size: var(--step-small); }
+  .e-desc { color: var(--muted); font-size: var(--step-small); max-width: 70ch; margin-top: 4px; }
+  .e-desc :global(p) { margin: 0; }
+
+  @media (min-width: 860px) {
+    .role { grid-template-columns: 220px minmax(0, 1fr); }
+    .period { padding-top: 6px; }
+    .earlier ul { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+  }
+</style>

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://jose-villa.dev/sitemap-index.xml

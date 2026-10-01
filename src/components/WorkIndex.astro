@@ -1,0 +1,146 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import Blob from './Blob.astro';
+import Waves from './Waves.astro';
+import { projectColors } from '../data/site';
+
+interface Props { projects: CollectionEntry<'projects'>[] }
+const { projects } = Astro.props;
+const label = (p: CollectionEntry<'projects'>) => p.data.when ?? String(p.data.year);
+---
+<section id="more" class="more section" aria-labelledby="more-title">
+  <div class="container">
+    <div class="section-head">
+      <h2 id="more-title">More work</h2>
+      <p>Client sites, automation and 3D experiments. Some run live right inside the project window.</p>
+    </div>
+
+    <div class="index" data-index>
+      <ul class="rows">
+        {projects.map((p, i) => (
+          <li class="row" style={`--b: ${projectColors[p.data.color]}`}>
+            <a href={`#project-${p.id}`} data-open={p.id} data-preview={i}>
+              <span class="dot" aria-hidden="true"></span>
+              <span class="title">{p.data.title}</span>
+              <span class="when">{label(p)}</span>
+              <span class="summary">{p.data.summary}</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="preview" aria-hidden="true" data-preview-box>
+        {projects.map((p, i) => (
+          <div class="card" data-card={i} style={`--b: ${projectColors[p.data.color]}; --t: ${p.data.color === 'blue' ? 'var(--bg)' : 'var(--ink)'}`}>
+            <Blob class="shape" seed={40 + i * 5} fill={projectColors[p.data.color]} points={7} vary={0.22} />
+            {p.data.cover ? (
+              <Image src={p.data.cover} alt="" widths={[480, 720]} sizes="420px" format="webp" quality={78} loading="lazy" class="shot" />
+            ) : (
+              <span class="shot art">
+                <Waves
+                  seed={60 + i * 9}
+                  height={300}
+                  class="art-waves"
+                  layers={[
+                    { fill: 'color-mix(in srgb, var(--bg) 30%, var(--b))', base: 120, amp: 30, steps: 4 },
+                    { fill: 'color-mix(in srgb, var(--bg) 60%, var(--b))', base: 180, amp: 26, steps: 5 },
+                    { fill: 'var(--bg)', base: 240, amp: 20, steps: 5 },
+                  ]}
+                />
+                <span class="art-title">{p.data.title}</span>
+                <span class="art-label">{p.data.embedUrl ? 'Live 3D demo inside' : 'Live site'}</span>
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .index { position: relative; }
+  .rows { list-style: none; margin: 0; padding: 0; }
+  .row a {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 6px 18px;
+    padding: clamp(18px, 2.4vw, 26px) 0; border-top: 1px solid var(--line); text-decoration: none;
+    border-radius: 0;
+  }
+  .row:last-child a { border-bottom: 1px solid var(--line); }
+  .dot {
+    width: 22px; height: 22px; background: var(--b);
+    border-radius: 52% 48% 40% 60% / 60% 42% 58% 40%;
+    transition: transform 320ms var(--ease-out);
+  }
+  .title {
+    font-family: var(--font-display); font-weight: 600; letter-spacing: -0.03em; line-height: 1.04;
+    font-size: clamp(1.875rem, 1.1rem + 3.8vw, 4.25rem); text-wrap: balance;
+  }
+  .when { grid-column: 2; color: var(--muted); font-size: var(--step-small); font-weight: 600; }
+  .summary { grid-column: 2; color: var(--muted); max-width: 52ch; }
+  .row a:hover .dot, .row a:focus-visible .dot { transform: scale(1.5) rotate(18deg); }
+  .row a:hover .title, .row a:focus-visible .title { text-decoration: underline; text-decoration-color: var(--b); text-decoration-thickness: 6px; text-underline-offset: 8px; }
+
+  .preview { display: none; }
+
+  /* Floating preview only where a real pointer can hover. */
+  @media (min-width: 900px) and (hover: hover) and (pointer: fine) {
+    .title, .summary { max-width: 56%; }
+    .when { display: none; }
+    .preview {
+      display: block; position: absolute; right: 0; top: 0; width: 38%; aspect-ratio: 16 / 11;
+      pointer-events: none; z-index: 2;
+      transition: transform 360ms var(--ease-out);
+    }
+    .card {
+      position: absolute; inset: 0; opacity: 0;
+      transform: translateY(14px) rotate(-2deg) scale(0.97);
+      transition: opacity 200ms ease-out, transform 360ms var(--ease-out);
+    }
+    .card.on { opacity: 1; transform: translateY(0) rotate(-2deg) scale(1); }
+    .card :global(.shape) { position: absolute; inset: -9% -7% -12% -9%; width: 116%; height: 121%; }
+    .card :global(.shot) {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      object-fit: cover; object-position: top left; border-radius: 22px;
+      box-shadow: 0 18px 40px -18px color-mix(in srgb, var(--ink) 45%, transparent);
+    }
+    .art { background: var(--b); overflow: hidden; display: block; }
+    .art :global(.art-waves) { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .art-title {
+      position: absolute; left: 24px; top: 20px; right: 24px;
+      font-family: var(--font-display); font-weight: 600; letter-spacing: -0.03em; line-height: 1;
+      font-size: 2.5rem; color: var(--t);
+    }
+    .art-label {
+      position: absolute; left: 24px; bottom: 20px; padding: 6px 12px; border-radius: 999px;
+      background: var(--ink); color: var(--bg); font-weight: 600; font-size: 0.875rem;
+    }
+  }
+</style>
+
+<script>
+  // Move the floating preview next to the hovered/focused row and show its card.
+  document.querySelectorAll<HTMLElement>('[data-index]').forEach((index) => {
+    const box = index.querySelector<HTMLElement>('[data-preview-box]');
+    if (!box) return;
+    const cards = [...box.querySelectorAll<HTMLElement>('[data-card]')];
+    const show = (a: HTMLElement) => {
+      const i = Number(a.dataset.preview);
+      const row = a.closest('li') as HTMLElement;
+      const maxTop = index.offsetHeight - box.offsetHeight;
+      const top = Math.min(Math.max(row.offsetTop + row.offsetHeight / 2 - box.offsetHeight / 2, 0), Math.max(maxTop, 0));
+      box.style.transform = `translateY(${top}px)`;
+      cards.forEach((c, j) => c.classList.toggle('on', j === i));
+    };
+    const hide = () => cards.forEach((c) => c.classList.remove('on'));
+    index.querySelectorAll<HTMLElement>('[data-preview]').forEach((a) => {
+      a.addEventListener('mouseenter', () => show(a));
+      a.addEventListener('focus', () => show(a));
+    });
+    index.addEventListener('mouseleave', hide);
+    index.addEventListener('focusout', (e) => {
+      if (!index.contains(e.relatedTarget as Node | null)) hide();
+    });
+  });
+</script>

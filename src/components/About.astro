@@ -1,0 +1,72 @@
+---
+import Blob from './Blob.astro';
+
+const toolkit = [
+  { name: 'Frontend', items: ['Next.js', 'React', 'React Native', 'Astro', 'Tailwind', 'Three.js'] },
+  { name: 'Backend and data', items: ['Node.js', 'Python', 'PostgreSQL', 'MySQL', 'Docker', 'AWS'] },
+  { name: 'Integrations', items: ['Stripe Connect', 'Twilio', 'SendGrid', 'Webhooks', 'REST APIs'] },
+  { name: 'Automation', items: ['n8n', 'Zapier', 'Make', 'Data pipelines'] },
+];
+---
+<section id="about" class="about section" aria-labelledby="about-title">
+  <div class="container about-grid">
+    <div class="text">
+      <div class="section-head">
+        <h2 id="about-title">About</h2>
+      </div>
+      <p class="big">
+        I'm a Lead Full-Stack Developer who builds <b>production systems</b> that solve real business
+        problems: SaaS platforms, lead marketplaces, POS systems, document automation and trading bots.
+      </p>
+      <p>
+        I lead engineering teams, run client relationships directly, and ship systems end-to-end,
+        from architecture through deployment. I also bring <b>4+ years of bilingual client-facing
+        experience</b>, so I can turn a business problem into a clear technical plan in English or
+        Spanish and keep stakeholders aligned from kickoff to launch.
+      </p>
+      <p>
+        Across every engagement, I look for opportunities to <b>automate manual processes</b>,
+        replacing slow, error-prone work with reliable self-serve workflows that save teams hours
+        every week.
+      </p>
+    </div>
+
+    <aside class="toolkit" aria-labelledby="toolkit-title">
+      <Blob class="tk-dot" seed={31} fill="var(--sun)" points={6} vary={0.3} />
+      <div class="tk-in">
+        <h3 id="toolkit-title">Toolkit</h3>
+        {toolkit.map((g) => (
+          <div class="group">
+            <p class="g-name">{g.name}</p>
+            <ul class="tags">{g.items.map((t) => <li>{t}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </aside>
+  </div>
+</section>
+
+<style>
+  .about-grid { display: grid; gap: clamp(40px, 6vw, 72px); }
+  .text { display: grid; gap: 20px; max-width: 62ch; }
+  .text .section-head { margin-bottom: 4px; }
+  .big { font-family: var(--font-display); font-weight: 500; font-size: var(--step-h3); line-height: 1.3; letter-spacing: -0.015em; }
+  .text p:not(.big) { color: var(--muted); }
+  .text b { color: var(--ink); }
+
+  .toolkit { position: relative; isolation: isolate; align-self: start; }
+  .toolkit :global(.tk-dot) { position: absolute; top: -34px; right: -14px; width: 110px; height: 104px; z-index: -1; }
+  .tk-in {
+    display: grid; gap: 20px; padding: clamp(28px, 5vw, 48px);
+    background: var(--sky);
+    border-radius: 72px 40px 80px 36px / 48px 76px 40px 68px;
+  }
+  .tk-in h3 { font-size: var(--step-h3); }
+  .group { display: grid; gap: 10px; }
+  .g-name { font-weight: 600; }
+  .group .tags li { background: color-mix(in srgb, var(--bg) 70%, transparent); }
+
+  @media (min-width: 960px) {
+    .about-grid { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); align-items: center; }
+  }
+</style>

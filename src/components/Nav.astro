@@ -1,0 +1,66 @@
+---
+import { site } from '../data/site';
+---
+<header class="nav" data-nav>
+  <div class="container nav-in">
+    <a class="logo" href="#top" aria-label={`${site.name}, back to top`}>{site.name}</a>
+    <nav aria-label="Primary">
+      <ul>
+        {site.nav.map((item) => <li><a href={item.href}>{item.label}</a></li>)}
+      </ul>
+    </nav>
+    <a class="btn nav-cta" href="#contact">Get in touch</a>
+  </div>
+</header>
+
+<style>
+  .nav {
+    position: sticky; top: 0; z-index: 40;
+    background: var(--bg);
+    border-bottom: 1px solid transparent;
+    transition: border-color 200ms ease-out;
+  }
+  :global(body[data-scrolled]) .nav { border-bottom-color: var(--line); }
+  .nav-in { display: flex; align-items: center; gap: 24px; min-height: 76px; }
+  .logo {
+    font-family: var(--font-display); font-weight: 600; font-size: 1.375rem;
+    letter-spacing: -0.02em; text-decoration: none; white-space: nowrap;
+  }
+  nav { margin-left: auto; display: none; }
+  ul { display: flex; gap: 6px; list-style: none; margin: 0; padding: 0; }
+  nav a {
+    display: inline-flex; align-items: center; min-height: 44px; padding: 0 14px;
+    border-radius: 999px; color: var(--muted); font-weight: 500; text-decoration: none;
+    transition: color 160ms ease-out, background-color 160ms ease-out;
+  }
+  nav a:hover { color: var(--ink); background: var(--surface); }
+  nav a[aria-current="true"] { color: var(--ink); background: var(--surface); }
+  .nav-cta { margin-left: auto; min-height: 44px; padding: 0 20px; font-size: 1rem; }
+  @media (min-width: 820px) {
+    nav { display: block; }
+    .nav-cta { margin-left: 8px; }
+  }
+</style>
+
+<script>
+  const body = document.body;
+  const links = [...document.querySelectorAll<HTMLAnchorElement>('[data-nav] nav a')];
+  const onScroll = () => body.toggleAttribute('data-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Mark the nav link for the section currently in view.
+  const sections = links
+    .map((a) => document.querySelector<HTMLElement>(a.getAttribute('href') ?? ''))
+    .filter((s): s is HTMLElement => !!s);
+  const io = new IntersectionObserver(
+    (entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        links.forEach((a) => a.setAttribute('aria-current', String(a.getAttribute('href') === `#${e.target.id}`)));
+      }
+    },
+    { rootMargin: '-45% 0px -50% 0px' },
+  );
+  sections.forEach((s) => io.observe(s));
+</script>

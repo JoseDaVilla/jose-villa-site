@@ -1,0 +1,49 @@
+---
+import Waves from './Waves.astro';
+import { site } from '../data/site';
+const year = new Date().getFullYear();
+---
+<footer class="footer">
+  <Waves
+    seed={77}
+    height={120}
+    layers={[
+      { fill: 'var(--sun)', base: 30, amp: 16 },
+      { fill: 'var(--orange)', base: 58, amp: 16 },
+      { fill: 'var(--blue)', base: 84, amp: 12 },
+      { fill: 'var(--ink)', base: 104, amp: 8, steps: 7 },
+    ]}
+    class="footer-waves"
+  />
+  <div class="foot-in">
+    <div class="container cols">
+      <div>
+        <p class="name">{site.name}</p>
+        <p class="role">{site.role}</p>
+      </div>
+      <ul class="links">
+        <li><a href={site.socials.github} target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href={site.socials.linkedin} target="_blank" rel="noopener">LinkedIn</a></li>
+        <li><a href={`mailto:${site.email}`}>Email</a></li>
+        <li><a href={site.cv} download>CV</a></li>
+      </ul>
+      <p class="copy">© {year} {site.fullName}</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer { background: var(--surface); }
+  .foot-in { background: var(--ink); color: var(--bg); padding-block: clamp(36px, 6vw, 64px); }
+  .cols { display: grid; gap: 28px; align-items: end; }
+  .name { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.75rem, 1.2rem + 2vw, 2.5rem); letter-spacing: -0.025em; }
+  .role { color: color-mix(in srgb, var(--bg) 72%, transparent); }
+  .links { display: flex; flex-wrap: wrap; gap: 6px 22px; list-style: none; margin: 0; padding: 0; }
+  .links a { text-decoration-color: var(--sun); font-weight: 500; display: inline-flex; min-height: 44px; align-items: center; }
+  .copy { color: color-mix(in srgb, var(--bg) 72%, transparent); font-size: var(--step-small); }
+  .footer :global(:focus-visible) { outline-color: var(--sun); }
+  @media (min-width: 860px) {
+    .cols { grid-template-columns: 1fr auto; }
+    .copy { grid-column: 1 / -1; }
+  }
+</style>

@@ -1,0 +1,90 @@
+---
+import Blob from './Blob.astro';
+import Waves from './Waves.astro';
+import { site } from '../data/site';
+---
+<section id="top" class="hero" aria-labelledby="hero-title">
+  <div class="container hero-grid">
+    <div class="copy">
+      <p class="who">{site.name}, {site.role}</p>
+      <h1 id="hero-title">I build the web applications businesses run on.</h1>
+      <p class="lead">
+        Years of delivery for marketing agencies give me a sharp focus on lead generation,
+        conversion and automation: SaaS and B2B platforms, POS systems, and the internal tools
+        that keep operations moving.
+      </p>
+      <div class="ctas">
+        <a class="btn" href="#work">
+          See selected work
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn--ghost" href={site.cv} download>
+          Download CV
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></svg>
+        </a>
+      </div>
+      <ul class="proof" aria-label="Highlights">
+        <li><b>30+ US locations</b> run a POS I built</li>
+        <li><b>Thousands of leads</b> validated every day</li>
+        <li><b>Lead engineer</b> at Geeks5G</li>
+      </ul>
+    </div>
+
+    <div class="art" aria-hidden="true">
+      <Blob class="s1" seed={4} fill="var(--orange)" points={7} vary={0.28} />
+      <Blob class="s2" seed={9} fill="var(--sun)" points={6} vary={0.3} />
+      <Blob class="s3" seed={13} fill="var(--sky)" points={6} vary={0.36} />
+    </div>
+  </div>
+
+  <Waves
+    seed={5}
+    layers={[
+      { fill: 'var(--sun)', base: 40, amp: 22 },
+      { fill: 'var(--orange)', base: 74, amp: 20 },
+      { fill: 'var(--surface)', base: 108, amp: 14, steps: 7 },
+    ]}
+  />
+</section>
+
+<style>
+  .hero { position: relative; padding-top: clamp(20px, min(6vw, 6vh), 72px); overflow: hidden; }
+  .hero-grid { display: grid; gap: clamp(24px, 4vw, 40px); padding-bottom: clamp(16px, 4vw, 48px); }
+  .copy { display: grid; gap: clamp(14px, 2.4vh, 20px); min-width: 0; }
+  .who { font-weight: 600; font-size: var(--step-lead); }
+  /* Width-based scale, capped by viewport height so the CTAs stay in the first screen on laptops. */
+  h1 { font-size: clamp(2.5rem, min(1.6rem + 5.6vw, 10.5vh), 6rem); line-height: 1.02; max-width: 15ch; }
+  .lead { color: var(--muted); font-size: var(--step-lead); max-width: 52ch; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
+  .proof {
+    display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 12px 0 0; padding: 20px 0 0;
+    list-style: none; border-top: 1px solid var(--line); color: var(--muted); font-size: var(--step-small);
+  }
+  .proof b { color: var(--ink); }
+
+  /* Shapes: a short strip under the copy on phones, a composition beside it on wide screens. */
+  .art { position: relative; height: clamp(150px, 38vw, 240px); }
+  .art :global(svg) { position: absolute; }
+  .art :global(.s1) { left: 0; top: 0; width: 48%; height: 100%; }
+  .art :global(.s2) { left: 40%; top: 34%; width: 28%; height: 66%; }
+  .art :global(.s3) { left: 68%; top: 6%; width: 22%; height: 52%; }
+
+  @media (min-width: 960px) {
+    .hero-grid { grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.75fr); align-items: center; }
+    .art { height: auto; aspect-ratio: 1 / 1.1; }
+    .art :global(.s1) { left: 6%; top: 0; width: 94%; height: 82%; }
+    .art :global(.s2) { left: -10%; top: 52%; width: 46%; height: 44%; }
+    .art :global(.s3) { left: 58%; top: 64%; width: 34%; height: 34%; }
+  }
+
+  /* The page's one authored motion: the shapes settle into place on load. */
+  @media (prefers-reduced-motion: no-preference) {
+    .art :global(svg) { animation: settle 900ms var(--ease-out) both; }
+    .art :global(.s2) { animation-delay: 120ms; }
+    .art :global(.s3) { animation-delay: 240ms; }
+  }
+  @keyframes settle {
+    from { transform: translateY(24px) scale(0.92); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+</style>

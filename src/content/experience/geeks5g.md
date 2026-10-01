@@ -1,10 +1,14 @@
 ---
-company: "Geeks5G"
-role: "Lead Full-Stack Developer"
+company: "Geeks5G Marketing Agency"
+role: "Full Stack Developer"
 period: "Jan 2025 — Present"
 url: "https://geeks5g.com"
 order: 2
 group: "current"
+stack: ["Next.js", "React", "React Native", "Node.js", "Python", "n8n"]
 ---
 
-Lead a team of developers, assigning tasks, organising timelines, and owning delivery. Architect and ship client platforms end-to-end, run client relationships directly, and build automations and integrations across a wide stack.
+- Design, build, deploy and maintain web platforms and client dashboards.
+- Lead the development team: plan timelines, assign tasks and make sure projects ship on time.
+- Meet with clients to define requirements and turn them into working features.
+- Build automations and data pipelines with n8n and Python that cut manual work and improve marketing results.

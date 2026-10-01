@@ -37,6 +37,7 @@ const experience = defineCollection({
     url: z.string().url().optional(),
     order: z.number(),
     group: z.enum(['current', 'earlier']),
+    stack: z.array(z.string()).optional(),
   }),
 });
 

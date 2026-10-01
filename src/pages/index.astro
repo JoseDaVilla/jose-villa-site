@@ -20,12 +20,15 @@ const more = projects.filter((p) => p.data.group === 'more');
   <Nav />
   <main id="main">
     <Hero />
+    <Experience />
+    <div class="seam seam--in" aria-hidden="true">
+      <Waves seed={21} layers={[{ fill: 'var(--surface)', base: 70, amp: 22 }]} />
+    </div>
     <WorkBands projects={featured} />
     <div class="seam" aria-hidden="true">
       <Waves seed={33} layers={[{ fill: 'var(--bg)', base: 70, amp: 22 }]} />
     </div>
     <WorkIndex projects={more} />
-    <Experience />
     <About />
     <Contact />
   </main>
@@ -40,5 +43,6 @@ const more = projects.filter((p) => p.data.group === 'more');
 
 <style>
   .seam { background: var(--surface); }
+  .seam--in { background: var(--bg); }
   :global(#more) { padding-top: clamp(24px, 4vw, 48px); }
 </style>

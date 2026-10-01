@@ -7,6 +7,9 @@ group: "more"
 order: 1
 color: "orange"
 role: "Full-stack developer"
+cover: "../../assets/projects/hammercrest/01.png"
+gallery:
+  - "../../assets/projects/hammercrest/02.png"
 liveUrl: "https://hammercrest.ca"
 ---
 

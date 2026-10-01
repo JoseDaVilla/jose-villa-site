@@ -1,0 +1,43 @@
+---
+// Brand marks come from Simple Icons (CC0), drawn single-colour so they sit
+// quietly in the flat palette. Brands Simple Icons no longer ships (AWS,
+// Twilio, SendGrid) and generic concepts use plain line icons instead.
+import {
+  siNextdotjs, siReact, siAstro, siTailwindcss, siThreedotjs, siJavascript,
+  siNodedotjs, siPython, siPostgresql, siMysql, siDocker,
+  siStripe, siN8n, siZapier, siMake,
+} from 'simple-icons';
+
+interface Props { name: string }
+const { name } = Astro.props;
+
+const brands: Record<string, { path: string }> = {
+  'Next.js': siNextdotjs, React: siReact, 'React Native': siReact, Astro: siAstro,
+  Tailwind: siTailwindcss, 'Three.js': siThreedotjs, JavaScript: siJavascript,
+  'Node.js': siNodedotjs, Python: siPython, PostgreSQL: siPostgresql, MySQL: siMysql,
+  Docker: siDocker, 'Stripe Connect': siStripe, n8n: siN8n, Zapier: siZapier, Make: siMake,
+};
+
+// 24x24 line icons (stroke) for everything without a brand mark.
+const lines: Record<string, string> = {
+  AWS: 'M7 18h10a4 4 0 0 0 .6-7.95A6 6 0 0 0 6.1 9.2 4.5 4.5 0 0 0 7 18z',
+  Twilio: 'M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z M8 10h.01 M12 10h.01 M16 10h.01',
+  SendGrid: 'M3 6h18v12H3z M3 7l9 6 9-6',
+  Webhooks: 'M18 16.98h-5.99c-1.1 0-1.95.94-2.48 1.9A4 4 0 0 1 2 17c.01-.7.2-1.4.57-2 M6 17l3.13-5.78c.53-.97.1-2.18-.5-3.1a4 4 0 1 1 6.89-4.06 M12 6l3.13 5.73C15.66 12.7 16.9 13 18 13a4 4 0 0 1 0 8',
+  'REST APIs': 'M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5a2 2 0 0 0 2 2h1 M16 3h1a2 2 0 0 1 2 2v5a2 2 0 0 0 2 2 2 2 0 0 0-2 2v5a2 2 0 0 1-2 2h-1',
+  'Data pipelines': 'M3 5h6v4H3z M15 15h6v4h-6z M6 9v3a2 2 0 0 0 2 2h8a2 2 0 0 1 2 2v-1',
+  'Machine learning': 'M12 3l1.9 5.8L20 10l-6.1 1.2L12 17l-1.9-5.8L4 10l6.1-1.2z M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z',
+};
+
+const brand = brands[name];
+const line = lines[name];
+---
+{brand ? (
+  <svg class="ti" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d={brand.path} fill="currentColor" /></svg>
+) : line ? (
+  <svg class="ti" viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d={line} /></svg>
+) : null}
+
+<style>
+  .ti { width: 18px; height: 18px; flex: none; display: block; }
+</style>

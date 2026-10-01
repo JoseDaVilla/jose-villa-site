@@ -1,11 +1,12 @@
 ---
 import Blob from './Blob.astro';
+import TechIcon from './TechIcon.astro';
 
 const toolkit = [
-  { name: 'Frontend', items: ['Next.js', 'React', 'React Native', 'Astro', 'Tailwind', 'Three.js'] },
+  { name: 'Frontend', items: ['JavaScript', 'Next.js', 'React', 'React Native', 'Astro', 'Tailwind', 'Three.js'] },
   { name: 'Backend and data', items: ['Node.js', 'Python', 'PostgreSQL', 'MySQL', 'Docker', 'AWS'] },
   { name: 'Integrations', items: ['Stripe Connect', 'Twilio', 'SendGrid', 'Webhooks', 'REST APIs'] },
-  { name: 'Automation', items: ['n8n', 'Zapier', 'Make', 'Data pipelines'] },
+  { name: 'Automation and data', items: ['n8n', 'Zapier', 'Make', 'Data pipelines', 'Machine learning'] },
 ];
 ---
 <section id="about" class="about section" aria-labelledby="about-title">
@@ -38,7 +39,7 @@ const toolkit = [
         {toolkit.map((g) => (
           <div class="group">
             <p class="g-name">{g.name}</p>
-            <ul class="tags">{g.items.map((t) => <li>{t}</li>)}</ul>
+            <ul class="tools">{g.items.map((t) => <li><TechIcon name={t} /><span>{t}</span></li>)}</ul>
           </div>
         ))}
       </div>
@@ -64,7 +65,12 @@ const toolkit = [
   .tk-in h3 { font-size: var(--step-h3); }
   .group { display: grid; gap: 10px; }
   .g-name { font-weight: 600; }
-  .group .tags li { background: color-mix(in srgb, var(--bg) 70%, transparent); }
+  .tools { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+  .tools li {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px 8px 11px; border-radius: 999px;
+    background: var(--bg); font-weight: 500; font-size: 0.9375rem; line-height: 1;
+  }
 
   @media (min-width: 960px) {
     .about-grid { grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr); align-items: center; }

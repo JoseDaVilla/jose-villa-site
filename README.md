@@ -34,6 +34,16 @@ Copy `.env.example` to `.env` locally, and set the same variables in Vercel:
 - `PUBLIC_SITE_URL`: canonical URL (sitemap, canonical links, social card).
 - `PUBLIC_WEB3FORMS_KEY`: required for the contact form to deliver messages (free at web3forms.com).
 
+## Deploying
+
+- **GitHub Pages:** `.github/workflows/pages.yml` builds and publishes on every push to `main`,
+  at `https://josedavilla.github.io/jose-villa-site/`. One-time setup: Settings → Pages →
+  Source: **GitHub Actions**. To enable the contact form there, add a repository secret
+  `PUBLIC_WEB3FORMS_KEY`.
+- **Vercel / any root domain:** no setup; leave `BASE_PATH` unset. `BASE_PATH` only exists so
+  links work under the Pages sub-path; use `withBase()` (`src/lib/paths.ts`) for any new
+  site-relative link.
+
 ## Design notes
 
 - Palette and type scale live as CSS variables at the top of `src/styles/global.css`.

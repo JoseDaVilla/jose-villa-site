@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import { site } from '../data/site';
+import { withBase } from '../lib/paths';
 
 interface Props {
   title?: string;
@@ -8,7 +9,7 @@ interface Props {
 }
 const { title = site.title, description = site.description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
-const ogImage = new URL('/og/default.png', Astro.site).toString();
+const ogImage = new URL(withBase('og/default.png'), Astro.site).toString();
 
 const person = {
   '@context': 'https://schema.org',
@@ -29,8 +30,8 @@ const person = {
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="icon" type="image/svg+xml" href={withBase('favicon.svg')} />
+    <link rel="sitemap" href={withBase('sitemap-index.xml')} />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />

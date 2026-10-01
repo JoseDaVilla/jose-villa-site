@@ -8,9 +8,27 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
 ---
 <section id="experience" class="section experience" aria-labelledby="exp-title">
   <div class="container">
-    <div class="section-head">
-      <h2 id="exp-title">Experience</h2>
-      <p>3+ years building web and mobile apps, and 4+ years of bilingual client work.</p>
+    <div class="exp-head">
+      <div class="section-head">
+        <h2 id="exp-title">Experience</h2>
+        <p>3+ years building web and mobile apps, and 4+ years of bilingual client work.</p>
+      </div>
+      <div class="scene" data-briefcase-scene aria-hidden="true">
+        <svg class="poster" viewBox="0 0 400 300" focusable="false">
+          <g stroke="var(--ink)" stroke-width="5" stroke-linejoin="round">
+            <rect x="150" y="40" width="120" height="70" rx="10" fill="var(--paper, #FFFDF8)" transform="rotate(-8 210 75)" />
+            <rect x="185" y="30" width="120" height="70" rx="10" fill="var(--sky)" transform="rotate(7 245 65)" />
+            <path d="M172 92 a28 28 0 0 1 56 0" fill="none" stroke-width="12" stroke="var(--ink)" />
+            <path d="M172 92 a28 28 0 0 1 56 0" fill="none" stroke-width="6" stroke="var(--blue)" />
+            <rect x="90" y="92" width="220" height="150" rx="18" fill="var(--orange)" />
+            <rect x="88" y="172" width="224" height="18" rx="6" fill="var(--blue)" />
+            <rect x="130" y="112" width="26" height="20" rx="4" fill="var(--sun)" />
+            <rect x="244" y="112" width="26" height="20" rx="4" fill="var(--sun)" />
+          </g>
+          <circle cx="58" cy="70" r="22" fill="var(--sky)" stroke="var(--ink)" stroke-width="5" />
+        </svg>
+        <canvas></canvas>
+      </div>
     </div>
 
     <ol class="roles">
@@ -72,6 +90,15 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
 </section>
 
 <style>
+  .exp-head { display: grid; gap: 8px; align-items: center; }
+  .exp-head .section-head { margin-bottom: 0; }
+  .scene { position: relative; height: clamp(220px, 50vw, 300px); }
+  .scene .poster, .scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .scene .poster { padding: 4%; transition: opacity 400ms ease-out; }
+  .scene canvas { opacity: 0; transition: opacity 500ms ease-out; }
+  .scene[data-ready] canvas { opacity: 1; }
+  .scene[data-ready] .poster { opacity: 0; }
+  .exp-head { margin-bottom: clamp(24px, 4vw, 48px); }
   .roles { list-style: none; margin: 0; padding: 0; display: grid; }
   .role { display: grid; gap: 8px 40px; padding: clamp(24px, 3vw, 36px) 0; border-top: 1px solid var(--line); }
   .role:last-child { border-bottom: 1px solid var(--line); }
@@ -115,4 +142,12 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
   @media (min-width: 1000px) {
     .extra { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
   }
+  @media (min-width: 860px) {
+    .exp-head { grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); }
+  }
 </style>
+
+<script>
+  import { lazyScene } from '../scripts/lazy-scene';
+  lazyScene('[data-briefcase-scene]', async () => (await import('../scripts/briefcase-scene')).mountBriefcaseScene);
+</script>

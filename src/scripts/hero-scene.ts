@@ -1,6 +1,6 @@
 // Hero 3D mark: a "</>" built from extruded capsules with toon shading, so
 // every face resolves to two or three flat tones (no gradients), plus a few
-// organic blobs drifting around it. Follows the pointer; idles gently.
+// organic blobs drifting around it. Sways on its own; follows the cursor on hover.
 import {
   AmbientLight, Color, DataTexture, DirectionalLight, ExtrudeGeometry, Group,
   IcosahedronGeometry, Mesh, MeshBasicMaterial, MeshToonMaterial, NearestFilter,
@@ -123,7 +123,7 @@ export function mountHeroScene(host: HTMLElement): () => void {
   ].map((b, i) => {
     const m = inked(blobGeometry(b.r, b.seed), toon(b.color), 0.06);
     m.position.set(b.pos[0], b.pos[1], b.pos[2]);
-    m.userData = { base: b.pos[1], phase: i * 1.7 };
+    m.userData = { base: b.pos[1], baseX: b.pos[0], phase: i * 1.7 };
     scene.add(m);
     return m;
   });
@@ -143,12 +143,19 @@ export function mountHeroScene(host: HTMLElement): () => void {
   resize();
 
   // --- pointer ---
-  let tx = 0, ty = 0, rx = 0, ry = 0;
-  const onPointer = (e: PointerEvent) => {
-    tx = (e.clientX / window.innerWidth - 0.5) * 2;
-    ty = (e.clientY / window.innerHeight - 0.5) * 2;
+  // Over the mark, rotation follows the cursor (relative to the scene box).
+  // Elsewhere it runs a livelier idle loop. `hover` eases 0..1 between the two.
+  let px = 0, py = 0, over = false, hover = 0, rx = 0, ry = 0, rz = 0;
+  const onMove = (e: PointerEvent) => {
+    const r = host.getBoundingClientRect();
+    px = Math.max(-1, Math.min(1, ((e.clientX - r.left) / r.width - 0.5) * 2));
+    py = Math.max(-1, Math.min(1, ((e.clientY - r.top) / r.height - 0.5) * 2));
   };
-  window.addEventListener('pointermove', onPointer, { passive: true });
+  const onEnter = (e: PointerEvent) => { if (e.pointerType === 'mouse' || e.pointerType === 'pen') over = true; };
+  const onLeave = () => { over = false; };
+  host.addEventListener('pointermove', onMove, { passive: true });
+  host.addEventListener('pointerenter', onEnter);
+  host.addEventListener('pointerleave', onLeave);
 
   // --- loop (only while visible) ---
   let running = false, raf = 0, t0 = performance.now(), first = true;
@@ -158,15 +165,36 @@ export function mountHeroScene(host: HTMLElement): () => void {
     const ease = 1 - Math.pow(1 - intro, 3);
     mark.scale.setScalar(0.82 + 0.18 * ease);
 
-    rx += (ty * 0.22 - rx) * 0.06;
-    ry += (tx * 0.38 - ry) * 0.06;
-    mark.rotation.x = rx + Math.sin(t * 0.6) * 0.05;
-    mark.rotation.y = ry + Math.sin(t * 0.45) * 0.12;
-    mark.position.y = Math.sin(t * 0.8) * 0.06;
+    hover += ((over ? 1 : 0) - hover) * 0.06;
+
+    // Idle: a slow figure-eight sway with a little roll.
+    const idleX = Math.sin(t * 0.7) * 0.2;
+    const idleY = Math.sin(t * 0.5) * 0.5 + Math.sin(t * 1.3) * 0.06;
+    const idleZ = Math.sin(t * 0.4) * 0.07;
+    // Hover: follow the cursor with more reach than the idle sway.
+    const aimX = py * 0.4;
+    const aimY = px * 0.65;
+
+    const k = 0.05 + hover * 0.07; // respond faster while hovered
+    rx += (idleX * (1 - hover) + aimX * hover - rx) * k;
+    ry += (idleY * (1 - hover) + aimY * hover - ry) * k;
+    rz += (idleZ * (1 - hover) - rz) * 0.05;
+    mark.rotation.set(rx, ry, rz);
+    mark.position.y = Math.sin(t * 0.8) * 0.14 * (1 - hover * 0.6);
+
+    // The chevrons "breathe" open and closed; the slash rocks slightly.
+    const breathe = Math.sin(t * 1.1) * 0.14 * (1 - hover * 0.5);
+    lt.position.x = -2.1 - breathe;
+    gt.position.x = 2.1 + breathe;
+    slash.rotation.z = (68 * Math.PI) / 180 + Math.sin(t * 0.9) * 0.06;
+
     for (const b of blobs) {
-      b.position.y = b.userData.base + Math.sin(t * 0.9 + b.userData.phase) * 0.12;
-      b.rotation.x = t * 0.25 + b.userData.phase;
-      b.rotation.y = t * 0.18;
+      const ph = b.userData.phase;
+      b.position.y = b.userData.base + Math.sin(t * 0.9 + ph) * 0.26;
+      b.position.x = b.userData.baseX + Math.cos(t * 0.6 + ph) * 0.16;
+      b.rotation.x = t * 0.35 + ph;
+      b.rotation.y = t * 0.25;
+      b.scale.setScalar(1 + Math.sin(t * 1.4 + ph) * 0.05);
     }
     renderer.render(scene, camera);
     if (first) { first = false; host.dataset.ready = ''; }
@@ -182,7 +210,9 @@ export function mountHeroScene(host: HTMLElement): () => void {
 
   return () => {
     stop(); io.disconnect(); ro.disconnect();
-    window.removeEventListener('pointermove', onPointer);
+    host.removeEventListener('pointermove', onMove);
+    host.removeEventListener('pointerenter', onEnter);
+    host.removeEventListener('pointerleave', onLeave);
     document.removeEventListener('visibilitychange', onVis);
     geos.forEach((g) => g.dispose()); mats.forEach((m) => m.dispose()); ramp.dispose(); renderer.dispose();
   };

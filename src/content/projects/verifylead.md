@@ -4,7 +4,7 @@ year: 2025
 summary: "Lead platform that validates thousands of leads a day with real-time SMTP checks."
 tags: ["Node.js", "PostgreSQL", "SMTP", "Twilio", "SendGrid"]
 group: "featured"
-order: 3
+order: 4
 color: "sun"
 role: "Lead engineer"
 cover: "../../assets/projects/verifylead/01.png"

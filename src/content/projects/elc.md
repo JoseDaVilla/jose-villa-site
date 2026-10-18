@@ -4,7 +4,7 @@ year: 2025
 summary: "Call exchange powering a real-time leads marketplace, matching buyers and sellers live."
 tags: ["Node.js", "PostgreSQL", "Real-time", "Marketplace"]
 group: "featured"
-order: 4
+order: 5
 color: "leaf"
 role: "Lead engineer"
 cover: "../../assets/projects/elc/01.png"

@@ -4,7 +4,7 @@ year: 2025
 summary: "Full operations and point-of-sale system in daily use across 30+ US spa locations."
 tags: ["Next.js", "Node.js", "PostgreSQL", "MySQL", "Docker"]
 group: "featured"
-order: 2
+order: 3
 color: "sky"
 role: "Lead engineer"
 cover: "../../assets/projects/spa-pos/01.png"

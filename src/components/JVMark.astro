@@ -6,12 +6,13 @@
 // unique when the mark is on a page more than once. `depth` stacks darker
 // copies down and to the right so the mark reads as a solid, extruded block:
 // the J sits in front and the blade, lit instead of faded, runs behind it
-// (sides from --jv-j-side and --jv-v-side).
+// (sides from --jv-j-side and --jv-v-side). The sides sit past the viewBox,
+// so the svg must not clip them.
 interface Props { id?: string; class?: string; title?: string; depth?: boolean }
 const { id = 'jv', class: className, title, depth = false } = Astro.props;
 const layers = depth ? Array.from({ length: 8 }, (_, i) => 8 - i) : [];
 ---
-<svg class:list={['jv-mark', className]} viewBox="8 0 90 100" role={title ? 'img' : undefined} aria-label={title} aria-hidden={title ? undefined : 'true'} focusable="false">
+<svg class:list={['jv-mark', className]} viewBox="8 0 90 100" style={depth ? 'overflow: visible' : undefined} role={title ? 'img' : undefined} aria-label={title} aria-hidden={title ? undefined : 'true'} focusable="false">
   <defs>
     <linearGradient id={`${id}-blade`} gradientUnits="userSpaceOnUse" x1="88" y1="4" x2="50" y2="96">
       <stop offset="0" style="stop-color: var(--jv-v, var(--orange))" />

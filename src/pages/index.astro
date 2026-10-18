@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import Base from '../layouts/Base.astro';
+import Intro from '../components/Intro.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
 import WorkBands from '../components/WorkBands.astro';
@@ -17,6 +18,7 @@ const featured = projects.filter((p) => p.data.group === 'featured');
 const more = projects.filter((p) => p.data.group === 'more');
 ---
 <Base>
+  <Intro />
   <Nav />
   <main id="main">
     <Hero />

@@ -1,0 +1,206 @@
+---
+import { site } from '../data/site';
+import { wavePath } from '../lib/shapes';
+
+// First-visit intro: the "</>" mark draws itself, the name rises, then the
+// screen lifts away as layered waves while the mark flies into the hero.
+const letters = [...site.name];
+const layers = [
+  { cls: 'l-sun', fill: 'var(--sun)', seed: 71 },
+  { cls: 'l-orange', fill: 'var(--orange)', seed: 77 },
+  { cls: 'l-bg', fill: 'var(--bg)', seed: 83 },
+];
+---
+<script is:inline>
+  // Decide before first paint, so the page never flashes under the intro.
+  // Once per browser; ?intro forces it; skipped when motion is reduced.
+  (function () {
+    var d = document.documentElement;
+    try {
+      var force = /[?&#]intro\b/.test(location.search + location.hash);
+      var seen = localStorage.getItem('jv-intro');
+      var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (force || (!seen && !calm)) d.classList.add('intro-on', 'intro-mark');
+    } catch (e) {}
+  })();
+</script>
+
+<div class="splash" data-intro aria-hidden="true">
+  {layers.map((l) => (
+    <div class={`layer ${l.cls}`} style={`--fill: ${l.fill}`}>
+      <svg class="edge" viewBox="0 0 1000 100" preserveAspectRatio="none" focusable="false">
+        <path d={wavePath(l.seed, 1000, 100, 45, 30, 5)} fill={l.fill} />
+      </svg>
+    </div>
+  ))}
+
+  <div class="stage">
+    <svg class="mark" viewBox="0 0 400 320" focusable="false">
+      <g class="dots">
+        <circle style="--t: 1.00s" cx="70" cy="70" r="30" fill="var(--sky)" stroke="var(--ink)" stroke-width="5" />
+        <circle style="--t: 1.10s" cx="330" cy="72" r="16" fill="var(--orange)" stroke="var(--ink)" stroke-width="5" />
+        <circle style="--t: 1.18s" cx="338" cy="252" r="34" fill="var(--leaf)" stroke="var(--ink)" stroke-width="5" />
+      </g>
+      <g class="strokes" fill="none" stroke-linecap="round" stroke-linejoin="round">
+        <path style="--t: 0.15s; --d: 0.55s" d="M150 110 L95 160 L150 210" stroke="var(--ink)" stroke-width="44" pathLength="1" />
+        <path style="--t: 0.15s; --d: 0.55s" d="M150 110 L95 160 L150 210" stroke="var(--orange)" stroke-width="34" pathLength="1" />
+        <path style="--t: 0.48s; --d: 0.45s" d="M222 92 L178 228" stroke="var(--ink)" stroke-width="44" pathLength="1" />
+        <path style="--t: 0.48s; --d: 0.45s" d="M222 92 L178 228" stroke="var(--blue)" stroke-width="34" pathLength="1" />
+        <path style="--t: 0.72s; --d: 0.55s" d="M250 110 L305 160 L250 210" stroke="var(--ink)" stroke-width="44" pathLength="1" />
+        <path style="--t: 0.72s; --d: 0.55s" d="M250 110 L305 160 L250 210" stroke="var(--sun)" stroke-width="34" pathLength="1" />
+      </g>
+    </svg>
+    <p class="name">
+      {letters.map((c, i) => <span style={`--i: ${i}`}>{c === ' ' ? ' ' : c}</span>)}
+    </p>
+    <p class="role">{site.role}</p>
+  </div>
+
+  <button class="skip" type="button" tabindex="-1">Skip intro</button>
+</div>
+
+<style is:global>
+  .splash { display: none; }
+  .intro-on body { overflow: hidden; }
+
+  .intro-on .splash, .splash.leaving {
+    position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; cursor: pointer;
+  }
+  .splash .layer {
+    position: absolute; inset: 0; background: var(--fill);
+    will-change: transform;
+  }
+  .splash .edge {
+    position: absolute; left: 0; top: 100%; width: 100%; height: 14vh;
+    transform: scaleY(-1); margin-top: -1px;
+  }
+
+  .splash .stage {
+    position: relative; display: grid; justify-items: center; gap: 4px;
+    padding: 24px; text-align: center;
+  }
+  .splash .mark { width: min(64vw, 360px, 44vh * 1.25); height: auto; overflow: visible; transform-origin: 0 0; }
+  .splash .name {
+    margin-top: 12px; overflow: hidden;
+    font: 600 clamp(2.5rem, 1.6rem + 4vw, 4.5rem)/1.05 var(--font-display); letter-spacing: -0.035em; color: var(--ink);
+  }
+  .splash .name span { display: inline-block; transform: translateY(130%); }
+  .splash .role { color: var(--muted); font-weight: 600; font-size: var(--step-lead); opacity: 0; letter-spacing: 0.04em; }
+  .splash .skip {
+    position: absolute; right: max(16px, env(safe-area-inset-right)); bottom: calc(16px + env(safe-area-inset-bottom));
+    padding: 10px 8px; border: 0; background: none; cursor: pointer;
+    color: var(--muted); font: 600 0.875rem/1 var(--font-body);
+    opacity: 0; transition: opacity 300ms ease-out 600ms;
+  }
+
+  .splash .strokes path { stroke-dasharray: 1 1; stroke-dashoffset: 1; opacity: 0; }
+  .splash .dots circle { transform-box: fill-box; transform-origin: center; transform: scale(0); }
+
+  .splash.play .skip { opacity: 1; }
+  .splash.play .strokes path { animation: intro-draw var(--d) var(--t) cubic-bezier(0.6, 0, 0.25, 1) forwards; }
+  .splash.play .dots circle { animation: intro-pop 520ms var(--t) cubic-bezier(0.3, 1.6, 0.5, 1) forwards; }
+  .splash.play .name span { animation: intro-rise 620ms calc(1.05s + var(--i) * 45ms) cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+  .splash.play .role { animation: intro-track 700ms 1.55s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+
+  /* Skipping jumps the drawing to its end state before the exit plays. */
+  .splash.fast * { animation-duration: 0.01ms !important; animation-delay: 0s !important; }
+
+  @keyframes intro-draw {
+    0% { stroke-dashoffset: 1; opacity: 0; }
+    1% { opacity: 1; }
+    100% { stroke-dashoffset: 0; opacity: 1; }
+  }
+  @keyframes intro-pop { to { transform: scale(1); } }
+  @keyframes intro-rise { to { transform: none; } }
+  @keyframes intro-track {
+    from { opacity: 0; letter-spacing: 0.2em; }
+    to { opacity: 1; letter-spacing: 0.04em; }
+  }
+</style>
+
+<script>
+  const intro = document.querySelector<HTMLElement>('[data-intro]');
+  const root = document.documentElement;
+
+  if (intro && root.classList.contains('intro-on')) {
+    try { localStorage.setItem('jv-intro', '1'); } catch {}
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+
+    const mark = intro.querySelector<SVGSVGElement>('.mark')!;
+    const ease = 'cubic-bezier(0.7, 0, 0.2, 1)';
+    let ended = false;
+    let timer = 0;
+
+    // Where the flat "</>" poster is drawn inside the hero scene (viewBox 400x320, "meet").
+    const target = () => {
+      const poster = document.querySelector<SVGSVGElement>('[data-hero-scene] .poster');
+      if (!poster) return null;
+      const r = poster.getBoundingClientRect();
+      const cs = getComputedStyle(poster);
+      const px = (v: string) => parseFloat(v) || 0;
+      const x = r.left + px(cs.paddingLeft), y = r.top + px(cs.paddingTop);
+      const w = r.width - px(cs.paddingLeft) - px(cs.paddingRight);
+      const h = r.height - px(cs.paddingTop) - px(cs.paddingBottom);
+      if (w <= 0 || h <= 0) return null;
+      const k = Math.min(w / 400, h / 320);
+      return { x: x + (w - 400 * k) / 2, y: y + (h - 320 * k) / 2, w: 400 * k };
+    };
+
+    // The hero scene fades in under the landed mark, then the mark fades out.
+    const done = () => {
+      root.classList.remove('intro-mark');
+      mark.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380, delay: 120, fill: 'forwards' })
+        .finished.then(() => intro.remove(), () => intro.remove());
+    };
+
+    const finish = () => {
+      if (ended) return;
+      ended = true;
+      clearTimeout(timer);
+      intro.classList.add('leaving');
+      // Hero copy starts its entrance while the curtain lifts.
+      root.classList.remove('intro-on');
+
+      intro.querySelectorAll<HTMLElement>('.name, .role, .skip').forEach((el) =>
+        el.animate([{ opacity: getComputedStyle(el).opacity }, { opacity: 0 }], { duration: 220, fill: 'forwards' }),
+      );
+
+      const lift = [{ transform: 'translateY(0)' }, { transform: 'translateY(calc(-100% - 15vh))' }];
+      const layers = [...intro.querySelectorAll<HTMLElement>('.layer')].reverse();
+      const runs = layers.map((l, i) => l.animate(lift, { duration: 1000, delay: 80 + i * 110, easing: ease, fill: 'forwards' }).finished);
+
+      const t = target();
+      if (t) {
+        const r = mark.getBoundingClientRect();
+        runs.push(
+          mark.animate(
+            [{ transform: 'none' }, { transform: `translate(${t.x - r.left}px, ${t.y - r.top}px) scale(${t.w / r.width})` }],
+            { duration: 1000, easing: ease, fill: 'forwards' },
+          ).finished,
+        );
+      } else {
+        mark.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 300, fill: 'forwards' });
+      }
+      Promise.all(runs).then(done, done);
+    };
+
+    const skip = () => {
+      intro.classList.add('fast');
+      requestAnimationFrame(finish);
+    };
+
+    // Wait for the display font so the name doesn't reflow mid-animation (max 1.5s).
+    Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]).then(() => {
+      requestAnimationFrame(() => intro.classList.add('play'));
+      timer = window.setTimeout(finish, 2650);
+    });
+
+    intro.addEventListener('click', skip);
+    addEventListener('keydown', (e) => { if (!ended && ['Escape', 'Enter', ' '].includes(e.key)) skip(); });
+    addEventListener('wheel', skip, { once: true, passive: true });
+    addEventListener('touchmove', skip, { once: true, passive: true });
+  } else {
+    intro?.remove();
+  }
+</script>

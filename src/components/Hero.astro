@@ -91,9 +91,20 @@ import { site } from '../data/site';
   .accent path {
     fill: none; stroke: var(--orange); stroke-width: 7; stroke-linecap: round;
     stroke-dasharray: 1; stroke-dashoffset: 1;
-    animation: draw 700ms 350ms var(--ease-out) forwards;
+    animation: draw 700ms 650ms var(--ease-out) forwards;
   }
   @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  /* Entrance: the copy rises in sequence; while the intro plays it waits. */
+  .copy > * { animation: rise 640ms calc(var(--n, 0) * 70ms + 80ms) var(--ease-out) both; }
+  .copy > :nth-child(2) { --n: 1; }
+  .copy > :nth-child(3) { --n: 2; }
+  .copy > :nth-child(4) { --n: 3; }
+  .copy > :nth-child(5) { --n: 4; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+  :global(.intro-on) .copy > *, :global(.intro-on) .accent path { animation: none; opacity: 0; }
+  .scene { transition: opacity 450ms ease-out; }
+  :global(.intro-mark) .scene { opacity: 0; }
 
   h1 { font-size: clamp(2.25rem, 1.1rem + 4.6vw, 2.75rem); line-height: 1.04; letter-spacing: -0.03em; max-width: 15ch; }
   .lead { color: var(--muted); font-size: 1.0625rem; line-height: 1.6; max-width: 52ch; }
@@ -127,7 +138,7 @@ import { site } from '../data/site';
   }
   .scene :global(.backdrop) { height: 88%; translate: -50% -50%; }
   .scene :global(.backdrop-2) { height: 26%; translate: -250% 30%; }
-  .scene .poster { padding: 4% 18%; transition: opacity 400ms ease-out; }
+  .scene .poster { padding: 0 12%; transition: opacity 400ms ease-out; }
   .scene canvas { opacity: 0; transition: opacity 500ms ease-out; }
   .scene[data-ready] canvas { opacity: 1; }
   .scene[data-ready] .poster { opacity: 0; }
@@ -154,7 +165,7 @@ import { site } from '../data/site';
     .scene { order: 1; height: auto; aspect-ratio: 1 / 1; margin: 0; }
     .scene :global(.backdrop) { height: 74%; }
     .scene :global(.backdrop-2) { height: 20%; translate: -235% 95%; }
-    .scene .poster { padding: 6%; }
+    .scene .poster { padding: 0; }
   }
 </style>
 

@@ -4,7 +4,8 @@
 // fades out where it crosses the J (the Sentra-style fold). Colours come from
 // --jv-j and --jv-v (ink and orange by default); `id` keeps the gradient
 // unique when the mark is on a page more than once. `depth` stacks darker
-// copies down and to the right so the mark reads as a solid, extruded block
+// copies down and to the right so the mark reads as a solid, extruded block:
+// the J sits in front and the blade, lit instead of faded, runs behind it
 // (sides from --jv-j-side and --jv-v-side).
 interface Props { id?: string; class?: string; title?: string; depth?: boolean }
 const { id = 'jv', class: className, title, depth = false } = Astro.props;
@@ -17,23 +18,36 @@ const layers = depth ? Array.from({ length: 8 }, (_, i) => 8 - i) : [];
       <stop offset="0.55" style="stop-color: var(--jv-v, var(--orange)); stop-opacity: 0.55" />
       <stop offset="1" style="stop-color: var(--jv-v, var(--orange)); stop-opacity: 0" />
     </linearGradient>
-    {depth && (
-      <linearGradient id={`${id}-side`} gradientUnits="userSpaceOnUse" x1="88" y1="4" x2="50" y2="96">
-        <stop offset="0" style="stop-color: var(--jv-v-side, #A9481A)" />
-        <stop offset="0.55" style="stop-color: var(--jv-v-side, #A9481A); stop-opacity: 0.55" />
-        <stop offset="1" style="stop-color: var(--jv-v-side, #A9481A); stop-opacity: 0" />
-      </linearGradient>
-    )}
   </defs>
-  {layers.map((n) => (
-    <g class="jv-side" transform={`translate(${n * 0.45} ${n * 0.55})`}>
-      <path d="M14 0H38L56.25 73H32.25Z" style="fill: var(--jv-j-side, #8F887E)" />
-      <path d="M56 72A24 24 0 0 1 8 72Z" style="fill: var(--jv-j-side, #8F887E)" />
-      <path d="M74 0H98L64 100H42Z" fill={`url(#${id}-side)`} />
-    </g>
-  ))}
-  <!-- The stem runs 1 unit into the bowl so no hairline shows at the join. -->
-  <path class="jv-stem" d="M14 0H38L56.25 73H32.25Z" style="fill: var(--jv-j, var(--ink))" />
-  <path class="jv-bowl" d="M56 72A24 24 0 0 1 8 72Z" style="fill: var(--jv-j, var(--ink))" />
-  <path class="jv-arm" d="M74 0H98L64 100H42Z" fill={`url(#${id}-blade)`} />
+  {depth ? (
+    <>
+      <defs>
+        <!-- Solid version: the blade is lit, not faded, and passes behind the J. -->
+        <linearGradient id={`${id}-lit`} gradientUnits="userSpaceOnUse" x1="88" y1="4" x2="50" y2="96">
+          <stop offset="0" style="stop-color: var(--jv-v, var(--orange))" />
+          <stop offset="1" style="stop-color: var(--jv-v-low, #D9612A)" />
+        </linearGradient>
+      </defs>
+      <g class="jv-block">
+        {layers.map((n) => (
+          <path class="jv-side" data-n={n} transform={`translate(${n * 0.45} ${n * 0.55})`} d="M74 0H98L64 100H42Z" style="fill: var(--jv-v-side, #9E4317)" />
+        ))}
+        <path class="jv-arm" d="M74 0H98L64 100H42Z" fill={`url(#${id}-lit)`} />
+      </g>
+      <g class="jv-block">
+        {layers.map((n) => (
+          <path class="jv-side" data-n={n} transform={`translate(${n * 0.45} ${n * 0.55})`} d="M14 0H38L56.25 73H32.25ZM56 72A24 24 0 0 1 8 72Z" style="fill: var(--jv-j-side, #8F887E)" />
+        ))}
+        <path class="jv-stem" d="M14 0H38L56.25 73H32.25Z" style="fill: var(--jv-j, var(--ink))" />
+        <path class="jv-bowl" d="M56 72A24 24 0 0 1 8 72Z" style="fill: var(--jv-j, var(--ink))" />
+      </g>
+    </>
+  ) : (
+    <>
+      <!-- The stem runs 1 unit into the bowl so no hairline shows at the join. -->
+      <path class="jv-stem" d="M14 0H38L56.25 73H32.25Z" style="fill: var(--jv-j, var(--ink))" />
+      <path class="jv-bowl" d="M56 72A24 24 0 0 1 8 72Z" style="fill: var(--jv-j, var(--ink))" />
+      <path class="jv-arm" d="M74 0H98L64 100H42Z" fill={`url(#${id}-blade)`} />
+    </>
+  )}
 </svg>

@@ -134,12 +134,11 @@ const letters = [...site.name];
     off.width = Math.ceil(box.width); off.height = Math.ceil(box.height);
     const o = off.getContext('2d', { willReadFrequently: true })!;
     o.setTransform(k, 0, 0, k, -8 * k, 0);
+    // Same stacking as the solid mark: the blade first, the J in front of it.
+    o.fillStyle = '#00f';
+    o.fill(new Path2D('M74 0H98L64 100H42Z'));
     o.fillStyle = '#f00';
     o.fill(new Path2D('M14 0H38L56.25 73H32.25Z')); o.fill(new Path2D('M56 72A24 24 0 0 1 8 72Z'));
-    const blade = o.createLinearGradient(88, 4, 50, 96);
-    blade.addColorStop(0, 'rgba(0,0,255,1)'); blade.addColorStop(0.55, 'rgba(0,0,255,.55)'); blade.addColorStop(1, 'rgba(0,0,255,0)');
-    o.fillStyle = blade;
-    o.fill(new Path2D('M74 0H98L64 100H42Z'));
     const px = o.getImageData(0, 0, off.width, off.height).data;
 
     const css = getComputedStyle(canvas);

@@ -4,10 +4,8 @@ import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
 import latam from '../assets/logos/latam.png';
 import spirit from '../assets/logos/spirit.png';
-import solvo from '../assets/logos/solvo.png';
 import travelperk from '../assets/logos/travelperk.png';
 import kaseya from '../assets/logos/kaseya.png';
-import igt from '../assets/logos/igt.png';
 import flagCo from '../assets/logos/co.svg';
 import flagUs from '../assets/logos/us.svg';
 
@@ -18,7 +16,7 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
 
 // Brand marks. Employers without a public logo we can ship get a neutral monogram.
 const mono: Record<string, string> = { geeks5g: 'G5' };
-const employerLogo: Record<string, ImageMetadata> = { kaseya, solvo, igt };
+const employerLogo: Record<string, ImageMetadata> = { kaseya };
 // The airline or company each bilingual role served.
 const client: Record<string, { name: string; logo: ImageMetadata }> = {
   solvo: { name: 'Spirit Airlines', logo: spirit },

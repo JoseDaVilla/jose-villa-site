@@ -1,4 +1,5 @@
 ---
+import { blobPath } from '../lib/shapes';
 import { getCollection, render } from 'astro:content';
 
 const all = (await getCollection('experience')).sort((a, b) => a.data.order - b.data.order);
@@ -13,53 +14,49 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
         <h2 id="exp-title">Experience</h2>
         <p>3+ years building web and mobile apps, and 4+ years of bilingual client work.</p>
       </div>
-      <div class="scene" data-stack-scene aria-hidden="true">
-        <!-- Flat twin of the 3D card deck (src/scripts/stack-scene.ts). -->
-        <svg class="poster" viewBox="0 0 400 300" focusable="false">
-          <circle cx="51" cy="66" r="25" fill="var(--sky)" stroke="var(--ink)" stroke-width="4" />
-          <g transform="translate(226 120) rotate(-10.2) scale(0.87)">
-            <rect x="-84" y="-54.5" width="168" height="109" rx="14" fill="var(--paper)" stroke="var(--ink)" stroke-width="4" />
-            <rect x="-78" y="-48" width="156" height="31" rx="9" fill="var(--sun)" />
-            <circle cx="-59" cy="-32.5" r="10" fill="var(--paper)" stroke="var(--ink)" stroke-width="3" />
-            <rect x="-68" y="-10" width="74" height="8" rx="4" fill="var(--ink)" />
-            <rect x="-68" y="5" width="105" height="6" rx="3" fill="#D9CFC1" />
-            <rect x="-68" y="16" width="80" height="6" rx="3" fill="#D9CFC1" />
-            <rect x="-68" y="33" width="31" height="12" rx="6" fill="var(--surface)" />
-            <rect x="-31" y="33" width="26" height="12" rx="6" fill="var(--surface)" />
+      <div class="scene" aria-hidden="true">
+        <svg class="art" viewBox="0 0 400 300" focusable="false">
+          <path class="backdrop" d={blobPath(17, 7, 0.22)} transform="translate(92 6) scale(2.9)" fill="color-mix(in srgb, var(--sky) 45%, var(--bg))" />
+          <path class="sat" d={blobPath(3, 7, 0.22)} transform="translate(318 214) scale(0.5)" fill="var(--sun)" />
+          <g class="deck">
+            <g class="card card-1" transform="translate(236 118) rotate(9)">
+              <g class="card-in">
+                <rect x="-88" y="-58" width="176" height="116" rx="16" fill="var(--paper)" />
+                <rect x="-80" y="-50" width="160" height="32" rx="10" fill="var(--sky)" />
+                <circle cx="-61" cy="-34" r="9" fill="var(--paper)" />
+                <rect x="-70" y="-4" width="78" height="9" rx="4.5" fill="var(--ink)" />
+                <rect x="-70" y="12" width="112" height="7" rx="3.5" fill="#E6DFD5" />
+                <rect x="-70" y="25" width="84" height="7" rx="3.5" fill="#E6DFD5" />
+                <rect x="-70" y="40" width="34" height="11" rx="5.5" fill="var(--surface)" />
+                <rect x="-31" y="40" width="28" height="11" rx="5.5" fill="var(--surface)" />
+              </g>
+            </g>
+            <g class="card card-2" transform="translate(208 136) rotate(-2)">
+              <g class="card-in">
+                <rect x="-88" y="-58" width="176" height="116" rx="16" fill="var(--paper)" />
+                <rect x="-80" y="-50" width="160" height="32" rx="10" fill="var(--leaf)" />
+                <circle cx="-61" cy="-34" r="9" fill="var(--paper)" />
+                <rect x="-70" y="-4" width="78" height="9" rx="4.5" fill="var(--ink)" />
+                <rect x="-70" y="12" width="112" height="7" rx="3.5" fill="#E6DFD5" />
+                <rect x="-70" y="25" width="84" height="7" rx="3.5" fill="#E6DFD5" />
+                <rect x="-70" y="40" width="34" height="11" rx="5.5" fill="var(--surface)" />
+                <rect x="-31" y="40" width="28" height="11" rx="5.5" fill="var(--surface)" />
+              </g>
+            </g>
+            <g class="card card-3" transform="translate(176 156) rotate(-10)">
+              <g class="card-in">
+                <rect x="-88" y="-58" width="176" height="116" rx="16" fill="var(--paper)" />
+                <rect x="-80" y="-50" width="160" height="32" rx="10" fill="var(--orange)" />
+                <circle cx="-61" cy="-34" r="9" fill="var(--paper)" />
+                <rect x="-70" y="-4" width="78" height="9" rx="4.5" fill="var(--ink)" />
+                <rect x="-70" y="12" width="112" height="7" rx="3.5" fill="#E6DFD5" />
+                <rect x="-70" y="25" width="84" height="7" rx="3.5" fill="#E6DFD5" />
+                <rect x="-70" y="40" width="34" height="11" rx="5.5" fill="var(--surface)" />
+                <rect x="-31" y="40" width="28" height="11" rx="5.5" fill="var(--surface)" />
+              </g>
+            </g>
           </g>
-          <g transform="translate(210 135) rotate(-6.8) scale(0.91)">
-            <rect x="-84" y="-54.5" width="168" height="109" rx="14" fill="var(--paper)" stroke="var(--ink)" stroke-width="4" />
-            <rect x="-78" y="-48" width="156" height="31" rx="9" fill="var(--leaf)" />
-            <circle cx="-59" cy="-32.5" r="10" fill="var(--paper)" stroke="var(--ink)" stroke-width="3" />
-            <rect x="-68" y="-10" width="74" height="8" rx="4" fill="var(--ink)" />
-            <rect x="-68" y="5" width="105" height="6" rx="3" fill="#D9CFC1" />
-            <rect x="-68" y="16" width="80" height="6" rx="3" fill="#D9CFC1" />
-            <rect x="-68" y="33" width="31" height="12" rx="6" fill="var(--surface)" />
-            <rect x="-31" y="33" width="26" height="12" rx="6" fill="var(--surface)" />
-          </g>
-          <g transform="translate(194 150) rotate(-3.4) scale(0.955)">
-            <rect x="-84" y="-54.5" width="168" height="109" rx="14" fill="var(--paper)" stroke="var(--ink)" stroke-width="4" />
-            <rect x="-78" y="-48" width="156" height="31" rx="9" fill="var(--sky)" />
-            <circle cx="-59" cy="-32.5" r="10" fill="var(--paper)" stroke="var(--ink)" stroke-width="3" />
-            <rect x="-68" y="-10" width="74" height="8" rx="4" fill="var(--ink)" />
-            <rect x="-68" y="5" width="105" height="6" rx="3" fill="#D9CFC1" />
-            <rect x="-68" y="16" width="80" height="6" rx="3" fill="#D9CFC1" />
-            <rect x="-68" y="33" width="31" height="12" rx="6" fill="var(--surface)" />
-            <rect x="-31" y="33" width="26" height="12" rx="6" fill="var(--surface)" />
-          </g>
-          <g transform="translate(178 165) rotate(-0.0) scale(1)">
-            <rect x="-84" y="-54.5" width="168" height="109" rx="14" fill="var(--paper)" stroke="var(--ink)" stroke-width="4" />
-            <rect x="-78" y="-48" width="156" height="31" rx="9" fill="var(--orange)" />
-            <circle cx="-59" cy="-32.5" r="10" fill="var(--paper)" stroke="var(--ink)" stroke-width="3" />
-            <rect x="-68" y="-10" width="74" height="8" rx="4" fill="var(--ink)" />
-            <rect x="-68" y="5" width="105" height="6" rx="3" fill="#D9CFC1" />
-            <rect x="-68" y="16" width="80" height="6" rx="3" fill="#D9CFC1" />
-            <rect x="-68" y="33" width="31" height="12" rx="6" fill="var(--surface)" />
-            <rect x="-31" y="33" width="26" height="12" rx="6" fill="var(--surface)" />
-          </g>
-          <circle cx="346" cy="234" r="19" fill="var(--orange)" stroke="var(--ink)" stroke-width="4" />
         </svg>
-        <canvas></canvas>
       </div>
     </div>
 
@@ -150,12 +147,17 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
 <style>
   .exp-head { display: grid; gap: 8px; align-items: center; }
   .exp-head .section-head { margin-bottom: 0; }
-  .scene { position: relative; height: clamp(220px, 58vw, 400px); }
-  .scene .poster, .scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .scene .poster { padding: 4%; transition: opacity 400ms ease-out; }
-  .scene canvas { opacity: 0; transition: opacity 500ms ease-out; }
-  .scene[data-ready] canvas { opacity: 1; }
-  .scene[data-ready] .poster { opacity: 0; }
+  .scene { position: relative; height: clamp(220px, 58vw, 380px); }
+  .art { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .deck { filter: drop-shadow(0 14px 18px color-mix(in srgb, var(--ink) 16%, transparent)); }
+  /* The fan slowly opens and closes; the front card lifts a little. */
+  .card-in { transform-box: fill-box; transform-origin: 50% 100%; animation: fan 7s ease-in-out infinite; }
+  .card-1 .card-in { --r: 4deg; }
+  .card-2 .card-in { --r: 1deg; animation-delay: -0.4s; }
+  .card-3 .card-in { --r: -4deg; --y: -8px; animation-delay: -0.8s; }
+  @keyframes fan { 50% { transform: rotate(var(--r, 0deg)) translateY(var(--y, 0px)); } }
+  .backdrop, .sat { transform-box: fill-box; }
+  @media (prefers-reduced-motion: reduce) { .card-in { animation: none; } }
   .exp-head { margin-bottom: clamp(24px, 4vw, 48px); }
   .roles { list-style: none; margin: 0; padding: 0; display: grid; }
   .role { display: grid; gap: 8px 40px; padding: clamp(24px, 3vw, 36px) 0; border-top: 1px solid var(--line); }
@@ -216,8 +218,3 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
     .exp-head { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }
   }
 </style>
-
-<script>
-  import { lazyScene } from '../scripts/lazy-scene';
-  lazyScene('[data-stack-scene]', async () => (await import('../scripts/stack-scene')).mountStackScene);
-</script>

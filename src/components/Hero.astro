@@ -1,25 +1,30 @@
 ---
-import Waves from './Waves.astro';
-import Blob from './Blob.astro';
-import AppMark from './AppMark.astro';
+import JVMark from './JVMark.astro';
 import { site } from '../data/site';
+
+// Fine-line ribbon behind the hero: a bundle of thin curves that drifts across
+// the page and pinches together in a few places, like a twisted band.
+const W = 1440, H = 640, N = 30;
+const lines = Array.from({ length: N }, (_, i) => {
+  let d = '';
+  for (let k = 0; k <= 72; k++) {
+    const u = k / 72;
+    const spread = 7 * (0.18 + Math.abs(Math.cos(u * Math.PI * 1.35 + 0.5)));
+    const y = H * 0.46 + Math.sin(u * Math.PI * 1.7 + 0.4) * 150 + (i - N / 2) * spread + Math.sin(u * 9 + i * 0.12) * 4;
+    d += `${k ? 'L' : 'M'}${(u * W).toFixed(1)} ${y.toFixed(1)}`;
+  }
+  return d;
+});
 ---
 <section id="top" class="hero" aria-labelledby="hero-title">
-  <div class="container hero-grid">
-    <div class="scene" data-hero-scene aria-hidden="true">
-      <Blob class="backdrop" seed={11} fill="color-mix(in srgb, var(--sky) 55%, var(--bg))" points={7} vary={0.26} />
-      <Blob class="backdrop-2" seed={29} fill="var(--sun)" points={6} vary={0.3} />
-      <!-- Flat twin of the 3D window, shown until the scene renders and kept when motion is reduced or WebGL is unavailable. -->
-      <AppMark class="poster" />
-      <canvas></canvas>
-    </div>
+  <svg class="ribbon" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    {lines.map((d) => <path d={d} />)}
+  </svg>
 
+  <div class="container hero-grid">
     <div class="copy">
-      <p class="who"><span class="dot" aria-hidden="true"></span><span>{site.role}<span class="status">, open to new projects</span></span></p>
-      <h1 id="hero-title">
-        I build the web applications businesses
-        <span class="accent">run on.<svg viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M4 14 C 50 4, 120 2, 196 10" pathLength="1" /></svg></span>
-      </h1>
+      <p class="who"><span class="dot" aria-hidden="true"></span><span>{site.role}<span class="status"> · Open to new projects</span></span></p>
+      <h1 id="hero-title">I build the web applications businesses <span class="accent">run on.</span></h1>
       <p class="lead">
         Years of delivery for marketing agencies give me a sharp focus on lead generation,
         conversion and automation: SaaS and B2B platforms, POS systems, and the internal tools
@@ -35,102 +40,142 @@ import { site } from '../data/site';
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></svg>
         </a>
       </div>
+      <p class="note">Prefer email? <a href={`mailto:${site.email}`}>{site.email}</a></p>
       <ul class="proof" aria-label="Highlights">
-        <li style="--c: var(--orange)"><b>30+</b> US locations run a POS I built</li>
-        <li style="--c: var(--sun)"><b>1000s</b> of leads validated daily</li>
-        <li style="--c: var(--leaf)"><b>3+ yrs</b> shipping web and mobile</li>
+        <li><b>30+</b> US locations run a POS I built</li>
+        <li><b>1000s</b> of leads validated daily</li>
+        <li><b>3+ yrs</b> shipping web and mobile</li>
       </ul>
     </div>
-  </div>
 
-  <Waves
-    seed={5}
-    layers={[
-      { fill: 'var(--sun)', base: 40, amp: 22 },
-      { fill: 'var(--orange)', base: 74, amp: 20 },
-      { fill: 'var(--bg)', base: 108, amp: 14, steps: 7 },
-    ]}
-  />
+    <div class="scene" data-hero-scene aria-hidden="true">
+      <!-- Flat stand-in for the 3D monogram, kept when motion is reduced or WebGL is unavailable. -->
+      <div class="poster">
+        <JVMark id="jv-hero" class="poster-mark" />
+        <span class="plinth plinth-1"></span>
+        <span class="plinth plinth-2"></span>
+      </div>
+      <canvas></canvas>
+
+      <div class="chip chip-lead">
+        <span class="chip-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.2 4.2L19 7"/></svg></span>
+        <span><b>Lead verified</b><small>Real-time SMTP check</small></span>
+      </div>
+      <div class="chip chip-pos">
+        <span><b>POS in production</b><small>30+ US spa locations</small></span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+      </div>
+    </div>
+  </div>
 </section>
 
 <style>
-  /* Mobile first: a compact mark, then the message, full-width actions and a stat row. */
-  .hero { position: relative; padding-top: 8px; overflow: hidden; }
-  .hero-grid { display: grid; gap: 4px; padding-bottom: 12px; }
+  .hero { position: relative; isolation: isolate; overflow: hidden; padding: 8px 0 clamp(40px, 6vw, 72px); }
+
+  /* Fine-line ribbon, faded out towards the edges. */
+  .ribbon {
+    position: absolute; inset: -6% 0 auto; width: 100%; height: 112%; z-index: -1;
+    -webkit-mask-image: radial-gradient(ellipse 75% 65% at 55% 45%, #000 30%, transparent 78%);
+    mask-image: radial-gradient(ellipse 75% 65% at 55% 45%, #000 30%, transparent 78%);
+  }
+  .ribbon path { fill: none; stroke: var(--ink); stroke-opacity: 0.085; stroke-width: 1; vector-effect: non-scaling-stroke; }
+
+  /* Mobile first: the monogram on top, then the message. */
+  .hero-grid { display: grid; gap: 8px; }
   .copy { display: grid; gap: 16px; min-width: 0; }
 
   .who {
     justify-self: start;
     display: inline-flex; align-items: center; gap: 10px;
-    padding: 7px 14px 7px 12px; border-radius: 999px;
-    background: var(--surface);
-    font-size: var(--step-small); font-weight: 600; line-height: 1.3;
+    padding: 7px 14px 7px 11px; border-radius: 999px;
+    background: color-mix(in srgb, var(--paper) 80%, transparent);
+    border: 1px solid var(--line);
+    font-size: var(--step-small); font-weight: 500; line-height: 1.3;
   }
   .dot {
-    flex: none; width: 9px; height: 9px; border-radius: 50%;
-    background: var(--leaf-ink); box-shadow: 0 0 0 4px color-mix(in srgb, var(--leaf) 60%, transparent);
+    flex: none; width: 8px; height: 8px; border-radius: 50%;
+    background: var(--leaf-ink); box-shadow: 0 0 0 4px color-mix(in srgb, var(--leaf) 55%, transparent);
   }
-  .status { display: none; }
+  .status { display: none; color: var(--muted); }
 
-  .accent { position: relative; display: inline-block; white-space: nowrap; isolation: isolate; }
-  .accent svg {
-    position: absolute; left: -2%; bottom: -0.04em; z-index: -1;
-    width: 104%; height: 0.32em; overflow: visible;
+  h1 {
+    font-size: clamp(2.25rem, 1.1rem + 4.6vw, 2.75rem); font-weight: 500;
+    line-height: 1.04; letter-spacing: -0.035em; max-width: 15ch;
   }
-  .accent path {
-    fill: none; stroke: var(--orange); stroke-width: 7; stroke-linecap: round;
-    stroke-dasharray: 1; stroke-dashoffset: 1;
-    animation: draw 700ms 650ms var(--ease-out) forwards;
-  }
-  @keyframes draw { to { stroke-dashoffset: 0; } }
-
-  /* Entrance: the copy rises in sequence; while the intro plays it waits. */
-  .copy > * { animation: rise 640ms calc(var(--n, 0) * 70ms + 80ms) var(--ease-out) both; }
-  .copy > :nth-child(2) { --n: 1; }
-  .copy > :nth-child(3) { --n: 2; }
-  .copy > :nth-child(4) { --n: 3; }
-  .copy > :nth-child(5) { --n: 4; }
-  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
-  :global(.intro-on) .copy > *, :global(.intro-on) .accent path { animation: none; opacity: 0; }
-  .scene { transition: opacity 450ms ease-out; }
-  :global(.intro-mark) .scene { opacity: 0; }
-
-  h1 { font-size: clamp(2.25rem, 1.1rem + 4.6vw, 2.75rem); line-height: 1.04; letter-spacing: -0.03em; max-width: 15ch; }
-  .lead { color: var(--muted); font-size: 1.0625rem; line-height: 1.6; max-width: 52ch; }
+  .accent { color: var(--orange); }
+  .lead { color: var(--muted); font-size: 1.0625rem; line-height: 1.6; max-width: 50ch; }
 
   .ctas { display: grid; gap: 10px; margin-top: 4px; }
   .ctas .btn { width: 100%; }
+  .note { color: var(--muted); font-size: var(--step-small); }
+  .note a { color: var(--ink); font-weight: 600; text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
 
   .proof {
     display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-    margin: 8px 0 0; padding: 18px 0 0; list-style: none;
+    margin: 4px 0 0; padding: 18px 0 0; list-style: none;
     border-top: 1px solid var(--line);
     color: var(--muted); font-size: 0.8125rem; line-height: 1.35;
   }
   .proof li { padding-inline: 12px; border-left: 1px solid var(--line); }
   .proof li:first-child { padding-left: 0; border-left: 0; }
-  .proof b::before {
-    content: ""; position: absolute; left: 0; top: 0; width: 22px; height: 6px;
-    border-radius: 999px; background: var(--c);
-  }
   .proof b {
-    position: relative; display: block; margin-bottom: 4px; padding-top: 14px;
-    font: 600 1.5rem/1 var(--font-display); letter-spacing: -0.02em; color: var(--ink);
+    display: block; margin-bottom: 4px;
+    font: 500 1.5rem/1 var(--font-display); letter-spacing: -0.03em; color: var(--ink);
   }
 
-  /* The 3D mark sits above the headline on phones, beside it on wide screens. */
-  .scene { position: relative; order: -1; height: clamp(168px, 50vw, 260px); margin-inline: -8px; }
-  .scene :global(.poster), .scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-  /* Flat organic backdrop that gives the mark a colour mass to sit on. */
-  .scene :global(.backdrop), .scene :global(.backdrop-2) {
-    position: absolute; left: 50%; top: 50%; aspect-ratio: 1; width: auto; overflow: visible;
-  }
-  .scene :global(.backdrop) { height: 88%; translate: -50% -50%; }
-  .scene :global(.backdrop-2) { height: 26%; translate: -250% 30%; }
-  .scene :global(.poster) { padding: 0 12%; transition: opacity 400ms ease-out; }
-  .scene canvas { opacity: 0; transition: opacity 500ms ease-out; }
+  /* Entrance: the copy rises in sequence; while the intro plays it waits. */
+  .copy > * { animation: rise 680ms calc(var(--n, 0) * 70ms + 80ms) var(--ease-out) both; }
+  .copy > :nth-child(2) { --n: 1; }
+  .copy > :nth-child(3) { --n: 2; }
+  .copy > :nth-child(4) { --n: 3; }
+  .copy > :nth-child(5) { --n: 4; }
+  .copy > :nth-child(6) { --n: 5; }
+  @keyframes rise { from { opacity: 0; transform: translateY(18px); } }
+  :global(.intro-on) .copy > *, :global(.intro-on) .chip { animation: none; opacity: 0; }
+
+  /* Scene: monogram on plinths, two floating cards. */
+  .scene { position: relative; order: -1; height: clamp(260px, 76vw, 360px); margin-inline: calc(-1 * var(--gutter)); }
+  .scene canvas, .poster { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .scene canvas { opacity: 0; transition: opacity 600ms ease-out; }
   .scene[data-ready] canvas { opacity: 1; }
-  .scene[data-ready] :global(.poster) { opacity: 0; }
+  .scene[data-ready] .poster { opacity: 0; }
+  .poster { display: grid; place-items: center; transition: opacity 400ms ease-out; }
+  .poster :global(.poster-mark) { position: relative; z-index: 1; width: 30%; height: auto; margin-top: -10%; }
+  .plinth {
+    position: absolute; left: 50%; translate: -50% 0; border-radius: 14px;
+    box-shadow: 0 18px 30px -18px color-mix(in srgb, var(--ink) 40%, transparent);
+  }
+  .plinth-1 { bottom: 16%; width: 62%; height: 6%; background: #F1EDE7; z-index: 0; }
+  .plinth-2 { bottom: 11%; width: 72%; height: 6%; background: #E4DED6; z-index: -1; }
+
+  .chip {
+    position: absolute; z-index: 2; display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px 10px 10px; border-radius: 16px;
+    font-size: 0.8125rem; line-height: 1.25; white-space: nowrap;
+    animation: chip-in 700ms var(--d, 600ms) var(--ease-out) both, float 6s calc(var(--d, 600ms) + 700ms) ease-in-out infinite;
+  }
+  .chip b { display: block; font-weight: 600; }
+  .chip small { display: block; font-size: 0.75rem; opacity: 0.75; }
+  .chip-lead {
+    left: var(--gutter); top: 4%; scale: 0.88; transform-origin: left top;
+    background: var(--paper); color: var(--ink);
+    box-shadow: 0 16px 34px -16px color-mix(in srgb, var(--ink) 35%, transparent), 0 0 0 1px var(--line);
+  }
+  .chip-icon {
+    display: grid; place-items: center; width: 30px; height: 30px; border-radius: 10px;
+    background: color-mix(in srgb, var(--leaf) 55%, var(--paper)); color: var(--leaf-ink);
+  }
+  .chip-icon svg { width: 18px; height: 18px; }
+  .chip-pos {
+    --d: 800ms;
+    right: var(--gutter); bottom: 6%; padding: 10px 10px 10px 14px; scale: 0.88; transform-origin: right bottom;
+    background: var(--orange); color: #fff;
+    box-shadow: 0 18px 34px -16px color-mix(in srgb, var(--orange) 70%, transparent);
+    rotate: -4deg;
+  }
+  .chip-pos svg { width: 18px; height: 18px; }
+  @keyframes chip-in { from { opacity: 0; transform: translateY(14px) scale(0.96); } }
+  @keyframes float { 50% { transform: translateY(-6px); } }
 
   @media (min-width: 560px) {
     .status { display: inline; }
@@ -139,22 +184,26 @@ import { site } from '../data/site';
     .proof { font-size: var(--step-small); }
     .proof li { padding-inline: 20px; }
     .proof b { font-size: 1.875rem; }
+    .chip { font-size: 0.875rem; }
   }
 
   @media (min-width: 960px) {
-    .hero { padding-top: clamp(20px, min(5vw, 5vh), 64px); }
+    .hero { padding-top: clamp(16px, min(4vw, 4vh), 48px); }
     .hero-grid {
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-      align-items: center; gap: 40px; padding-bottom: 40px;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      align-items: center; gap: 32px;
     }
-    .copy { gap: clamp(14px, 2.4vh, 22px); }
+    .copy { gap: clamp(14px, 2.2vh, 22px); }
     /* Width-based scale, capped by viewport height so the CTAs stay in the first screen on laptops. */
-    h1 { font-size: clamp(3rem, min(1.6rem + 4.4vw, 9.5vh), 5.5rem); line-height: 1.02; }
+    h1 { font-size: clamp(3rem, min(1.6rem + 4.2vw, 9vh), 5.25rem); line-height: 1.02; }
     .lead { font-size: var(--step-lead); }
-    .scene { order: 1; height: auto; aspect-ratio: 1 / 1; margin: 0; }
-    .scene :global(.backdrop) { height: 74%; }
-    .scene :global(.backdrop-2) { height: 20%; translate: -235% 95%; }
-    .scene :global(.poster) { padding: 0; }
+    .scene { order: 1; height: auto; aspect-ratio: 1 / 1.02; margin: 0; }
+    .chip-lead { left: 0; top: 16%; scale: 1; }
+    .chip-pos { right: 0; bottom: 20%; scale: 1; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .chip { animation: none; }
   }
 </style>
 

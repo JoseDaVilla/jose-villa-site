@@ -1,5 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
 import { wavePath } from '../lib/shapes';
 import { projectColors } from '../data/site';
 
@@ -22,17 +23,27 @@ const label = (p: CollectionEntry<'projects'>) => p.data.when ?? String(p.data.y
               <path d={wavePath(20 + i * 3, 1000, 40, 16, 11, 5)} fill={projectColors[p.data.color]} />
             </svg>
           )}
+          {p.data.cover && (
+            <div class="shot" aria-hidden="true">
+              <span class="bar"><i></i><i></i><i></i></span>
+              <Image
+                src={p.data.cover}
+                alt=""
+                widths={[400, 640, 960]}
+                sizes="(min-width: 860px) 560px, calc(100vw - 80px)"
+                format="webp"
+                quality={80}
+                loading="lazy"
+              />
+            </div>
+          )}
           <a class="band-link" href={`#project-${p.id}`} data-open={p.id}>
-            <span class="head">
-              <span class="when">{label(p)} · {p.data.role}</span>
-              <span class="title">{p.data.title}</span>
-            </span>
-            <span class="body">
-              <span class="summary">{p.data.summary}</span>
-              <span class="open">
-                Open project
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-              </span>
+            <span class="when">{String(i + 1).padStart(2, '0')} · {label(p)} · {p.data.role}</span>
+            <span class="title">{p.data.title}</span>
+            <span class="summary">{p.data.summary}</span>
+            <span class="open">
+              Open project
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </a>
           <ul class="tags" aria-label={`${p.data.title} stack`}>
@@ -47,39 +58,69 @@ const label = (p: CollectionEntry<'projects'>) => p.data.when ?? String(p.data.y
 <style>
   .work { background: var(--surface); padding-top: clamp(24px, 5vw, 56px); padding-bottom: clamp(32px, 4vw, 56px); }
   .bands { list-style: none; margin: 0; padding: 0; display: grid; }
+
+  /* Phones: screenshot first, then the story; the whole band opens the project. */
   .band {
-    position: relative; display: grid; gap: 18px;
+    position: relative; display: grid; gap: 20px; align-content: start;
     background: var(--b);
-    padding: clamp(28px, 4vw, 44px) clamp(22px, 5vw, 56px) clamp(64px, 8vw, 96px);
+    padding: 24px 20px 64px;
     margin-top: -40px;
   }
-  .band:first-child { margin-top: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
-  .band:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding-bottom: clamp(32px, 5vw, 56px); }
+  .band:first-child { margin-top: 0; border-radius: var(--radius-lg) var(--radius-lg) 0 0; padding-top: 20px; }
+  .band:last-child { border-radius: 0 0 var(--radius-lg) var(--radius-lg); padding-bottom: 28px; }
   .edge { position: absolute; left: 0; top: -38px; width: 100%; height: 40px; }
 
-  .band-link { display: grid; gap: 16px; text-decoration: none; border-radius: 12px; }
+  .shot {
+    position: relative; z-index: 0;
+    background: var(--bg); border: 3px solid var(--ink); border-radius: 18px; overflow: hidden;
+    box-shadow: 6px 6px 0 var(--ink);
+    transition: transform 320ms var(--ease-out), box-shadow 320ms var(--ease-out);
+  }
+  .bar { display: flex; gap: 6px; padding: 9px 12px; border-bottom: 3px solid var(--ink); background: var(--bg); }
+  .bar i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--ink); }
+  .bar i:nth-child(1) { background: var(--orange); }
+  .bar i:nth-child(2) { background: var(--sun); }
+  .bar i:nth-child(3) { background: var(--leaf); }
+  .shot :global(img) { width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: top left; }
+
+  .band-link { display: grid; gap: 12px; text-decoration: none; border-radius: 12px; }
   /* Whole band is clickable; the link's box is stretched over it. */
   .band-link::after { content: ""; position: absolute; inset: 0; z-index: 1; }
   .band-link:focus-visible { outline: none; }
   .band:has(.band-link:focus-visible) { outline: 3px solid var(--ink); outline-offset: -6px; }
   .tags { position: relative; z-index: 0; }
 
-  .head { display: grid; gap: 10px; }
-  .when { font-weight: 600; font-size: var(--step-small); }
+  .when { font-weight: 600; font-size: var(--step-small); font-variant-numeric: tabular-nums; }
   .title {
     font-family: var(--font-display); font-weight: 600; letter-spacing: -0.03em;
-    font-size: clamp(2.25rem, 1.4rem + 4.2vw, 4.75rem); line-height: 1; text-wrap: balance;
+    font-size: clamp(2rem, 1.3rem + 3.4vw, 4rem); line-height: 1; text-wrap: balance;
   }
-  .body { display: grid; gap: 16px; align-content: end; }
   .summary { font-size: var(--step-lead); max-width: 40ch; }
-  .open { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+  .open {
+    justify-self: start; display: inline-flex; align-items: center; gap: 8px; margin-top: 4px;
+    min-height: 44px; padding: 0 18px; border-radius: 999px;
+    background: var(--ink); color: var(--bg); font-weight: 600; font-size: 1rem;
+  }
   .open svg { transition: transform 200ms var(--ease-out); }
-  .band:hover .open svg { transform: translateX(4px); }
-  .band { transition: transform 260ms var(--ease-out); }
+
+  @media (hover: hover) {
+    .band:hover .open svg { transform: translateX(4px); }
+    .band:hover .shot { transform: translate(-2px, -2px); box-shadow: 9px 9px 0 var(--ink); }
+  }
 
   @media (min-width: 860px) {
-    .band { grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr); column-gap: 48px; }
-    .band-link { grid-column: 1 / -1; grid-template-columns: subgrid; column-gap: 48px; align-items: end; }
-    .tags { grid-column: 2; }
+    .band {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+      grid-template-areas: "text shot" "tags shot";
+      column-gap: 56px; row-gap: 24px; align-items: center;
+      padding: 48px 56px 104px;
+    }
+    .band:first-child { padding-top: 48px; }
+    .band:last-child { padding-bottom: 56px; }
+    .band-link { grid-area: text; gap: 16px; }
+    .tags { grid-area: tags; align-self: start; }
+    .shot { grid-area: shot; transform: rotate(1.5deg); }
+    .band:nth-child(even) .shot { transform: rotate(-1.5deg); }
+    .band:hover .shot { transform: rotate(0) translate(-2px, -2px); }
   }
 </style>

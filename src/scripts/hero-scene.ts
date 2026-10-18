@@ -2,29 +2,8 @@
 // chart, plus two cards floating in front of it (a validated lead and a POS
 // receipt), the kind of tools the site is about. Sways on its own; follows the
 // cursor on hover.
-import { ExtrudeGeometry, Group, Mesh, Shape, SphereGeometry, type BufferGeometry, type Material } from 'three';
-import { PALETTE, blobGeometry, createStage, easeOut, swayer } from './scene-kit';
-
-/** Rounded rectangle extruded to `depth`, centred on the origin. */
-function plate(w: number, h: number, r: number, depth: number, bevel = 0.04): BufferGeometry {
-  const x = -w / 2, y = -h / 2;
-  const s = new Shape();
-  s.moveTo(x + r, y);
-  s.lineTo(x + w - r, y);
-  s.quadraticCurveTo(x + w, y, x + w, y + r);
-  s.lineTo(x + w, y + h - r);
-  s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-  s.lineTo(x + r, y + h);
-  s.quadraticCurveTo(x, y + h, x, y + h - r);
-  s.lineTo(x, y + r);
-  s.quadraticCurveTo(x, y, x + r, y);
-  const g = new ExtrudeGeometry(s, {
-    depth, curveSegments: 10, bevelEnabled: bevel > 0,
-    bevelThickness: bevel, bevelSize: bevel, bevelSegments: 3,
-  });
-  g.center();
-  return g;
-}
+import { Group, Mesh, SphereGeometry, type BufferGeometry, type Material } from 'three';
+import { PALETTE, blobGeometry, createStage, easeOut, plate, swayer } from './scene-kit';
 
 export function mountHeroScene(host: HTMLElement) {
   const stage = createStage(host, { cameraZ: 12 });

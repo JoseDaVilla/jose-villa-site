@@ -3,13 +3,14 @@
 // a render loop that only runs while the scene is on screen, and a pointer
 // model that blends an idle sway with cursor-follow on hover.
 import {
-  AmbientLight, BackSide, Color, DataTexture, DirectionalLight, Group, IcosahedronGeometry,
+  AmbientLight, BackSide, Color, DataTexture, DirectionalLight, ExtrudeGeometry, Group, IcosahedronGeometry,
   Mesh, MeshBasicMaterial, MeshToonMaterial, NearestFilter, PerspectiveCamera, RedFormat,
-  Scene, WebGLRenderer, type BufferGeometry, type Material, type Object3D,
+  Scene, Shape, WebGLRenderer, type BufferGeometry, type Material, type Object3D,
 } from 'three';
 
 export const PALETTE = {
   bg: '#FBF7F2',
+  surface: '#F1EADF',
   paper: '#FFFDF8',
   orange: '#F47B3B',
   blue: '#2A4BB8',
@@ -187,3 +188,24 @@ export function blobGeometry(radius: number, seed: number): BufferGeometry {
 
 /** Ease-out cubic, clamped to 0..1. */
 export const easeOut = (x: number) => 1 - Math.pow(1 - Math.min(Math.max(x, 0), 1), 3);
+
+/** Rounded rectangle extruded to `depth`, centred on the origin. */
+export function plate(w: number, h: number, r: number, depth: number, bevel = 0.04): BufferGeometry {
+  const x = -w / 2, y = -h / 2;
+  const s = new Shape();
+  s.moveTo(x + r, y);
+  s.lineTo(x + w - r, y);
+  s.quadraticCurveTo(x + w, y, x + w, y + r);
+  s.lineTo(x + w, y + h - r);
+  s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h);
+  s.quadraticCurveTo(x, y + h, x, y + h - r);
+  s.lineTo(x, y + r);
+  s.quadraticCurveTo(x, y, x + r, y);
+  const g = new ExtrudeGeometry(s, {
+    depth, curveSegments: 10, bevelEnabled: bevel > 0,
+    bevelThickness: bevel, bevelSize: bevel, bevelSegments: 3,
+  });
+  g.center();
+  return g;
+}

@@ -70,8 +70,8 @@ strong, b { font-weight: 600; }
 h1, h2, h3, h4 {
   margin: 0;
   font-family: var(--font-display);
-  font-weight: 600;
-  letter-spacing: -0.025em;
+  font-weight: 500;
+  letter-spacing: -0.035em;
   line-height: 1.05;
   text-wrap: balance;
 }

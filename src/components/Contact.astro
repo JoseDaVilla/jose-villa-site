@@ -28,17 +28,27 @@ const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying h
             <button type="button" class="copy" data-copy={site.email}>Copy</button>
           </div>
         </div>
-        <div class="scene" data-envelope-scene aria-hidden="true">
+        <div class="scene" data-chat-scene aria-hidden="true">
+          <!-- Flat twin of the 3D chat (src/scripts/chat-scene.ts). -->
           <svg class="poster" viewBox="0 0 400 300" focusable="false">
-            <g stroke="var(--ink)" stroke-width="5" stroke-linejoin="round">
-              <rect x="95" y="95" width="210" height="140" rx="10" fill="var(--sun)" />
-              <rect x="120" y="55" width="160" height="110" rx="8" fill="#FFFDF8" />
-              <path d="M95 235 V125 L200 175 L305 125 V235 Z" fill="var(--orange)" />
-              <path d="M300 60 l50 -20 l-18 48 l-10 -16 z" fill="var(--sky)" />
+            <g stroke="var(--ink)" stroke-linejoin="round">
+              <circle cx="358" cy="64" r="20" fill="var(--sky)" stroke-width="4" />
+              <circle cx="48" cy="242" r="16" fill="var(--sun)" stroke-width="4" />
+              <rect x="86" y="128" width="26" height="26" rx="5" transform="rotate(45 99 141)" fill="var(--paper)" stroke-width="4" />
+              <rect x="81" y="75" width="172" height="69" rx="24" fill="var(--paper)" stroke-width="4" />
+              <circle cx="55" cy="133" r="21" fill="var(--orange)" stroke-width="4" />
+              <rect x="296" y="210" width="24" height="24" rx="5" transform="rotate(45 308 222)" fill="var(--blue)" stroke-width="4" />
+              <rect x="184" y="172" width="132" height="56" rx="22" fill="var(--blue)" stroke-width="4" />
+              <circle cx="316" cy="226" r="14" fill="var(--leaf)" stroke-width="3.5" />
+              <path d="M310 226.5 l4 4 l8 -8" fill="none" stroke-width="3" stroke-linecap="round" />
             </g>
-            <g stroke="var(--ink)" stroke-width="6" stroke-linecap="round">
-              <path d="M145 80 h50" stroke="var(--blue)" />
-              <path d="M145 100 h105 M145 118 h80" />
+            <g stroke="none">
+              <rect x="99" y="93" width="95" height="9" rx="4.5" fill="var(--ink)" />
+              <rect x="99" y="110" width="130" height="6" rx="3" fill="#D9CFC1" />
+              <rect x="99" y="124" width="80" height="6" rx="3" fill="#D9CFC1" />
+              <circle cx="230" cy="200" r="6.6" fill="var(--paper)" />
+              <circle cx="250" cy="200" r="6.6" fill="var(--paper)" />
+              <circle cx="270" cy="200" r="6.6" fill="var(--paper)" />
             </g>
           </svg>
           <canvas></canvas>
@@ -226,5 +236,5 @@ const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying h
 
 <script>
   import { lazyScene } from '../scripts/lazy-scene';
-  lazyScene('[data-envelope-scene]', async () => (await import('../scripts/envelope-scene')).mountEnvelopeScene);
+  lazyScene('[data-chat-scene]', async () => (await import('../scripts/chat-scene')).mountChatScene);
 </script>

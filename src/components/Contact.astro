@@ -80,7 +80,7 @@ const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying h
         </fieldset>
         <label class="field">
           <span>Message</span>
-          <textarea id="c-message" name="message" rows="5" required maxlength="4000" placeholder="The project, the timeline, anything you'd like me to know."></textarea>
+          <textarea id="c-message" name="message" rows="4" required maxlength="4000" placeholder="The project, the timeline, anything you'd like me to know."></textarea>
         </label>
         <p class="status" data-status role="status" aria-live="polite"></p>
         <button class="btn submit" type="submit" data-submit>
@@ -209,6 +209,20 @@ const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying h
   @keyframes sent-rise { from { opacity: 0; transform: translateY(10px); } }
   .submit[disabled] { opacity: 0.6; cursor: progress; }
 
+  /* Phones: tighter so the whole form, button included, fits on one screen. */
+  @media (max-width: 639px) {
+    .form, .fields { gap: 14px; }
+    .form { padding: 18px; border-radius: 24px; }
+    .row2 { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .field { gap: 6px; }
+    input[type="text"], input[type="email"], textarea { padding: 11px 13px; border-radius: 13px; }
+    .topics { gap: 8px; }
+    .chips { gap: 6px; }
+    .chip span { min-height: 38px; padding: 0 14px; font-size: 0.9375rem; }
+    textarea { min-height: 104px; }
+    .submit { justify-self: stretch; }
+  }
+  @media (max-width: 339px) { .row2 { grid-template-columns: 1fr; } }
   @media (min-width: 640px) { .row2 { grid-template-columns: 1fr 1fr; } }
   @media (min-width: 1000px) { .grid { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); } }
 </style>

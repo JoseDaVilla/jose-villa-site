@@ -111,6 +111,7 @@ const label = (p: CollectionEntry<'projects'>) => p.data.when ?? String(p.data.y
     .band, .band:first-child, .band:last-child {
       grid-template-columns: 40% minmax(0, 1fr); gap: 14px; align-items: center;
       margin: 0; padding: 12px; border-radius: 20px;
+      background: var(--paper); box-shadow: var(--shadow-card);
     }
     .edge, .bar, .tags, .open { display: none; }
     .shot { border-radius: 12px; box-shadow: 0 10px 22px -14px color-mix(in srgb, var(--ink) 45%, transparent); }

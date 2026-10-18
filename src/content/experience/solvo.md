@@ -2,7 +2,7 @@
 company: "Solvo Global"
 role: "Bilingual Customer Service Representative"
 period: "May 2023 — Feb 2025"
-order: 3
+order: 4
 group: "earlier"
 ---
 

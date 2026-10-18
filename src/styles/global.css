@@ -2,22 +2,22 @@
 @import "@fontsource-variable/figtree/wght.css";
 
 /*
-  Flat colour and organic shapes on a restrained palette: bone and stone
+  Flat colour and organic shapes on a restrained palette: white and stone
   neutrals, ink for text and actions, orange as the single accent. The old
   sky/leaf/sun/blue tokens survive as sand tones so shapes keep their layers.
 */
 :root {
-  --bg: #F2F0EB;
-  --surface: #E8E5DE;
-  --paper: #FAF9F6;
+  --bg: #FFFFFF;
+  --surface: #F4F3F0;
+  --paper: #FFFFFF;
   --ink: #1F1B17;
   --muted: #57534D;
-  --line: #DAD6CD;
+  --line: #E7E5E0;
 
   --orange: #F47B3B;
-  --sun: #E4E0D7;
-  --sky: #E4E0D7;
-  --leaf: #DDD9D0;
+  --sun: #EFEDE8;
+  --sky: #EFEDE8;
+  --leaf: #EAE8E2;
   --leaf-ink: #2E8A4C;
   --blue: #1F1B17;
   --on-blue: #FFFFFF;
@@ -37,6 +37,13 @@
   --radius-lg: 28px;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 
+  /* One elevation for every card: a hairline edge plus a soft, low shadow. */
+  --shadow-card: 0 0 0 1px color-mix(in srgb, var(--ink) 7%, transparent),
+    0 1px 2px color-mix(in srgb, var(--ink) 5%, transparent),
+    0 14px 32px -18px color-mix(in srgb, var(--ink) 24%, transparent);
+  --shadow-card-hover: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent),
+    0 2px 4px color-mix(in srgb, var(--ink) 6%, transparent),
+    0 22px 44px -20px color-mix(in srgb, var(--ink) 30%, transparent);
   --nav-h: 64px;
 
   color-scheme: light;

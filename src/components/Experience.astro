@@ -2,6 +2,7 @@
 import { blobPath } from '../lib/shapes';
 import { getCollection, render } from 'astro:content';
 import { Image } from 'astro:assets';
+import JVMark from './JVMark.astro';
 import latam from '../assets/logos/latam.png';
 import spirit from '../assets/logos/spirit.png';
 import travelperk from '../assets/logos/travelperk.png';
@@ -87,7 +88,9 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
             <div class="role-head">
               {employerLogo[id]
                 ? <span class="brand"><Image src={employerLogo[id]} alt={data.company} height={60} densities={[1, 2]} /></span>
-                : <span class="mono" aria-hidden="true">{mono[id] ?? data.company[0]}</span>}
+                : id === 'freelance'
+                  ? <span class="brand" aria-hidden="true"><JVMark id="jv-freelance" class="brand-jv" /></span>
+                  : <span class="mono" aria-hidden="true">{mono[id] ?? data.company[0]}</span>}
               <div>
                 <h3>{data.role}</h3>
                 <p class="company">
@@ -197,13 +200,13 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
   .built-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
   .built-list a {
     display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 12px 6px 6px;
-    border-radius: 14px; background: var(--surface); text-decoration: none;
-    transition: background-color 160ms ease-out;
+    border-radius: 14px; background: var(--paper); text-decoration: none; box-shadow: var(--shadow-card);
+    transition: box-shadow 200ms ease-out, transform 200ms var(--ease-out);
   }
   .built-thumb { flex: none; width: 44px; height: 32px; border-radius: 8px; overflow: hidden; background: var(--paper); }
   .built-thumb :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
   .built-name { font-weight: 600; font-size: 0.8125rem; line-height: 1.25; min-width: 0; }
-  @media (hover: hover) { .built-list a:hover { background: var(--line); } .built-list a:hover .built-name { color: var(--orange); } }
+  @media (hover: hover) { .built-list a:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); } .built-list a:hover .built-name { color: var(--orange); } }
   @media (min-width: 640px) {
     .built-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .built-thumb { width: 56px; height: 40px; }
@@ -212,6 +215,7 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
 
   .role-head { display: flex; align-items: center; gap: 16px; }
   .brand { display: flex; align-items: center; justify-content: flex-start; flex: none; width: 112px; height: 60px; }
+  .brand :global(.brand-jv) { height: 46px; width: auto; }
   .brand :global(img) { max-width: 100%; max-height: 58px; width: auto; height: auto; object-fit: contain; }
   .mono {
     display: grid; place-items: center; flex: none; width: 96px; height: 56px; border-radius: 16px;
@@ -226,7 +230,7 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
   .clients { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
   .client {
     display: grid; grid-template-columns: 108px minmax(0, 1fr); gap: 16px; align-items: start;
-    padding: 18px; background: var(--surface); border-radius: 22px;
+    padding: 18px; background: var(--paper); border-radius: 22px; box-shadow: var(--shadow-card);
   }
   .client-logo { display: flex; align-items: center; height: 64px; }
   .client-logo :global(img) { width: 100%; max-height: 44px; height: auto; object-fit: contain; object-position: left center; }

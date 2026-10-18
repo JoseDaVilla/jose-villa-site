@@ -59,8 +59,8 @@ const toolkit = [
   .toolkit :global(.tk-dot) { position: absolute; top: -34px; right: -14px; width: 110px; height: 104px; z-index: -1; }
   .tk-in {
     display: grid; gap: 20px; padding: clamp(28px, 5vw, 48px);
-    background: var(--sky);
-    border-radius: 72px 40px 80px 36px / 48px 76px 40px 68px;
+    background: var(--paper); box-shadow: var(--shadow-card);
+    border-radius: 28px;
   }
   .tk-in h3 { font-size: var(--step-h3); }
   .group { display: grid; gap: 10px; }
@@ -69,7 +69,7 @@ const toolkit = [
   .tools li {
     display: inline-flex; align-items: center; gap: 8px;
     padding: 8px 14px 8px 11px; border-radius: 999px;
-    background: var(--bg); font-weight: 500; font-size: 0.9375rem; line-height: 1;
+    background: var(--surface); font-weight: 500; font-size: 0.9375rem; line-height: 1;
   }
 
   @media (min-width: 960px) {

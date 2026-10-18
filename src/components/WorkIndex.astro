@@ -64,7 +64,7 @@ const label = (p: CollectionEntry<'projects'>) => p.data.when ?? String(p.data.y
   .row a {
     display: grid; grid-template-columns: 40% minmax(0, 1fr); grid-template-rows: auto auto 1fr;
     column-gap: 14px; row-gap: 4px; align-items: start;
-    padding: 12px; border-radius: 20px; background: var(--surface); text-decoration: none;
+    padding: 12px; border-radius: 20px; background: var(--paper); text-decoration: none; box-shadow: var(--shadow-card);
   }
   .thumb {
     grid-row: 1 / 4; grid-column: 1; position: relative; display: block; align-self: center;
@@ -103,7 +103,7 @@ const label = (p: CollectionEntry<'projects'>) => p.data.when ?? String(p.data.y
     .rows { display: block; }
     .row a {
       grid-template-columns: 4.5rem minmax(0, 1fr); grid-template-rows: none; align-items: baseline; gap: 6px 0;
-      padding: clamp(20px, 2.4vw, 28px) 0; border-top: 1px solid var(--line); border-radius: 0; background: none;
+      padding: clamp(20px, 2.4vw, 28px) 0; border-top: 1px solid var(--line); border-radius: 0; background: none; box-shadow: none;
     }
     .num { display: block; }
     .row:last-child a { border-bottom: 1px solid var(--line); }

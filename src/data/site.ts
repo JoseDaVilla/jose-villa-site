@@ -23,9 +23,9 @@ export const site = {
 
 /** Stone tones the project bands and dialogs are painted with (one per colour key). */
 export const projectColors = {
-  orange: '#E8E5DE',
-  sky: '#E2DED6',
-  sun: '#EBE8E2',
-  leaf: '#DEDAD2',
-  blue: '#E5E2DB',
+  orange: '#F4F3F0',
+  sky: '#F0EFEB',
+  sun: '#F6F5F2',
+  leaf: '#EEEDE9',
+  blue: '#F2F1ED',
 } as const;

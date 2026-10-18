@@ -2,7 +2,7 @@
 company: "IGT Solutions"
 role: "Bilingual Executive Assistant"
 period: "Jul 2022 — Apr 2023"
-order: 4
+order: 5
 group: "earlier"
 ---
 

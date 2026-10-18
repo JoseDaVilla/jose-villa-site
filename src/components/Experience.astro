@@ -114,7 +114,7 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
                     <li>
                       <a href={`#project-${p!.id}`} data-open={p!.id}>
                         <span class="built-thumb" aria-hidden="true">
-                          {p!.data.cover && <Image src={p!.data.cover} alt="" widths={[120, 240]} sizes="80px" format="webp" quality={70} loading="lazy" />}
+                          {p!.data.cover && <Image src={p!.data.cover} alt="" widths={[240, 480]} sizes="(min-width: 640px) 220px, 45vw" format="webp" quality={70} loading="lazy" />}
                         </span>
                         <span class="built-name">{p!.data.title}</span>
                       </a>
@@ -217,21 +217,24 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
   /* Projects shipped in a role: small screenshot chips that open the project dialog. */
   .built { margin-top: 22px; }
   .built-title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
-  .built-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .built-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
   .built-list a {
-    display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 12px 6px 6px;
+    display: grid; gap: 8px; padding: 6px 6px 10px; height: 100%;
     border-radius: 14px; background: var(--paper); text-decoration: none; box-shadow: var(--shadow-card);
     transition: box-shadow 200ms ease-out, transform 200ms var(--ease-out);
   }
-  .built-thumb { flex: none; width: 44px; height: 32px; border-radius: 8px; overflow: hidden; background: var(--paper); }
-  .built-thumb :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
-  .built-name { font-weight: 600; font-size: 0.8125rem; line-height: 1.25; min-width: 0; }
-  @media (hover: hover) { .built-list a:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); } .built-list a:hover .built-name { color: var(--orange); } }
-  @media (min-width: 640px) {
-    .built-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .built-thumb { width: 56px; height: 40px; }
-    .built-name { font-size: 0.875rem; }
+  /* The whole screenshot, letterboxed on stone: no cropping. */
+  .built-thumb {
+    display: grid; place-items: center; aspect-ratio: 16 / 9; padding: 10px;
+    border-radius: 10px; overflow: hidden; background: var(--surface);
   }
+  .built-thumb :global(img) {
+    width: 100%; height: auto; max-height: 100%; object-fit: contain;
+    border-radius: 4px; box-shadow: 0 4px 12px -6px color-mix(in srgb, var(--ink) 35%, transparent);
+  }
+  .built-name { padding: 0 6px; font-weight: 600; font-size: 0.875rem; line-height: 1.25; }
+  @media (hover: hover) { .built-list a:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); } .built-list a:hover .built-name { color: var(--orange); } }
+  @media (min-width: 640px) { .built-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
   .role-head { display: flex; align-items: center; gap: 16px; }
   .brand { display: flex; align-items: center; justify-content: center; flex: none; width: 76px; height: 44px; }

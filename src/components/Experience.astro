@@ -19,15 +19,6 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
 // Brand marks. Employers without a public logo we can ship get a neutral monogram.
 const mono: Record<string, string> = {};
 const employerLogo: Record<string, ImageMetadata> = { kaseya, geeks5g };
-// Cards that cycle in the illustration, newest first.
-const deck: { logo?: ImageMetadata; role: string; meta: string }[] = [
-  { logo: kaseya, role: 'Professional Services Consultant', meta: 'Kaseya · 2026' },
-  { logo: geeks5g, role: 'Full Stack Developer', meta: 'Geeks5G · 2025' },
-  { role: 'Freelance Full-Stack Developer', meta: 'Independent clients' },
-  { logo: spirit, role: 'Customer Service, bilingual', meta: 'Spirit Airlines · 2023' },
-  { logo: travelperk, role: 'Executive Assistant, bilingual', meta: 'TravelPerk · 2022' },
-  { logo: latam, role: 'Customer Service, bilingual', meta: 'LATAM Airlines · 2021' },
-];
 const projectsById = new Map((await getCollection('projects')).map((p) => [p.id, p]));
 // The airline or company each bilingual role served.
 const client: Record<string, { name: string; logo: ImageMetadata }> = {
@@ -48,18 +39,45 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
           <path d={blobPath(17, 7, 0.22)} transform="translate(92 6) scale(2.9)" fill="var(--surface)" />
           <path d={blobPath(3, 7, 0.22)} transform="translate(318 214) scale(0.5)" fill="var(--orange)" />
         </svg>
-        <!-- A deck of role cards, one per company; the front card flies off and rejoins at the back. -->
-        <div class="deck" style={`--n: ${deck.length}`}>
-          {deck.map((c, i) => (
-            <div class="dcard" style={`--k: ${i}`}>
-              <span class="dlogo">
-                {c.logo ? <Image src={c.logo} alt="" height={44} densities={[1, 2]} /> : <JVMark id={`jv-deck-${i}`} class="dlogo-jv" />}
-              </span>
-              <span class="drole">{c.role}</span>
-              <span class="dmeta">{c.meta}</span>
-              <span class="dbar"><i></i><i></i></span>
-            </div>
-          ))}
+        <!-- A deck of work cards (what I build); the front card flies off and rejoins at the back. -->
+        <div class="deck" style="--n: 6">
+          <div class="dcard" style="--k: 0">
+            <svg class="dart" viewBox="0 0 130 80" aria-hidden="true"><rect x="0" y="0" width="34" height="80" rx="6" fill="var(--surface)"/><rect x="8" y="12" width="18" height="4" rx="2" fill="var(--line)"/><rect x="8" y="22" width="14" height="4" rx="2" fill="var(--line)"/><rect x="8" y="32" width="18" height="4" rx="2" fill="var(--line)"/>
+<rect x="44" y="0" width="40" height="22" rx="6" fill="var(--surface)"/><rect x="90" y="0" width="40" height="22" rx="6" fill="var(--surface)"/><rect x="50" y="7" width="18" height="8" rx="2" fill="var(--ink)"/><rect x="96" y="7" width="22" height="8" rx="2" fill="var(--orange)"/>
+<rect x="48" y="60" width="10" height="20" rx="3" fill="var(--ink)"/><rect x="64" y="48" width="10" height="32" rx="3" fill="var(--ink)"/><rect x="80" y="54" width="10" height="26" rx="3" fill="var(--ink)"/><rect x="96" y="34" width="10" height="46" rx="3" fill="var(--orange)"/><rect x="112" y="42" width="10" height="38" rx="3" fill="var(--ink)"/></svg>
+            <span class="drole">Dashboards</span>
+            <span class="dmeta">SaaS & B2B platforms</span>
+          </div>
+          <div class="dcard" style="--k: 1">
+            <svg class="dart" viewBox="0 0 130 80" aria-hidden="true"><rect x="40" y="0" width="50" height="80" rx="10" fill="var(--ink)"/><rect x="44" y="6" width="42" height="68" rx="6" fill="var(--paper)"/><rect x="50" y="12" width="30" height="16" rx="4" fill="var(--orange)"/><rect x="50" y="34" width="24" height="4" rx="2" fill="var(--ink)"/><rect x="50" y="42" width="30" height="4" rx="2" fill="var(--line)"/><rect x="50" y="56" width="30" height="10" rx="5" fill="var(--ink)"/>
+<rect x="100" y="14" width="30" height="52" rx="7" fill="var(--surface)"/><rect x="0" y="22" width="30" height="52" rx="7" fill="var(--surface)"/></svg>
+            <span class="drole">Mobile apps</span>
+            <span class="dmeta">React Native</span>
+          </div>
+          <div class="dcard" style="--k: 2">
+            <svg class="dart" viewBox="0 0 130 80" aria-hidden="true"><path d="M28 20 C 55 20, 55 40, 65 40 M28 60 C 55 60, 55 40, 65 40 M95 40 H 108" fill="none" stroke="var(--line)" stroke-width="3"/>
+<rect x="0" y="8" width="28" height="24" rx="7" fill="var(--surface)"/><rect x="0" y="48" width="28" height="24" rx="7" fill="var(--surface)"/><rect x="65" y="26" width="30" height="28" rx="8" fill="var(--orange)"/><circle cx="119" cy="40" r="12" fill="var(--ink)"/><path d="M114 40 l4 4 l7 -8" fill="none" stroke="var(--paper)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M76 34 l8 6 l-8 6z" fill="var(--paper)"/></svg>
+            <span class="drole">Automation</span>
+            <span class="dmeta">n8n · Python pipelines</span>
+          </div>
+          <div class="dcard" style="--k: 3">
+            <svg class="dart" viewBox="0 0 130 80" aria-hidden="true"><rect x="0" y="0" width="76" height="80" rx="8" fill="var(--surface)"/><rect x="8" y="8" width="16" height="16" rx="4" fill="var(--paper)"/><rect x="30" y="8" width="16" height="16" rx="4" fill="var(--paper)"/><rect x="52" y="8" width="16" height="16" rx="4" fill="var(--paper)"/><rect x="8" y="30" width="16" height="16" rx="4" fill="var(--paper)"/><rect x="30" y="30" width="16" height="16" rx="4" fill="var(--orange)"/><rect x="52" y="30" width="16" height="16" rx="4" fill="var(--paper)"/><rect x="8" y="52" width="16" height="16" rx="4" fill="var(--paper)"/><rect x="30" y="52" width="16" height="16" rx="4" fill="var(--paper)"/><rect x="52" y="52" width="16" height="16" rx="4" fill="var(--paper)"/>
+<rect x="86" y="0" width="44" height="80" rx="8" fill="var(--paper)" stroke="var(--line)" stroke-width="2"/><rect x="94" y="10" width="28" height="4" rx="2" fill="var(--line)"/><rect x="94" y="20" width="20" height="4" rx="2" fill="var(--line)"/><rect x="94" y="30" width="28" height="4" rx="2" fill="var(--line)"/><rect x="94" y="62" width="28" height="9" rx="3" fill="var(--ink)"/></svg>
+            <span class="drole">POS systems</span>
+            <span class="dmeta">30+ US locations</span>
+          </div>
+          <div class="dcard" style="--k: 4">
+            <svg class="dart" viewBox="0 0 130 80" aria-hidden="true"><rect x="0" y="0" width="130" height="16" rx="5" fill="var(--surface)"/><circle cx="10" cy="8" r="4" fill="var(--line)"/><rect x="20" y="6" width="58" height="4" rx="2" fill="var(--ink)"/><rect x="104" y="4" width="20" height="8" rx="4" fill="var(--orange)"/><rect x="0" y="21" width="130" height="16" rx="5" fill="var(--surface)"/><circle cx="10" cy="29" r="4" fill="var(--line)"/><rect x="20" y="27" width="44" height="4" rx="2" fill="var(--line)"/><rect x="104" y="25" width="20" height="8" rx="4" fill="var(--orange)"/><rect x="0" y="42" width="130" height="16" rx="5" fill="var(--surface)"/><circle cx="10" cy="50" r="4" fill="var(--line)"/><rect x="20" y="48" width="66" height="4" rx="2" fill="var(--line)"/><rect x="104" y="46" width="20" height="8" rx="4" fill="var(--ink)"/><rect x="0" y="63" width="130" height="16" rx="5" fill="var(--surface)"/><circle cx="10" cy="71" r="4" fill="var(--line)"/><rect x="20" y="69" width="50" height="4" rx="2" fill="var(--line)"/><rect x="104" y="67" width="20" height="8" rx="4" fill="var(--orange)"/></svg>
+            <span class="drole">Lead validation</span>
+            <span class="dmeta">1000s checked daily</span>
+          </div>
+          <div class="dcard" style="--k: 5">
+            <svg class="dart" viewBox="0 0 130 80" aria-hidden="true"><rect x="0" y="0" width="130" height="80" rx="8" fill="var(--surface)"/><rect x="0" y="0" width="130" height="12" rx="6" fill="var(--line)"/><circle cx="8" cy="6" r="2.5" fill="var(--paper)"/><circle cx="16" cy="6" r="2.5" fill="var(--paper)"/>
+<rect x="10" y="22" width="56" height="8" rx="3" fill="var(--ink)"/><rect x="10" y="36" width="44" height="4" rx="2" fill="var(--line)"/><rect x="10" y="46" width="30" height="10" rx="5" fill="var(--orange)"/><rect x="76" y="22" width="44" height="46" rx="6" fill="var(--paper)"/><circle cx="98" cy="45" r="11" fill="var(--orange)" opacity=".25"/></svg>
+            <span class="drole">Client websites</span>
+            <span class="dmeta">Fast, SEO-first sites</span>
+          </div>
         </div>
       </div>
     </div>
@@ -149,27 +167,22 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
 <style>
   .exp-head { display: grid; gap: 8px; align-items: center; }
   .exp-head .section-head { margin-bottom: 0; }
-  .scene { position: relative; height: clamp(220px, 58vw, 380px); }
+  .scene { position: relative; height: clamp(280px, 78vw, 400px); }
   .art { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 
   /* Rotating deck. Each card runs the same loop, offset by --k slots: hold at the
      front, fly off, wait hidden at the back, then step forward through slots 2 and 1. */
-  .deck { position: absolute; left: 50%; top: 50%; width: min(62%, 280px); aspect-ratio: 1.6; translate: -54% -46%; }
+  .deck { position: absolute; left: 50%; top: 50%; width: min(64%, 270px); aspect-ratio: 1.12; translate: -54% -50%; }
   .dcard {
     position: absolute; inset: 0; display: grid; align-content: start; gap: 4px;
-    padding: 18px 20px; border-radius: 18px; background: var(--paper);
+    padding: 16px 16px 18px; border-radius: 20px; background: var(--paper);
     box-shadow: var(--shadow-card-hover);
     animation: deal calc(var(--n) * 2.4s) calc((var(--n) - var(--k)) * -2.4s) cubic-bezier(0.6, 0, 0.2, 1) infinite;
     opacity: 0;
   }
-  .dlogo { display: flex; align-items: center; height: 40px; margin-bottom: 10px; }
-  .dlogo :global(img) { max-height: 36px; max-width: 70%; width: auto; height: auto; object-fit: contain; }
-  .dlogo :global(.dlogo-jv) { height: 34px; width: auto; }
+  .dart { width: 100%; height: auto; margin-bottom: 10px; overflow: visible; }
   .drole { font-weight: 600; font-size: 0.9375rem; line-height: 1.25; }
   .dmeta { color: var(--muted); font-size: 0.8125rem; }
-  .dbar { display: flex; gap: 6px; margin-top: 10px; }
-  .dbar i { height: 6px; border-radius: 3px; background: var(--surface); }
-  .dbar i:first-child { width: 42%; } .dbar i:last-child { width: 24%; }
 
   @keyframes deal {
     0%, 12.5% { transform: translate(0, 0) rotate(-5deg); opacity: 1; z-index: 3; }
@@ -221,9 +234,10 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
   }
 
   .role-head { display: flex; align-items: center; gap: 16px; }
-  .brand { display: flex; align-items: center; justify-content: flex-start; flex: none; width: 112px; height: 60px; }
+  .brand { display: flex; align-items: center; justify-content: flex-start; flex: none; width: 76px; height: 44px; }
+  @media (min-width: 640px) { .brand { width: 112px; height: 60px; } }
   .brand :global(.brand-jv) { height: 46px; width: auto; }
-  .brand :global(img) { max-width: 100%; max-height: 58px; width: auto; height: auto; object-fit: contain; }
+  .brand :global(img) { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; }
   .mono {
     display: grid; place-items: center; flex: none; width: 96px; height: 56px; border-radius: 16px;
     background: var(--ink); color: var(--bg);

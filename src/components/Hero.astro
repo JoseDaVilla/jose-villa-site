@@ -1,17 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
-import { Image } from 'astro:assets';
 import JVMark from './JVMark.astro';
 import { site } from '../data/site';
 
-// Dark, logo-led hero (the intro hands its mark over to this one). Behind it,
-// screenshots of the featured projects cross-fade under a heavy ink tint, and
-// a bundle of hairlines drifts across.
-const shots = (await getCollection('projects'))
-  .filter((p) => p.data.group === 'featured' && p.data.cover)
-  .sort((a, b) => a.data.order - b.data.order)
-  .map((p) => p.data.cover!);
-
+// Dark, logo-led hero (the intro hands its mark over to this one): the JV
+// monogram, the name and one line, on ink with a faint hairline ribbon.
 const W = 1440, H = 900, N = 26;
 const lines = Array.from({ length: N }, (_, i) => {
   let d = '';
@@ -25,11 +17,6 @@ const lines = Array.from({ length: N }, (_, i) => {
 });
 ---
 <section id="top" class="hero" aria-labelledby="hero-title" data-hero>
-  <div class="slides" aria-hidden="true" style={`--n: ${shots.length}`}>
-    {shots.map((src, i) => (
-      <Image src={src} alt="" widths={[800, 1400]} sizes="100vw" format="webp" quality={60} loading={i === 0 ? 'eager' : 'lazy'} style={`--i: ${i}`} />
-    ))}
-  </div>
   <svg class="ribbon" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
     {lines.map((d) => <path d={d} />)}
   </svg>
@@ -86,30 +73,11 @@ const lines = Array.from({ length: N }, (_, i) => {
     text-align: center;
   }
 
-  /* Project screenshots, cross-fading under an ink tint. */
-  .slides { position: absolute; inset: 0; z-index: -2; }
-  .slides :global(img) {
-    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top center;
-    opacity: 0; filter: grayscale(0.5) blur(3px);
-    animation: slide calc(var(--n) * 6s) calc(var(--i) * 6s) linear infinite;
-  }
-  .slides::after {
-    content: ""; position: absolute; inset: 0;
-    background:
-      radial-gradient(ellipse 70% 60% at 50% 45%, color-mix(in srgb, var(--ink) 78%, transparent), var(--ink) 92%),
-      color-mix(in srgb, var(--ink) 55%, transparent);
-  }
-  @keyframes slide {
-    0% { opacity: 0; transform: scale(1.06); }
-    6%, 25% { opacity: 0.3; }
-    31%, 100% { opacity: 0; transform: scale(1); }
-  }
-
   .ribbon { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
   .ribbon path { fill: none; stroke: var(--on); stroke-opacity: 0.07; stroke-width: 1; vector-effect: non-scaling-stroke; }
 
   .hero-in { display: grid; justify-items: center; gap: 14px; }
-  .hero-in :global(.hero-mark) { --jv-j: var(--on); width: clamp(88px, 22vw, 150px); height: auto; margin-bottom: 10px; }
+  .hero-in :global(.hero-mark) { --jv-j: var(--on); width: clamp(110px, min(34vw, 21vh), 210px); height: auto; margin-bottom: 14px; }
   .name {
     font: 500 clamp(2.5rem, 1.6rem + 4vw, 4.5rem)/1 var(--font-display); letter-spacing: -0.04em;
   }
@@ -160,7 +128,7 @@ const lines = Array.from({ length: N }, (_, i) => {
   }
   .dot {
     flex: none; width: 8px; height: 8px; border-radius: 50%;
-    background: var(--leaf-ink); box-shadow: 0 0 0 4px color-mix(in srgb, var(--leaf) 55%, transparent);
+    background: var(--orange); box-shadow: 0 0 0 4px color-mix(in srgb, var(--orange) 22%, transparent);
   }
   .lead {
     max-width: 30ch; font-family: var(--font-display); font-weight: 400;
@@ -191,8 +159,6 @@ const lines = Array.from({ length: N }, (_, i) => {
     .note { grid-column: 2; }
   }
   @media (prefers-reduced-motion: reduce) {
-    .slides :global(img) { animation: none; }
-    .slides :global(img:first-child) { opacity: 0.3; }
     .cue { animation: none; }
   }
 </style>

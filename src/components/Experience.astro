@@ -21,10 +21,27 @@ const mono: Record<string, string> = {};
 const employerLogo: Record<string, ImageMetadata> = { kaseya, geeks5g };
 const projectsById = new Map((await getCollection('projects')).map((p) => [p.id, p]));
 // The airline or company each bilingual role served.
-const client: Record<string, { name: string; logo: ImageMetadata }> = {
-  solvo: { name: 'Spirit Airlines', logo: spirit },
-  igt: { name: 'TravelPerk', logo: travelperk },
-  almacontact: { name: 'LATAM Airlines', logo: latam },
+type Link = { label: string; href: string };
+const client: Record<string, { name: string; logo: ImageMetadata; href: string; employer: string; tools: Link[] }> = {
+  solvo: {
+    name: 'Spirit Airlines', logo: spirit, href: 'https://www.spirit.com', employer: 'https://solvoglobal.com',
+    tools: [],
+  },
+  igt: {
+    name: 'TravelPerk', logo: travelperk, href: 'https://www.travelperk.com', employer: 'https://www.igtsolutions.com',
+    tools: [
+      { label: 'Amadeus GDS', href: 'https://amadeus.com' },
+      { label: 'NDC', href: 'https://www.iata.org/en/programs/airline-distribution/retailing/ndc/' },
+    ],
+  },
+  almacontact: {
+    name: 'LATAM Airlines', logo: latam, href: 'https://www.latamairlines.com', employer: 'https://www.almacontact.com.co',
+    tools: [
+      { label: 'Sabre GDS', href: 'https://www.sabre.com' },
+      { label: 'Sabre Red 360', href: 'https://www.sabre.com/products/sabre-red-360/' },
+      { label: 'Zendesk', href: 'https://www.zendesk.com' },
+    ],
+  },
 };
 ---
 <section id="experience" class="section experience" aria-labelledby="exp-title">
@@ -134,14 +151,24 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
       <ul class="clients">
         {earlier.map(({ id, data, Content }) => (
           <li class="client">
-            <div class="client-logo">
+            <a class="client-logo" href={client[id]?.href} target="_blank" rel="noopener" aria-label={`${client[id]?.name} website`}>
               {client[id] && <Image src={client[id].logo} alt={client[id].name} height={52} densities={[1, 2]} />}
-            </div>
+            </a>
             <div class="client-text">
               <p class="e-role">{data.role}</p>
-              <p class="e-meta">{client[id]?.name} account · via {data.company}</p>
+              <p class="e-meta">
+                <a href={client[id]?.href} target="_blank" rel="noopener">{client[id]?.name}</a> account · via
+                <a href={client[id]?.employer} target="_blank" rel="noopener">{data.company}</a>
+              </p>
               <p class="e-period">{data.period}</p>
               <div class="e-desc"><Content /></div>
+              {client[id]?.tools.length > 0 && (
+                <ul class="e-tools" aria-label="Tools used">
+                  {client[id].tools.map((t) => (
+                    <li><a href={t.href} target="_blank" rel="noopener">{t.label}<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg></a></li>
+                  ))}
+                </ul>
+              )}
             </div>
           </li>
         ))}
@@ -273,6 +300,17 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
   .e-period { color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; margin-top: 2px; }
   .e-desc { color: var(--muted); font-size: var(--step-small); margin-top: 8px; line-height: 1.5; }
   .e-desc :global(p) { margin: 0; }
+  .e-meta a { color: var(--ink); font-weight: 600; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--orange) 60%, transparent); text-decoration-thickness: 1.5px; text-underline-offset: 3px; }
+  .e-meta a:hover { text-decoration-color: var(--orange); }
+  .e-tools { list-style: none; margin: 12px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .e-tools a {
+    display: inline-flex; align-items: center; gap: 5px; min-height: 30px; padding: 0 11px; border-radius: 999px;
+    background: var(--surface); color: var(--ink); font-size: 0.8125rem; font-weight: 500; text-decoration: none;
+    transition: background-color 160ms ease-out, color 160ms ease-out;
+  }
+  .e-tools svg { opacity: 0.55; }
+  @media (hover: hover) { .e-tools a:hover { background: var(--ink); color: var(--bg); } }
+  .client-logo { border-radius: 8px; }
 
   /* Languages: one quiet row. */
   .langs {

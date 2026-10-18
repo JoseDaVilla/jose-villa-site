@@ -7,6 +7,7 @@ group: "more"
 order: 5
 color: "leaf"
 role: "Personal project"
+cover: "../../assets/projects/portal-entry/01.png"
 embedUrl: "https://portal-chi-five.vercel.app/"
 liveUrl: "https://portal-chi-five.vercel.app/"
 ---

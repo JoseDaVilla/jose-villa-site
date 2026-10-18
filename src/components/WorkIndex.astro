@@ -19,9 +19,13 @@ const label = (p: CollectionEntry<'projects'>) => p.data.when ?? String(p.data.y
           <li class="row">
             <a href={`#project-${p.id}`} data-open={p.id} data-preview={i}>
               <span class="thumb" aria-hidden="true">
-                {p.data.cover ? (
-                  <Image src={p.data.cover} alt="" widths={[360, 640]} sizes="80vw" format="webp" quality={76} loading="lazy" />
-                ) : (
+                {p.data.cover && <Image src={p.data.cover} alt="" widths={[360, 640]} sizes="80vw" format="webp" quality={76} loading="lazy" />}
+                {p.data.embedUrl ? (
+                  <span class:list={['thumb-art', { 'on-image': p.data.cover }]}>
+                    <span class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z" /></svg></span>
+                    <span class="thumb-label">Live 3D demo</span>
+                  </span>
+                ) : !p.data.cover && (
                   <span class="thumb-art">
                     <span class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z" /></svg></span>
                     <span class="thumb-label">{p.data.embedUrl ? 'Live 3D demo' : 'Live site'}</span>
@@ -40,7 +44,14 @@ const label = (p: CollectionEntry<'projects'>) => p.data.when ?? String(p.data.y
       <div class="preview" aria-hidden="true" data-preview-box>
         {projects.map((p, i) => (
           <div class="card" data-card={i}>
-            {p.data.cover ? (
+            {p.data.cover && p.data.embedUrl ? (
+              <span class="shot art on-image">
+                <Image src={p.data.cover} alt="" widths={[480, 720]} sizes="420px" format="webp" quality={78} loading="lazy" class="art-bg" />
+                <span class="play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5.5v13l10.5-6.5z" /></svg></span>
+                <span class="art-title">{p.data.title}</span>
+                <span class="thumb-label">Live 3D demo inside</span>
+              </span>
+            ) : p.data.cover ? (
               <Image src={p.data.cover} alt="" widths={[480, 720]} sizes="420px" format="webp" quality={78} loading="lazy" class="shot" />
             ) : (
               <span class="shot art">
@@ -80,6 +91,12 @@ const label = (p: CollectionEntry<'projects'>) => p.data.when ?? String(p.data.y
     background: var(--orange); color: #fff;
   }
   .play svg { width: 18px; height: 18px; margin-left: 2px; }
+  /* Live demos with a screenshot: the scene shows through a soft dark scrim. */
+  .on-image { background: linear-gradient(to top, color-mix(in srgb, #000 55%, transparent), color-mix(in srgb, #000 10%, transparent)); }
+  .art.on-image { position: absolute; isolation: isolate; color: #fff; }
+  .art.on-image :global(.art-bg) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+  .art.on-image::before { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgb(0 0 0 / 0.6), rgb(0 0 0 / 0.15)); }
+  .art.on-image .play, .art.on-image .art-title, .art.on-image .thumb-label { position: relative; color: #fff; }
   .thumb-label { font-size: 0.6875rem; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.8; }
   .num, .when {
     font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;

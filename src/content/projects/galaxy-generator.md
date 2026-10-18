@@ -7,6 +7,7 @@ group: "more"
 order: 4
 color: "blue"
 role: "Personal project"
+cover: "../../assets/projects/galaxy-generator/01.png"
 embedUrl: "https://galaxy-generator-animated-amber.vercel.app/"
 liveUrl: "https://galaxy-generator-animated-amber.vercel.app/"
 ---

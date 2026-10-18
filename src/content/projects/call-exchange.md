@@ -1,17 +1,27 @@
 ---
-title: "Call Exchange Platform"
-year: 2025
-summary: "Multi-tenant, white-label pay-per-call exchange integrated with eLocal, Ringba and other networks. Over $6k in daily profit."
-tags: ["Next.js", "Node.js", "Twilio", "AI", "Multi-tenant", "White-label"]
+title: "ProAxis Call Exchange"
+year: 2026
+summary: "Multi-tenant, white-label pay-per-call and lead exchange with real-time bidding, integrated with eLocal, Ringba and Twilio. Over $6k in daily profit."
+tags: ["Next.js", "Node.js", "Twilio", "AI", "RTB", "Multi-tenant"]
 group: "featured"
 order: 2
 color: "sky"
 role: "Lead engineer"
 cover: "../../assets/projects/call-exchange/01.png"
+gallery:
+  - "../../assets/projects/call-exchange/02.png"
+  - "../../assets/projects/call-exchange/03.png"
+  - "../../assets/projects/call-exchange/04.png"
+  - "../../assets/projects/call-exchange/05.png"
+liveUrl: "https://proaxis.ai"
 ---
 
-A pay-per-call exchange that buys and sells live inbound calls in real time. It grew out of the ProAxis ecosystem, but the call business needed its own architecture: telephony, routing and settlement at a volume and latency a marketing platform was never designed for. It now generates **more than $6,000 in profit every day**.
+**Turn every call into revenue.** ProAxis is now a full exchange for calls, leads and bookings: traffic is captured, routed to the buyer who pays most, verified by AI and paid out, whether the deal is per call, lead, appointment or action. It grew out of the original ProAxis agency platform, but buying and selling live calls needed its own architecture. It now generates **more than $6,000 in profit every day**.
 
-Inbound call inventory flows in from networks such as **eLocal** and **Ringba**, and through numbers provisioned on **Twilio**. A real-time routing engine scores each call and sends it to the buyer whose rules fit best: bids, daily caps, hours, geography, vertical and minimum call duration. **AI** helps qualify and classify calls so they reach the right buyer.
+**Real-time bidding on both sides.** Publishers send traffic by ping-post; the exchange pings each buyer's RTB endpoint and the best bid wins. The RTB logs show every request in both directions with win rate, error rate and latency, plus duplicates, late responses, throttles, caps, resenders and blocked buyers. **Lead RTB** runs the same live auction for form leads, with deliveries, returns, compliance and a lead-to-call view that hands sold leads a tracking number and offers their calls to the same buyer first.
 
-The platform is **multi-tenant and white-label**: each partner runs the exchange under its own brand, with its own buyers, campaigns, numbers and reporting, isolated from every other tenant. Built with Next.js on the front end and a Node.js service layer for telephony, routing and settlement.
+**Telephony and integrations.** Call inventory comes in from networks like **eLocal** and **Ringba** and through numbers provisioned on **Twilio**, billed against a per-tenant telephony wallet.
+
+**Multi-tenant and white-label.** Each partner runs its own exchange under its own brand (Standalone), with its own publishers, buyers, campaigns, phone numbers, onboarding, ID verification, contracts, Stripe payouts and reports. **Market Intelligence** turns calls, leads, RTB requests and unsold traffic into a demand map and market reports: demand score, unsold opportunities, average bid and suggested budget by city and vertical.
+
+Built with Next.js and a Node.js service layer for telephony, bidding, routing and settlement.

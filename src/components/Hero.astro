@@ -1,10 +1,13 @@
 ---
 import Waves from './Waves.astro';
+import Blob from './Blob.astro';
 import { site } from '../data/site';
 ---
 <section id="top" class="hero" aria-labelledby="hero-title">
   <div class="container hero-grid">
     <div class="scene" data-hero-scene aria-hidden="true">
+      <Blob class="backdrop" seed={11} fill="color-mix(in srgb, var(--sky) 55%, var(--bg))" points={7} vary={0.26} />
+      <Blob class="backdrop-2" seed={29} fill="var(--sun)" points={6} vary={0.3} />
       <!-- Flat "</>" shown until the 3D scene renders, and kept when motion is reduced or WebGL is unavailable. -->
       <svg class="poster" viewBox="0 0 400 320" focusable="false">
         <circle cx="70" cy="70" r="30" fill="var(--sky)" stroke="var(--ink)" stroke-width="5" />
@@ -24,7 +27,10 @@ import { site } from '../data/site';
 
     <div class="copy">
       <p class="who"><span class="dot" aria-hidden="true"></span><span>{site.role}<span class="status">, open to new projects</span></span></p>
-      <h1 id="hero-title">I build the web applications businesses run on.</h1>
+      <h1 id="hero-title">
+        I build the web applications businesses
+        <span class="accent">run on.<svg viewBox="0 0 200 20" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path d="M4 14 C 50 4, 120 2, 196 10" pathLength="1" /></svg></span>
+      </h1>
       <p class="lead">
         Years of delivery for marketing agencies give me a sharp focus on lead generation,
         conversion and automation: SaaS and B2B platforms, POS systems, and the internal tools
@@ -41,9 +47,9 @@ import { site } from '../data/site';
         </a>
       </div>
       <ul class="proof" aria-label="Highlights">
-        <li><b>30+</b> US locations run a POS I built</li>
-        <li><b>1000s</b> of leads validated daily</li>
-        <li><b>3+ yrs</b> shipping web and mobile</li>
+        <li style="--c: var(--orange)"><b>30+</b> US locations run a POS I built</li>
+        <li style="--c: var(--sun)"><b>1000s</b> of leads validated daily</li>
+        <li style="--c: var(--leaf)"><b>3+ yrs</b> shipping web and mobile</li>
       </ul>
     </div>
   </div>
@@ -77,6 +83,18 @@ import { site } from '../data/site';
   }
   .status { display: none; }
 
+  .accent { position: relative; display: inline-block; white-space: nowrap; isolation: isolate; }
+  .accent svg {
+    position: absolute; left: -2%; bottom: -0.04em; z-index: -1;
+    width: 104%; height: 0.32em; overflow: visible;
+  }
+  .accent path {
+    fill: none; stroke: var(--orange); stroke-width: 7; stroke-linecap: round;
+    stroke-dasharray: 1; stroke-dashoffset: 1;
+    animation: draw 700ms 350ms var(--ease-out) forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
   h1 { font-size: clamp(2.25rem, 1.1rem + 4.6vw, 2.75rem); line-height: 1.04; letter-spacing: -0.03em; max-width: 15ch; }
   .lead { color: var(--muted); font-size: 1.0625rem; line-height: 1.6; max-width: 52ch; }
 
@@ -91,14 +109,24 @@ import { site } from '../data/site';
   }
   .proof li { padding-inline: 12px; border-left: 1px solid var(--line); }
   .proof li:first-child { padding-left: 0; border-left: 0; }
+  .proof b::before {
+    content: ""; position: absolute; left: 0; top: 0; width: 22px; height: 6px;
+    border-radius: 999px; background: var(--c);
+  }
   .proof b {
-    display: block; margin-bottom: 4px;
+    position: relative; display: block; margin-bottom: 4px; padding-top: 14px;
     font: 600 1.5rem/1 var(--font-display); letter-spacing: -0.02em; color: var(--ink);
   }
 
   /* The 3D mark sits above the headline on phones, beside it on wide screens. */
   .scene { position: relative; order: -1; height: clamp(132px, 40vw, 220px); margin-inline: -8px; }
   .scene .poster, .scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  /* Flat organic backdrop that gives the mark a colour mass to sit on. */
+  .scene :global(.backdrop), .scene :global(.backdrop-2) {
+    position: absolute; left: 50%; top: 50%; aspect-ratio: 1; width: auto; overflow: visible;
+  }
+  .scene :global(.backdrop) { height: 88%; translate: -50% -50%; }
+  .scene :global(.backdrop-2) { height: 26%; translate: -250% 30%; }
   .scene .poster { padding: 4% 18%; transition: opacity 400ms ease-out; }
   .scene canvas { opacity: 0; transition: opacity 500ms ease-out; }
   .scene[data-ready] canvas { opacity: 1; }
@@ -124,6 +152,8 @@ import { site } from '../data/site';
     h1 { font-size: clamp(3rem, min(1.6rem + 4.4vw, 9.5vh), 5.5rem); line-height: 1.02; }
     .lead { font-size: var(--step-lead); }
     .scene { order: 1; height: auto; aspect-ratio: 1 / 1; margin: 0; }
+    .scene :global(.backdrop) { height: 74%; }
+    .scene :global(.backdrop-2) { height: 20%; translate: -235% 95%; }
     .scene .poster { padding: 6%; }
   }
 </style>

@@ -76,16 +76,14 @@ const lines = Array.from({ length: N }, (_, i) => {
 </section>
 
 <script>
-  // Cursor in the hero: the hairlines part around the pointer like a comb, a
-  // faint warm light follows it, and the mark's extruded side and shadow swing
-  // away from it as if the cursor were the light source. Fine pointers only.
+  // Cursor in the hero: the hairlines part around the pointer like a comb and a
+  // faint warm light follows it. Fine pointers only.
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   const ribbon = hero?.querySelector<SVGSVGElement>('.ribbon');
-  const mark = hero?.querySelector<SVGSVGElement>('.hero-mark');
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (hero && ribbon && mark && fine && !calm) {
+  if (hero && ribbon && fine && !calm) {
     // Same ribbon as the server render, kept as points so it can be bent.
     const W = 1440, H = 900, N = 26, S = 72;
     const base = Array.from({ length: N }, (_, i) => Array.from({ length: S + 1 }, (_, k) => {
@@ -94,16 +92,15 @@ const lines = Array.from({ length: N }, (_, i) => {
       return [u * W, H * 0.62 + Math.sin(u * Math.PI * 1.7 + 0.4) * 190 + (i - N / 2) * spread + Math.sin(u * 9 + i * 0.12) * 5];
     }));
     const paths = [...ribbon.querySelectorAll('path')];
-    const sides = [...mark.querySelectorAll<SVGGElement>('.jv-side')].map((g) => [g, Number(g.dataset.n)] as const);
 
-    const target = { x: 0, y: 0, f: 0, mx: 0, my: 0 }; // f: how strongly the lines part (0..1)
-    const now = { x: 0, y: 0, f: 0, mx: 0, my: 0 };
+    const target = { x: 0, y: 0, f: 0 }; // f: how strongly the lines part (0..1)
+    const now = { x: 0, y: 0, f: 0 };
     let raf = 0;
 
     const draw = () => {
       const k = 0.14;
       let moving = false;
-      for (const key of ['x', 'y', 'f', 'mx', 'my'] as const) {
+      for (const key of ['x', 'y', 'f'] as const) {
         const d = target[key] - now[key];
         if (Math.abs(d) > 0.001) moving = true;
         now[key] += d * k;
@@ -121,11 +118,6 @@ const lines = Array.from({ length: N }, (_, i) => {
           p.setAttribute('d', d);
         });
       }
-      // Depth swings away from the cursor: base direction (0.45, 0.55) per layer.
-      const ex = 0.45 - now.mx * 0.7, ey = 0.55 - now.my * 0.6;
-      for (const [g, n] of sides) g.setAttribute('transform', `translate(${(n * ex).toFixed(2)} ${(n * ey).toFixed(2)})`);
-      mark.style.setProperty('--sx', `${(-now.mx * 18).toFixed(1)}px`);
-      mark.style.setProperty('--sy', `${(22 - now.my * 10).toFixed(1)}px`);
       raf = moving ? requestAnimationFrame(draw) : 0;
     };
     const kick = () => { if (!raf) raf = requestAnimationFrame(draw); };
@@ -138,10 +130,6 @@ const lines = Array.from({ length: N }, (_, i) => {
         if (now.f < 0.01) { now.x = pt.x; now.y = pt.y; }
       }
       target.f = 1;
-      const r = mark.getBoundingClientRect();
-      const clamp = (v: number) => Math.max(-1, Math.min(1, v));
-      target.mx = clamp((e.clientX - (r.left + r.width / 2)) / (innerWidth / 2));
-      target.my = clamp((e.clientY - (r.top + r.height / 2)) / (innerHeight / 2));
       const hr = hero.getBoundingClientRect();
       hero.style.setProperty('--gx', `${e.clientX - hr.left}px`);
       hero.style.setProperty('--gy', `${e.clientY - hr.top}px`);
@@ -149,7 +137,7 @@ const lines = Array.from({ length: N }, (_, i) => {
       kick();
     });
     hero.addEventListener('pointerleave', () => {
-      target.f = 0; target.mx = 0; target.my = 0;
+      target.f = 0;
       hero.removeAttribute('data-pointer');
       kick();
     });
@@ -179,7 +167,7 @@ const lines = Array.from({ length: N }, (_, i) => {
 
   .hero-in { display: grid; justify-items: center; gap: 14px; }
   .hero-in :global(.hero-mark) { --jv-j: var(--on); width: clamp(110px, min(34vw, 21vh), 210px); height: auto; margin-bottom: 14px;
-    filter: drop-shadow(var(--sx, 0px) var(--sy, 22px) 26px rgb(0 0 0 / 0.45)); }
+    filter: drop-shadow(0 22px 26px rgb(0 0 0 / 0.45)); }
   .name {
     font: 500 clamp(2.5rem, 1.6rem + 4vw, 4.5rem)/1 var(--font-display); letter-spacing: -0.04em;
   }

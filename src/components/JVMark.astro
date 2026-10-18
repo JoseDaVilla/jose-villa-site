@@ -30,13 +30,13 @@ const layers = depth ? Array.from({ length: 8 }, (_, i) => 8 - i) : [];
       </defs>
       <g class="jv-block">
         {layers.map((n) => (
-          <path class="jv-side" data-n={n} transform={`translate(${n * 0.45} ${n * 0.55})`} d="M74 0H98L64 100H42Z" style="fill: var(--jv-v-side, #9E4317)" />
+          <path class="jv-side" transform={`translate(${n * 0.45} ${n * 0.55})`} d="M74 0H98L64 100H42Z" style="fill: var(--jv-v-side, #9E4317)" />
         ))}
         <path class="jv-arm" d="M74 0H98L64 100H42Z" fill={`url(#${id}-lit)`} />
       </g>
       <g class="jv-block">
         {layers.map((n) => (
-          <path class="jv-side" data-n={n} transform={`translate(${n * 0.45} ${n * 0.55})`} d="M14 0H38L56.25 73H32.25ZM56 72A24 24 0 0 1 8 72Z" style="fill: var(--jv-j-side, #8F887E)" />
+          <path class="jv-side" transform={`translate(${n * 0.45} ${n * 0.55})`} d="M14 0H38L56.25 73H32.25ZM56 72A24 24 0 0 1 8 72Z" style="fill: var(--jv-j-side, #8F887E)" />
         ))}
         <path class="jv-stem" d="M14 0H38L56.25 73H32.25Z" style="fill: var(--jv-j, var(--ink))" />
         <path class="jv-bowl" d="M56 72A24 24 0 0 1 8 72Z" style="fill: var(--jv-j, var(--ink))" />

@@ -4,31 +4,6 @@ import { site } from '../data/site';
 ---
 <section id="top" class="hero" aria-labelledby="hero-title">
   <div class="container hero-grid">
-    <div class="copy">
-      <p class="who">{site.name}, {site.role}</p>
-      <h1 id="hero-title">I build the web applications businesses run on.</h1>
-      <p class="lead">
-        Years of delivery for marketing agencies give me a sharp focus on lead generation,
-        conversion and automation: SaaS and B2B platforms, POS systems, and the internal tools
-        that keep operations moving.
-      </p>
-      <div class="ctas">
-        <a class="btn" href="#work">
-          See selected work
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </a>
-        <a class="btn btn--ghost" href={site.cv} download>
-          Download CV
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></svg>
-        </a>
-      </div>
-      <ul class="proof" aria-label="Highlights">
-        <li><b>30+ US locations</b> run a POS I built</li>
-        <li><b>Thousands of leads</b> validated every day</li>
-        <li><b>Lead engineer</b> from architecture to launch</li>
-      </ul>
-    </div>
-
     <div class="scene" data-hero-scene aria-hidden="true">
       <!-- Flat "</>" shown until the 3D scene renders, and kept when motion is reduced or WebGL is unavailable. -->
       <svg class="poster" viewBox="0 0 400 320" focusable="false">
@@ -46,6 +21,31 @@ import { site } from '../data/site';
       </svg>
       <canvas></canvas>
     </div>
+
+    <div class="copy">
+      <p class="who"><span class="dot" aria-hidden="true"></span><span>{site.role}<span class="status">, open to new projects</span></span></p>
+      <h1 id="hero-title">I build the web applications businesses run on.</h1>
+      <p class="lead">
+        Years of delivery for marketing agencies give me a sharp focus on lead generation,
+        conversion and automation: SaaS and B2B platforms, POS systems, and the internal tools
+        that keep operations moving.
+      </p>
+      <div class="ctas">
+        <a class="btn" href="#work">
+          See selected work
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+        <a class="btn btn--ghost" href={site.cv} download>
+          Download CV
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v12M6 11l6 6 6-6M5 20h14"/></svg>
+        </a>
+      </div>
+      <ul class="proof" aria-label="Highlights">
+        <li><b>30+</b> US locations run a POS I built</li>
+        <li><b>1000s</b> of leads validated daily</li>
+        <li><b>3+ yrs</b> shipping web and mobile</li>
+      </ul>
+    </div>
   </div>
 
   <Waves
@@ -59,31 +59,72 @@ import { site } from '../data/site';
 </section>
 
 <style>
-  .hero { position: relative; padding-top: clamp(20px, min(6vw, 6vh), 72px); overflow: hidden; }
-  .hero-grid { display: grid; gap: clamp(24px, 4vw, 40px); padding-bottom: clamp(16px, 4vw, 48px); }
-  .copy { display: grid; gap: clamp(14px, 2.4vh, 20px); min-width: 0; }
-  .who { font-weight: 600; font-size: var(--step-lead); }
-  /* Width-based scale, capped by viewport height so the CTAs stay in the first screen on laptops. */
-  h1 { font-size: clamp(2.5rem, min(1.6rem + 5.6vw, 10.5vh), 6rem); line-height: 1.02; max-width: 15ch; }
-  .lead { color: var(--muted); font-size: var(--step-lead); max-width: 52ch; }
-  .ctas { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
-  .proof {
-    display: flex; flex-wrap: wrap; gap: 10px 28px; margin: 12px 0 0; padding: 20px 0 0;
-    list-style: none; border-top: 1px solid var(--line); color: var(--muted); font-size: var(--step-small);
-  }
-  .proof b { color: var(--ink); }
+  /* Mobile first: a compact mark, then the message, full-width actions and a stat row. */
+  .hero { position: relative; padding-top: 8px; overflow: hidden; }
+  .hero-grid { display: grid; gap: 4px; padding-bottom: 12px; }
+  .copy { display: grid; gap: 16px; min-width: 0; }
 
-  /* 3D mark: a band under the copy on phones, beside it on wide screens. */
-  .scene { position: relative; height: clamp(240px, 62vw, 360px); }
+  .who {
+    justify-self: start;
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 7px 14px 7px 12px; border-radius: 999px;
+    background: var(--surface);
+    font-size: var(--step-small); font-weight: 600; line-height: 1.3;
+  }
+  .dot {
+    flex: none; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--leaf-ink); box-shadow: 0 0 0 4px color-mix(in srgb, var(--leaf) 60%, transparent);
+  }
+  .status { display: none; }
+
+  h1 { font-size: clamp(2.25rem, 1.1rem + 4.6vw, 2.75rem); line-height: 1.04; letter-spacing: -0.03em; max-width: 15ch; }
+  .lead { color: var(--muted); font-size: 1.0625rem; line-height: 1.6; max-width: 52ch; }
+
+  .ctas { display: grid; gap: 10px; margin-top: 4px; }
+  .ctas .btn { width: 100%; }
+
+  .proof {
+    display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 8px 0 0; padding: 18px 0 0; list-style: none;
+    border-top: 1px solid var(--line);
+    color: var(--muted); font-size: 0.8125rem; line-height: 1.35;
+  }
+  .proof li { padding-inline: 12px; border-left: 1px solid var(--line); }
+  .proof li:first-child { padding-left: 0; border-left: 0; }
+  .proof b {
+    display: block; margin-bottom: 4px;
+    font: 600 1.5rem/1 var(--font-display); letter-spacing: -0.02em; color: var(--ink);
+  }
+
+  /* The 3D mark sits above the headline on phones, beside it on wide screens. */
+  .scene { position: relative; order: -1; height: clamp(132px, 40vw, 220px); margin-inline: -8px; }
   .scene .poster, .scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
-  .scene .poster { padding: 6%; transition: opacity 400ms ease-out; }
+  .scene .poster { padding: 4% 18%; transition: opacity 400ms ease-out; }
   .scene canvas { opacity: 0; transition: opacity 500ms ease-out; }
   .scene[data-ready] canvas { opacity: 1; }
   .scene[data-ready] .poster { opacity: 0; }
 
+  @media (min-width: 560px) {
+    .status { display: inline; }
+    .ctas { display: flex; flex-wrap: wrap; gap: 12px; }
+    .ctas .btn { width: auto; }
+    .proof { font-size: var(--step-small); }
+    .proof li { padding-inline: 20px; }
+    .proof b { font-size: 1.875rem; }
+  }
+
   @media (min-width: 960px) {
-    .hero-grid { grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr); align-items: center; }
-    .scene { height: auto; aspect-ratio: 1 / 1; }
+    .hero { padding-top: clamp(20px, min(5vw, 5vh), 64px); }
+    .hero-grid {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      align-items: center; gap: 40px; padding-bottom: 40px;
+    }
+    .copy { gap: clamp(14px, 2.4vh, 22px); }
+    /* Width-based scale, capped by viewport height so the CTAs stay in the first screen on laptops. */
+    h1 { font-size: clamp(3rem, min(1.6rem + 4.4vw, 9.5vh), 5.5rem); line-height: 1.02; }
+    .lead { font-size: var(--step-lead); }
+    .scene { order: 1; height: auto; aspect-ratio: 1 / 1; margin: 0; }
+    .scene .poster { padding: 6%; }
   }
 </style>
 

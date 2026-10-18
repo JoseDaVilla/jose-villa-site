@@ -11,12 +11,12 @@ import {
 export const PALETTE = {
   bg: '#FBF7F2',
   paper: '#FFFDF8',
-  orange: '#FF8A3D',
-  blue: '#2B59C3',
-  sun: '#FFCB57',
-  sky: '#9CCBFF',
-  leaf: '#9FD6A8',
-  ink: '#24211D',
+  orange: '#F47B3B',
+  blue: '#2A4BB8',
+  sun: '#F7C54A',
+  sky: '#A9C6F2',
+  leaf: '#A9D3B0',
+  ink: '#1F1B17',
 } as const;
 
 export interface Pointer {

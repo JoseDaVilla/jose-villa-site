@@ -1,20 +1,22 @@
 ---
-// The JV monogram. A geometric J (stem + half-disc bowl) and a V whose left
-// arm is a blade that fades in from nothing, both on a 22-unit stroke and a
-// shared baseline. Colours come from --jv-j and --jv-v (ink and orange by
-// default); `id` keeps the gradient unique when the mark is on a page twice.
+// The JV monogram. One gesture: the V's left arm slants down and turns into
+// the J's half-disc bowl, while the V's right arm falls in as a blade that
+// fades out where it crosses the J (the Sentra-style fold). Colours come from
+// --jv-j and --jv-v (ink and orange by default); `id` keeps the gradient
+// unique when the mark is on a page more than once.
 interface Props { id?: string; class?: string; title?: string }
 const { id = 'jv', class: className, title } = Astro.props;
 ---
-<svg class:list={['jv-mark', className]} viewBox="0 0 108 86" role={title ? 'img' : undefined} aria-label={title} aria-hidden={title ? undefined : 'true'} focusable="false">
+<svg class:list={['jv-mark', className]} viewBox="8 0 90 100" role={title ? 'img' : undefined} aria-label={title} aria-hidden={title ? undefined : 'true'} focusable="false">
   <defs>
-    <linearGradient id={`${id}-blade`} gradientUnits="userSpaceOnUse" x1="52" y1="0" x2="74" y2="0">
-      <stop offset="0" style="stop-color: var(--jv-v, var(--orange)); stop-opacity: 0" />
-      <stop offset="0.85" style="stop-color: var(--jv-v, var(--orange))" />
+    <linearGradient id={`${id}-blade`} gradientUnits="userSpaceOnUse" x1="88" y1="4" x2="50" y2="96">
+      <stop offset="0" style="stop-color: var(--jv-v, var(--orange))" />
+      <stop offset="0.55" style="stop-color: var(--jv-v, var(--orange)); stop-opacity: 0.55" />
+      <stop offset="1" style="stop-color: var(--jv-v, var(--orange)); stop-opacity: 0" />
     </linearGradient>
   </defs>
-  <path class="jv-stem" d="M24 0H46V63H24Z" style="fill: var(--jv-j, var(--ink))" />
-  <path class="jv-bowl" d="M46 63A23 23 0 0 1 0 63Z" style="fill: var(--jv-j, var(--ink))" />
-  <path class="jv-blade" d="M50 0H72L78 86Z" fill={`url(#${id}-blade)`} />
-  <path class="jv-arm" d="M86 0H108L78 86Z" style="fill: var(--jv-v, var(--orange))" />
+  <!-- The stem runs 1 unit into the bowl so no hairline shows at the join. -->
+  <path class="jv-stem" d="M14 0H38L56.25 73H32.25Z" style="fill: var(--jv-j, var(--ink))" />
+  <path class="jv-bowl" d="M56 72A24 24 0 0 1 8 72Z" style="fill: var(--jv-j, var(--ink))" />
+  <path class="jv-arm" d="M74 0H98L64 100H42Z" fill={`url(#${id}-blade)`} />
 </svg>

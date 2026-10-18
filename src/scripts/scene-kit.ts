@@ -3,10 +3,11 @@
 // a render loop that only runs while the scene is on screen, and a pointer
 // model that blends an idle sway with cursor-follow on hover.
 import {
-  AmbientLight, BackSide, Color, DataTexture, DirectionalLight, ExtrudeGeometry, Group, IcosahedronGeometry,
-  Mesh, MeshBasicMaterial, MeshToonMaterial, NearestFilter, PerspectiveCamera, RedFormat,
-  Scene, Shape, WebGLRenderer, type BufferGeometry, type Material, type Object3D,
+  ACESFilmicToneMapping, AmbientLight, BackSide, Color, DataTexture, DirectionalLight, ExtrudeGeometry, Group,
+  IcosahedronGeometry, Mesh, MeshBasicMaterial, MeshToonMaterial, NearestFilter, PCFSoftShadowMap, PerspectiveCamera,
+  PMREMGenerator, RedFormat, Scene, Shape, WebGLRenderer, type BufferGeometry, type Material, type Object3D,
 } from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
 export const PALETTE = {
   bg: '#FBF7F2',
@@ -31,6 +32,8 @@ export interface Pointer {
 export interface Stage {
   scene: Scene;
   camera: PerspectiveCamera;
+  /** The key light; casts soft shadows in the `soft` look. */
+  key: DirectionalLight;
   pointer: Pointer;
   toon: (hex: string) => MeshToonMaterial;
   /** Mesh plus an ink outline, like a drawn illustration. */
@@ -42,7 +45,11 @@ export interface Stage {
   dispose: () => void;
 }
 
-export function createStage(host: HTMLElement, opts: { cameraZ: number; fov?: number }): Stage {
+/**
+ * `soft` swaps the flat toon look for a studio render: image-based lighting
+ * from a neutral room, filmic tone mapping and soft shadows.
+ */
+export function createStage(host: HTMLElement, opts: { cameraZ: number; fov?: number; soft?: boolean }): Stage {
   const canvas = host.querySelector('canvas')!;
   const renderer = new WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'low-power' });
   renderer.setClearColor(0x000000, 0);
@@ -52,10 +59,28 @@ export function createStage(host: HTMLElement, opts: { cameraZ: number; fov?: nu
   const camera = new PerspectiveCamera(opts.fov ?? 30, 1, 0.1, 100);
   camera.position.set(0, 0, opts.cameraZ);
 
-  scene.add(new AmbientLight(0xffffff, 1.15));
   const key = new DirectionalLight(0xffffff, 1.6);
   key.position.set(-3, 4, 6);
   scene.add(key);
+  let envTex: { dispose: () => void } | null = null;
+  if (opts.soft) {
+    renderer.toneMapping = ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = PCFSoftShadowMap;
+    const pmrem = new PMREMGenerator(renderer);
+    const env = pmrem.fromScene(new RoomEnvironment(), 0.04);
+    scene.environment = env.texture;
+    envTex = env.texture;
+    pmrem.dispose();
+    key.intensity = 1.4;
+    key.castShadow = true;
+    key.shadow.mapSize.set(1024, 1024);
+    key.shadow.radius = 8;
+    key.shadow.bias = -0.0005;
+  } else {
+    scene.add(new AmbientLight(0xffffff, 1.15));
+  }
 
   // Three-step ramp: shadow, mid, lit. NearestFilter keeps the bands hard.
   const ramp = new DataTexture(new Uint8Array([110, 190, 255]), 3, 1, RedFormat);
@@ -129,7 +154,7 @@ export function createStage(host: HTMLElement, opts: { cameraZ: number; fov?: nu
   const onVis = () => (document.hidden ? stop() : start());
 
   return {
-    scene, camera, pointer, toon, inked, track,
+    scene, camera, key, pointer, toon, inked, track,
     run(fn) {
       update = fn;
       io = new IntersectionObserver(([e]) => (e.isIntersecting && !document.hidden ? start() : stop()));
@@ -145,6 +170,7 @@ export function createStage(host: HTMLElement, opts: { cameraZ: number; fov?: nu
       geos.forEach((g) => g.dispose());
       mats.forEach((m) => m.dispose());
       ramp.dispose();
+      envTex?.dispose();
       renderer.dispose();
     },
   };

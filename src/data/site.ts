@@ -21,11 +21,11 @@ export const site = {
   ],
 } as const;
 
-/** Flat brand colours a project can be painted with (see global.css). */
+/** Sand tones the project bands and dialogs are painted with (one per colour key). */
 export const projectColors = {
-  orange: 'var(--orange)',
-  sky: 'var(--sky)',
-  sun: 'var(--sun)',
-  leaf: 'var(--leaf)',
-  blue: 'var(--blue)',
+  orange: '#E9E1D5',
+  sky: '#E1D8CB',
+  sun: '#ECE5DA',
+  leaf: '#DDD3C5',
+  blue: '#E6DED2',
 } as const;

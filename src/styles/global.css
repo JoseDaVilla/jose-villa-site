@@ -2,8 +2,9 @@
 @import "@fontsource-variable/figtree/wght.css";
 
 /*
-  Direction "Capas": flat colour, organic shapes, no gradients or glows.
-  One action colour (blue); the warm/cool shape colours carry the brand.
+  Flat colour and organic shapes on a restrained palette: cream and sand
+  neutrals, ink for text and actions, orange as the single accent. The old
+  sky/leaf/sun/blue tokens survive as sand tones so shapes keep their layers.
 */
 :root {
   --bg: #FBF7F2;
@@ -14,11 +15,11 @@
   --line: #E2D9CC;
 
   --orange: #F47B3B;
-  --sun: #F7C54A;
-  --sky: #A9C6F2;
-  --leaf: #A9D3B0;
+  --sun: #E9E0D3;
+  --sky: #E3DACD;
+  --leaf: #DCD2C4;
   --leaf-ink: #2E8A4C;
-  --blue: #2A4BB8;
+  --blue: #1F1B17;
   --on-blue: #FFFFFF;
 
   --font-display: "Rubik Variable", "Rubik", system-ui, sans-serif;
@@ -82,7 +83,7 @@ p { margin: 0; text-wrap: pretty; }
 img, svg { display: block; max-width: 100%; }
 a { color: inherit; text-decoration-thickness: 2px; text-underline-offset: 4px; }
 
-::selection { background: var(--sun); color: var(--ink); }
+::selection { background: color-mix(in srgb, var(--orange) 30%, var(--bg)); color: var(--ink); }
 
 :focus-visible {
   outline: 3px solid var(--blue);

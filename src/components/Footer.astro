@@ -9,8 +9,7 @@ const year = new Date().getFullYear();
     seed={77}
     height={120}
     layers={[
-      { fill: 'var(--sun)', base: 30, amp: 16 },
-      { fill: 'var(--orange)', base: 62, amp: 16 },
+      { fill: 'var(--sun)', base: 40, amp: 16 },
       { fill: 'var(--ink)', base: 96, amp: 10, steps: 7 },
     ]}
     class="footer-waves"
@@ -46,7 +45,7 @@ const year = new Date().getFullYear();
   .links { display: flex; flex-wrap: wrap; gap: 6px 22px; list-style: none; margin: 0; padding: 0; }
   .links a { text-decoration-color: var(--orange); font-weight: 500; display: inline-flex; min-height: 44px; align-items: center; }
   .copy { color: color-mix(in srgb, var(--bg) 72%, transparent); font-size: var(--step-small); }
-  .footer :global(:focus-visible) { outline-color: var(--sun); }
+  .footer :global(:focus-visible) { outline-color: var(--orange); }
   @media (min-width: 860px) {
     .cols { grid-template-columns: 1fr auto; }
     .copy { grid-column: 1 / -1; }

@@ -86,7 +86,7 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
           <div class="role-body">
             <div class="role-head">
               {employerLogo[id]
-                ? <span class="brand"><Image src={employerLogo[id]} alt={data.company} height={40} densities={[1, 2]} /></span>
+                ? <span class="brand"><Image src={employerLogo[id]} alt={data.company} height={60} densities={[1, 2]} /></span>
                 : <span class="mono" aria-hidden="true">{mono[id] ?? data.company[0]}</span>}
               <div>
                 <h3>{data.role}</h3>
@@ -130,7 +130,7 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
         {earlier.map(({ id, data, Content }) => (
           <li class="client">
             <div class="client-logo">
-              {client[id] && <Image src={client[id].logo} alt={client[id].name} height={56} densities={[1, 2]} />}
+              {client[id] && <Image src={client[id].logo} alt={client[id].name} height={52} densities={[1, 2]} />}
             </div>
             <div class="client-text">
               <p class="e-role">{data.role}</p>
@@ -211,8 +211,8 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
   }
 
   .role-head { display: flex; align-items: center; gap: 16px; }
-  .brand { display: flex; align-items: center; justify-content: flex-start; flex: none; width: 84px; height: 48px; }
-  .brand :global(img) { max-width: 100%; max-height: 46px; width: auto; height: auto; object-fit: contain; }
+  .brand { display: flex; align-items: center; justify-content: flex-start; flex: none; width: 112px; height: 60px; }
+  .brand :global(img) { max-width: 100%; max-height: 58px; width: auto; height: auto; object-fit: contain; }
   .mono {
     display: grid; place-items: center; flex: none; width: 96px; height: 56px; border-radius: 16px;
     background: var(--ink); color: var(--bg);
@@ -225,11 +225,11 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
   .extra-sub { color: var(--muted); margin: 6px 0 22px; max-width: 52ch; }
   .clients { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
   .client {
-    display: grid; grid-template-columns: 92px minmax(0, 1fr); gap: 16px; align-items: start;
+    display: grid; grid-template-columns: 108px minmax(0, 1fr); gap: 16px; align-items: start;
     padding: 18px; background: var(--surface); border-radius: 22px;
   }
-  .client-logo { display: flex; align-items: center; height: 56px; }
-  .client-logo :global(img) { max-width: 100%; max-height: 34px; width: auto; height: auto; object-fit: contain; }
+  .client-logo { display: flex; align-items: center; height: 64px; }
+  .client-logo :global(img) { width: 100%; max-height: 44px; height: auto; object-fit: contain; object-position: left center; }
   .e-role { font-weight: 600; line-height: 1.3; }
   .e-meta { margin-top: 4px; color: var(--muted); font-size: var(--step-small); }
   .e-period { color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; margin-top: 2px; }
@@ -251,8 +251,8 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
   @media (min-width: 900px) {
     .clients { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
     .client { grid-template-columns: 1fr; align-content: start; padding: 22px; gap: 12px; }
-    .client-logo { height: 48px; }
-    .client-logo :global(img) { max-height: 38px; }
+    .client-logo { height: 64px; }
+    .client-logo :global(img) { width: 160px; max-height: 52px; }
   }
 
   @media (min-width: 860px) {

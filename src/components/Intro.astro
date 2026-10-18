@@ -4,8 +4,8 @@ import JVMark from './JVMark.astro';
 
 // First-visit intro: the JV monogram is constructed on its own grid (Sentra
 // style): the stem slides down its diagonal, the bowl swings in, the blade
-// falls; then the name rises, then the mark flies into the nav logo while the
-// screen fades away.
+// falls; then the name rises. On exit the cream screen fades into the dark
+// hero while the mark settles onto the hero's own mark and turns light.
 const letters = [...site.name];
 // Construction lines, in the mark's own units (viewBox 8 0 90 100).
 const vx = [8, 14, 32, 38, 56, 74, 98];
@@ -45,7 +45,7 @@ const hy = [0, 72, 100];
 <style is:global>
   .splash { display: none; }
   .intro-on body { overflow: hidden; }
-  .intro-mark .nav .logo-mark { opacity: 0; }
+  .intro-played .hero-mark { animation: none !important; }
 
   .intro-on .splash, .splash.leaving {
     position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; cursor: pointer;
@@ -55,6 +55,8 @@ const hy = [0, 72, 100];
   .splash .plate { position: relative; width: min(36vw, 190px, 26vh * 0.9); margin-bottom: 30px; }
   .splash .mark, .splash .guides { display: block; width: 100%; height: auto; overflow: visible; }
   .splash .mark { position: relative; transform-origin: 0 0; }
+  .splash .mark path { transition: fill 700ms ease-out; }
+  .splash.leaving .mark { --jv-j: #F4EFE7; }
   .splash .guides { position: absolute; inset: 0; }
   .splash .guides line {
     stroke: var(--orange); stroke-opacity: 0.45; stroke-width: 1px; vector-effect: non-scaling-stroke;
@@ -119,6 +121,7 @@ const hy = [0, 72, 100];
     let timer = 0;
 
     const done = () => {
+      root.classList.add('intro-played');
       root.classList.remove('intro-mark');
       intro.remove();
     };
@@ -128,8 +131,8 @@ const hy = [0, 72, 100];
       ended = true;
       clearTimeout(timer);
 
-      // Measure the nav logo while the nav is still at rest, then let the page in.
-      const target = document.querySelector('.nav .logo-mark')?.getBoundingClientRect();
+      // Measure the hero's mark while it is still at rest, then let the page in.
+      const target = document.querySelector('.hero-mark')?.getBoundingClientRect();
       intro.classList.add('leaving');
       root.classList.remove('intro-on');
 
@@ -138,7 +141,7 @@ const hy = [0, 72, 100];
       intro.querySelectorAll('.guides, .name, .role, .skip').forEach((el) => fade(el, 260));
 
       // The backdrop fades while the mark keeps flying, so the mark is the last thing to land.
-      const bg = intro.animate([{ backgroundColor: getComputedStyle(intro).backgroundColor }, { backgroundColor: 'transparent' }], { duration: 650, delay: 280, fill: 'forwards' }).finished;
+      const bg = intro.animate([{ backgroundColor: getComputedStyle(intro).backgroundColor }, { backgroundColor: 'transparent' }], { duration: 800, delay: 150, fill: 'forwards' }).finished;
       const runs: Promise<unknown>[] = [bg];
       if (target && target.width) {
         const r = mark.getBoundingClientRect();

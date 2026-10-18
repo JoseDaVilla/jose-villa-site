@@ -36,8 +36,11 @@
   --radius-lg: 28px;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 
+  --nav-h: 64px;
+
   color-scheme: light;
 }
+@media (min-width: 820px) { :root { --nav-h: 72px; } }
 
 *, *::before, *::after { box-sizing: border-box; }
 

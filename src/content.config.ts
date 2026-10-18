@@ -38,6 +38,8 @@ const experience = defineCollection({
     order: z.number(),
     group: z.enum(['current', 'earlier']),
     stack: z.array(z.string()).optional(),
+    /** Ids of projects (src/content/projects) built in this role. */
+    projects: z.array(z.string()).optional(),
   }),
 });
 

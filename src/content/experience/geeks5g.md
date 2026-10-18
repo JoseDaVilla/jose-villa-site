@@ -6,6 +6,7 @@ url: "https://geeks5g.com"
 order: 2
 group: "current"
 stack: ["Next.js", "React", "React Native", "Node.js", "Python", "n8n"]
+projects: ["proaxis", "spa-pos", "verifylead", "elc", "hammercrest", "legal-doc-automation"]
 ---
 
 - Design, build, deploy and maintain web platforms and client dashboards.

@@ -6,6 +6,7 @@ import latam from '../assets/logos/latam.png';
 import spirit from '../assets/logos/spirit.png';
 import travelperk from '../assets/logos/travelperk.png';
 import kaseya from '../assets/logos/kaseya.png';
+import geeks5g from '../assets/logos/geeks5g-mark.png';
 import flagCo from '../assets/logos/co.svg';
 import flagUs from '../assets/logos/us.svg';
 
@@ -15,8 +16,9 @@ const current = withContent.filter((e) => e.data.group === 'current');
 const earlier = withContent.filter((e) => e.data.group === 'earlier');
 
 // Brand marks. Employers without a public logo we can ship get a neutral monogram.
-const mono: Record<string, string> = { geeks5g: 'G5' };
-const employerLogo: Record<string, ImageMetadata> = { kaseya };
+const mono: Record<string, string> = {};
+const employerLogo: Record<string, ImageMetadata> = { kaseya, geeks5g };
+const projectsById = new Map((await getCollection('projects')).map((p) => [p.id, p]));
 // The airline or company each bilingual role served.
 const client: Record<string, { name: string; logo: ImageMetadata }> = {
   solvo: { name: 'Spirit Airlines', logo: spirit },
@@ -99,6 +101,23 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
                 {data.stack.map((t) => <li>{t}</li>)}
               </ul>
             )}
+            {data.projects && (
+              <div class="built">
+                <p class="built-title">Projects from this role</p>
+                <ul class="built-list">
+                  {data.projects.map((pid) => projectsById.get(pid)).filter((p) => !!p).map((p) => (
+                    <li>
+                      <a href={`#project-${p!.id}`} data-open={p!.id}>
+                        <span class="built-thumb" aria-hidden="true">
+                          {p!.data.cover && <Image src={p!.data.cover} alt="" widths={[120, 240]} sizes="80px" format="webp" quality={70} loading="lazy" />}
+                        </span>
+                        <span class="built-name">{p!.data.title}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
           </div>
         </li>
       ))}
@@ -171,6 +190,25 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
     background: var(--orange); border-radius: 52% 48% 40% 60% / 60% 42% 58% 40%;
   }
   .role .tags { margin-top: 16px; }
+
+  /* Projects shipped in a role: small screenshot chips that open the project dialog. */
+  .built { margin-top: 22px; }
+  .built-title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  .built-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .built-list a {
+    display: flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 12px 6px 6px;
+    border-radius: 14px; background: var(--surface); text-decoration: none;
+    transition: background-color 160ms ease-out;
+  }
+  .built-thumb { flex: none; width: 44px; height: 32px; border-radius: 8px; overflow: hidden; background: var(--paper); }
+  .built-thumb :global(img) { width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+  .built-name { font-weight: 600; font-size: 0.8125rem; line-height: 1.25; min-width: 0; }
+  @media (hover: hover) { .built-list a:hover { background: var(--line); } .built-list a:hover .built-name { color: var(--orange); } }
+  @media (min-width: 640px) {
+    .built-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .built-thumb { width: 56px; height: 40px; }
+    .built-name { font-size: 0.875rem; }
+  }
 
   .role-head { display: flex; align-items: center; gap: 16px; }
   .brand {

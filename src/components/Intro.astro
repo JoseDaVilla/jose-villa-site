@@ -2,14 +2,10 @@
 import { site } from '../data/site';
 import JVMark from './JVMark.astro';
 
-// First-visit intro: the JV monogram is constructed on its own grid (Sentra
-// style): the stem slides down its diagonal, the bowl swings in, the blade
-// falls; then the name rises. On exit the cream screen fades into the dark
-// hero while the mark settles onto the hero's own mark and turns light.
+// Intro: on the hero's own ink, particles stream in from every edge and
+// assemble into the JV monogram, the solid mark takes over and the name rises.
+// On exit the screen dissolves into the hero while the mark lands on the hero's.
 const letters = [...site.name];
-// Construction lines, in the mark's own units (viewBox 8 0 90 100).
-const vx = [8, 14, 32, 38, 56, 74, 98];
-const hy = [0, 72, 100];
 ---
 <script is:inline>
   // Decide before first paint, so the page never flashes under the intro.
@@ -28,12 +24,9 @@ const hy = [0, 72, 100];
 </script>
 
 <div class="splash" data-intro aria-hidden="true">
+  <canvas class="dust"></canvas>
   <div class="stage">
     <div class="plate">
-      <svg class="guides" viewBox="8 0 90 100" focusable="false">
-        {hy.map((y, i) => <line class="gh" style={`--i: ${i}`} x1="-400" x2="500" y1={y} y2={y} />)}
-        {vx.map((x, i) => <line class="gv" style={`--i: ${i}`} x1={x} x2={x} y1="-300" y2="400" />)}
-      </svg>
       <JVMark id="jv-intro" class="mark" />
     </div>
     <p class="name">
@@ -50,58 +43,42 @@ const hy = [0, 72, 100];
   .intro-played .hero-mark { animation: none !important; }
 
   .intro-on .splash, .splash.leaving {
+    --on: #F2F0EB;
     position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; cursor: pointer;
-    background: var(--bg); overflow: hidden;
+    background: var(--ink); overflow: hidden;
   }
-  .splash .stage { display: grid; justify-items: center; gap: 6px; text-align: center; }
+  .splash .dust { position: absolute; inset: 0; width: 100%; height: 100%; transition: opacity 500ms ease-out; }
+  .splash .stage { position: relative; display: grid; justify-items: center; gap: 6px; text-align: center; }
   .splash .plate { position: relative; width: min(36vw, 190px, 26vh * 0.9); margin-bottom: 30px; }
-  .splash .mark, .splash .guides { display: block; width: 100%; height: auto; overflow: visible; }
-  .splash .mark { position: relative; transform-origin: 0 0; }
-  .splash .mark path { transition: fill 700ms ease-out; }
-  .splash.leaving .mark { --jv-j: #F2F0EB; }
-  .splash .guides { position: absolute; inset: 0; }
-  .splash .guides line {
-    stroke: var(--orange); stroke-opacity: 0.45; stroke-width: 1px; vector-effect: non-scaling-stroke;
-  }
+  .splash .mark { --jv-j: var(--on); display: block; width: 100%; height: auto; overflow: visible; transform-origin: 0 0; opacity: 0; }
   .splash .name {
     overflow: hidden;
-    font: 500 clamp(2rem, 1.4rem + 3vw, 3.5rem)/1.1 var(--font-display); letter-spacing: -0.04em; color: var(--ink);
+    font: 500 clamp(2rem, 1.4rem + 3vw, 3.5rem)/1.1 var(--font-display); letter-spacing: -0.04em; color: var(--on);
   }
   .splash .name span { display: inline-block; transform: translateY(130%); }
   .splash .role {
-    color: var(--muted); font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: color-mix(in srgb, var(--on) 70%, transparent); font-weight: 600; font-size: 0.8125rem; letter-spacing: 0.18em; text-transform: uppercase;
     opacity: 0;
   }
   .splash .skip {
     position: absolute; right: max(16px, env(safe-area-inset-right)); bottom: calc(16px + env(safe-area-inset-bottom));
     padding: 10px 8px; border: 0; background: none; cursor: pointer;
-    color: var(--muted); font: 600 0.875rem/1 var(--font-body);
+    color: color-mix(in srgb, var(--on) 60%, transparent); font: 600 0.875rem/1 var(--font-body);
     opacity: 0; transition: opacity 300ms ease-out 600ms;
   }
 
-  /* Construction. Every part starts hidden and plays once .play is set. */
-  .splash .mark path { transform-box: view-box; }
-  .splash .gh { transform-box: fill-box; transform-origin: center; transform: scaleX(0); }
-  .splash .gv { transform-box: fill-box; transform-origin: center; transform: scaleY(0); }
-  .splash .jv-stem { transform: translate(-18px, -72px); opacity: 0; }
-  .splash .jv-bowl { transform-origin: 32px 72px; transform: rotate(-180deg); opacity: 0; }
-  .splash .jv-arm { clip-path: inset(0 0 100% 0); }
-
+  /* Once the particles have landed the solid mark takes over, then the name rises. */
   .splash.play .skip { opacity: 1; }
-  .splash.play .gh { animation: jv-line 700ms calc(var(--i) * 70ms) cubic-bezier(0.6, 0, 0.2, 1) forwards; }
-  .splash.play .gv { animation: jv-line 700ms calc(120ms + var(--i) * 45ms) cubic-bezier(0.6, 0, 0.2, 1) forwards; }
-  .splash.play .jv-stem { animation: jv-in 560ms 420ms cubic-bezier(0.7, 0, 0.2, 1) forwards; }
-  .splash.play .jv-bowl { animation: jv-in 640ms 820ms cubic-bezier(0.3, 1.25, 0.4, 1) forwards; }
-  .splash.play .jv-arm { animation: jv-wipe 760ms 1.1s cubic-bezier(0.6, 0, 0.2, 1) forwards; }
-  .splash.play .name span { animation: jv-in 640ms calc(1.45s + var(--i) * 40ms) cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
-  .splash.play .role { animation: jv-track 700ms 1.85s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+  .splash.formed .mark { animation: jv-in 420ms ease-out forwards; }
+  .splash.formed .dust { opacity: 0; }
+  .splash.formed .name span { animation: jv-rise 640ms calc(150ms + var(--i) * 40ms) cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+  .splash.formed .role { animation: jv-track 700ms 550ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
 
-  /* Skipping jumps the construction to its end state before the exit plays. */
-  .splash.fast * { animation-duration: 0.01ms !important; animation-delay: 0s !important; }
+  /* Skipping jumps straight to the end state before the exit plays. */
+  .splash.fast * { animation-duration: 0.01ms !important; animation-delay: 0s !important; transition: none !important; }
 
-  @keyframes jv-line { to { transform: none; } }
-  @keyframes jv-in { to { transform: none; opacity: 1; } }
-  @keyframes jv-wipe { to { clip-path: inset(0); } }
+  @keyframes jv-in { to { opacity: 1; } }
+  @keyframes jv-rise { to { transform: none; } }
   @keyframes jv-track {
     from { opacity: 0; letter-spacing: 0.4em; }
     to { opacity: 1; letter-spacing: 0.18em; }
@@ -109,6 +86,98 @@ const hy = [0, 72, 100];
 </style>
 
 <script>
+  // Particles fly in from beyond the edges as short streaks and land on points
+  // sampled from the mark's own shapes; resolves once the last one has landed.
+  function assemble(canvas: HTMLCanvasElement, mark: SVGSVGElement, stopped: () => boolean) {
+    const dpr = Math.min(devicePixelRatio || 1, 2);
+    const W = innerWidth, H = innerHeight;
+    canvas.width = W * dpr; canvas.height = H * dpr;
+    const ctx = canvas.getContext('2d')!;
+    ctx.scale(dpr, dpr);
+
+    // Rasterise the mark where it sits and sample a grid of points from it.
+    const box = mark.getBoundingClientRect();
+    const k = box.width / 90;
+    const off = document.createElement('canvas');
+    off.width = Math.ceil(box.width); off.height = Math.ceil(box.height);
+    const o = off.getContext('2d', { willReadFrequently: true })!;
+    o.setTransform(k, 0, 0, k, -8 * k, 0);
+    o.fillStyle = '#f00';
+    o.fill(new Path2D('M14 0H38L56.25 73H32.25Z')); o.fill(new Path2D('M56 72A24 24 0 0 1 8 72Z'));
+    const blade = o.createLinearGradient(88, 4, 50, 96);
+    blade.addColorStop(0, 'rgba(0,0,255,1)'); blade.addColorStop(0.55, 'rgba(0,0,255,.55)'); blade.addColorStop(1, 'rgba(0,0,255,0)');
+    o.fillStyle = blade;
+    o.fill(new Path2D('M74 0H98L64 100H42Z'));
+    const px = o.getImageData(0, 0, off.width, off.height).data;
+
+    const css = getComputedStyle(canvas);
+    const on = css.getPropertyValue('--on').trim() || '#F2F0EB';
+    const orange = css.getPropertyValue('--orange').trim() || '#F47B3B';
+    const step = Math.max(3, Math.round(box.width / 40));
+    const R = Math.hypot(W, H) * 0.6;
+    const cx = W / 2, cy = H / 2;
+    type P = { x: number; y: number; sx: number; sy: number; bend: number; t0: number; dur: number; c: string; a: number; size: number; land: boolean };
+    const ps: P[] = [];
+    const launch = (x: number, y: number, c: string, a: number, land: boolean, t0: number, dur: number) => {
+      const ang = Math.random() * Math.PI * 2, dist = R * (0.75 + Math.random() * 0.5);
+      ps.push({ x, y, sx: cx + Math.cos(ang) * dist, sy: cy + Math.sin(ang) * dist, bend: (Math.random() - 0.5) * 0.5,
+        t0, dur, c, a, size: land ? step * 0.42 : 1, land });
+    };
+    for (let y = step / 2; y < off.height; y += step) {
+      for (let x = step / 2; x < off.width; x += step) {
+        const i = (Math.round(y) * off.width + Math.round(x)) * 4;
+        const alpha = px[i + 3] / 255;
+        if (alpha < 0.12) continue;
+        const isJ = px[i] > px[i + 2];
+        // Points nearer the centre of the mark land last, so it fills in from the outside.
+        const d = Math.hypot(x - off.width / 2, y - off.height / 2) / off.width;
+        launch(box.left + x, box.top + y, isJ ? on : orange, isJ ? 1 : alpha, true, 80 + Math.random() * 520 - d * 200, 950 + Math.random() * 450);
+      }
+    }
+    // Dust that streams through the centre and never lands.
+    for (let n = 0; n < Math.round(W * H / 14000); n++) {
+      launch(cx + (Math.random() - 0.5) * W * 0.5, cy + (Math.random() - 0.5) * H * 0.5, Math.random() < 0.4 ? orange : on, 0.5, false, Math.random() * 900, 900 + Math.random() * 700);
+    }
+    const end = Math.max(...ps.filter((p) => p.land).map((p) => p.t0 + p.dur));
+    const ease = (t: number) => 1 - Math.pow(1 - t, 3);
+    const at = (p: P, t: number) => {
+      const e = ease(t), dx = p.x - p.sx, dy = p.y - p.sy, s = Math.sin(Math.PI * e) * p.bend;
+      return [p.sx + dx * e - dy * s, p.sy + dy * e + dx * s];
+    };
+
+    return new Promise<void>((resolve) => {
+      const start = performance.now();
+      const frame = (now: number) => {
+        if (stopped()) return resolve();
+        const el = now - start;
+        ctx.clearRect(0, 0, W, H);
+        ctx.lineCap = 'round';
+        for (const p of ps) {
+          const t = (el - p.t0) / p.dur;
+          if (t <= 0 || (!p.land && t >= 1)) continue;
+          const tc = Math.min(t, 1);
+          const [x, y] = at(p, tc);
+          const fade = p.land ? Math.min(1, t * 3) : Math.sin(Math.PI * tc);
+          ctx.globalAlpha = p.a * fade;
+          ctx.strokeStyle = ctx.fillStyle = p.c;
+          if (tc < 1) {
+            // A short tail behind the head, capped so fast particles read as dots, not lines.
+            const [tx, ty] = at(p, Math.max(0, tc - 0.03));
+            const len = Math.hypot(x - tx, y - ty), cap = Math.min(1, 22 / (len || 1));
+            ctx.lineWidth = 1;
+            ctx.globalAlpha *= 0.55;
+            ctx.beginPath(); ctx.moveTo(x + (tx - x) * cap, y + (ty - y) * cap); ctx.lineTo(x, y); ctx.stroke();
+            ctx.globalAlpha /= 0.55;
+          }
+          ctx.beginPath(); ctx.arc(x, y, p.land ? p.size * (0.6 + 0.4 * tc) : 1, 0, Math.PI * 2); ctx.fill();
+        }
+        if (el < end + 120) requestAnimationFrame(frame);
+        else resolve();
+      };
+      requestAnimationFrame(frame);
+    });
+  }
+
   const intro = document.querySelector<HTMLElement>('[data-intro]');
   const root = document.documentElement;
 
@@ -139,7 +208,7 @@ const hy = [0, 72, 100];
 
       const fade = (el: Element, ms: number, delay = 0) =>
         el.animate([{ opacity: getComputedStyle(el).opacity }, { opacity: 0 }], { duration: ms, delay, fill: 'forwards' }).finished;
-      intro.querySelectorAll('.guides, .name, .role, .skip').forEach((el) => fade(el, 260));
+      intro.querySelectorAll('.dust, .name, .role, .skip').forEach((el) => fade(el, 260));
 
       // The backdrop fades while the mark keeps flying, so the mark is the last thing to land.
       const bg = intro.animate([{ backgroundColor: getComputedStyle(intro).backgroundColor }, { backgroundColor: 'transparent' }], { duration: 800, delay: 150, fill: 'forwards' }).finished;
@@ -157,14 +226,20 @@ const hy = [0, 72, 100];
     };
 
     const skip = () => {
-      intro.classList.add('fast');
+      intro.classList.add('fast', 'formed');
       requestAnimationFrame(finish);
     };
 
     // Wait for the display font so the name doesn't reflow mid-animation (max 1.5s).
     Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1500))]).then(() => {
-      requestAnimationFrame(() => intro.classList.add('play'));
-      timer = window.setTimeout(finish, 2700);
+      if (ended) return;
+      intro.classList.add('play');
+      const landed = assemble(intro.querySelector('canvas')!, mark, () => ended);
+      landed.then(() => {
+        if (ended) return;
+        intro.classList.add('formed');
+        timer = window.setTimeout(finish, 1250);
+      });
     });
 
     intro.addEventListener('click', skip);

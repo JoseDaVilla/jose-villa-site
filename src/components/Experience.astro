@@ -110,11 +110,11 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
               <div class="built">
                 <p class="built-title">Projects from this role</p>
                 <ul class="built-list">
-                  {data.projects.map((pid) => projectsById.get(pid)).filter((p) => !!p).map((p) => (
-                    <li>
+                  {data.projects.map((pid) => projectsById.get(pid)).filter((p) => !!p).map((p, i, all) => (
+                    <li class:list={{ wide: (all.length % 3 === 2 && i < 2) || (all.length % 3 === 1 && i === 0) && all.length > 1, full: all.length === 1 }}>
                       <a href={`#project-${p!.id}`} data-open={p!.id}>
                         <span class="built-thumb" aria-hidden="true">
-                          {p!.data.cover && <Image src={p!.data.cover} alt="" widths={[240, 480]} sizes="(min-width: 640px) 220px, 45vw" format="webp" quality={70} loading="lazy" />}
+                          {p!.data.cover && <Image src={p!.data.cover} alt="" widths={[320, 640, 960]} sizes="(min-width: 640px) 420px, 90vw" format="webp" quality={72} loading="lazy" />}
                         </span>
                         <span class="built-name">{p!.data.title}</span>
                       </a>
@@ -217,24 +217,34 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
   /* Projects shipped in a role: small screenshot chips that open the project dialog. */
   .built { margin-top: 22px; }
   .built-title { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+  /* Bento grid on six columns: rows of three, and when the count leaves two over,
+     the first two run wide so every row is full. */
   .built-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .built-list li { display: grid; }
   .built-list a {
-    display: grid; gap: 8px; padding: 6px 6px 10px; height: 100%;
-    border-radius: 14px; background: var(--paper); text-decoration: none; box-shadow: var(--shadow-card);
+    display: grid; grid-template-rows: auto 1fr; gap: 0; overflow: hidden;
+    border-radius: 16px; background: var(--paper); text-decoration: none; box-shadow: var(--shadow-card);
     transition: box-shadow 200ms ease-out, transform 200ms var(--ease-out);
   }
-  /* The whole screenshot, letterboxed on stone: no cropping. */
-  .built-thumb {
-    display: grid; place-items: center; aspect-ratio: 16 / 9; padding: 10px;
-    border-radius: 10px; overflow: hidden; background: var(--surface);
-  }
+  .built-thumb { display: block; aspect-ratio: 2.2 / 1; overflow: hidden; background: var(--surface); border-bottom: 1px solid var(--line); }
   .built-thumb :global(img) {
-    width: 100%; height: auto; max-height: 100%; object-fit: contain;
-    border-radius: 4px; box-shadow: 0 4px 12px -6px color-mix(in srgb, var(--ink) 35%, transparent);
+    display: block; width: 100%; height: 100%; object-fit: cover; object-position: top center;
+    transition: transform 500ms var(--ease-out);
   }
-  .built-name { padding: 0 6px; font-weight: 600; font-size: 0.875rem; line-height: 1.25; }
-  @media (hover: hover) { .built-list a:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); } .built-list a:hover .built-name { color: var(--orange); } }
-  @media (min-width: 640px) { .built-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  .built-name { padding: 10px 12px 12px; font-weight: 600; font-size: 0.875rem; line-height: 1.25; }
+  @media (hover: hover) {
+    .built-list a:hover { box-shadow: var(--shadow-card-hover); transform: translateY(-2px); }
+    .built-list a:hover .built-name { color: var(--orange); }
+    .built-list a:hover .built-thumb :global(img) { transform: scale(1.03); }
+  }
+  @media (max-width: 639px) { .built-list li:first-child:nth-last-child(odd) { grid-column: 1 / -1; } }
+  @media (min-width: 640px) {
+    .built-list { grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; }
+    .built-list li { grid-column: span 2; }
+    .built-list li.wide { grid-column: span 3; }
+    .built-list li.full { grid-column: 1 / -1; }
+    .built-name { font-size: 0.9375rem; padding: 12px 14px 14px; }
+  }
 
   .role-head { display: flex; align-items: center; gap: 16px; }
   .brand { display: flex; align-items: center; justify-content: center; flex: none; width: 76px; height: 44px; }

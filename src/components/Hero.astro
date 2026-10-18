@@ -4,23 +4,23 @@ import { Image } from 'astro:assets';
 import { site } from '../data/site';
 import nowShot from '../assets/projects/call-exchange/02.png';
 
+import { ribbons, ribbonPoints, toPath, RW, RH } from '../lib/ribbon';
+
 // Dark, logo-led hero (the intro hands its mark over to this one): the JV
-// monogram, the name and one line, on ink with a faint hairline ribbon.
-const W = 1440, H = 900, N = 26;
-const lines = Array.from({ length: N }, (_, i) => {
-  let d = '';
-  for (let k = 0; k <= 72; k++) {
-    const u = k / 72;
-    const spread = 8 * (0.18 + Math.abs(Math.cos(u * Math.PI * 1.35 + 0.5)));
-    const y = H * 0.62 + Math.sin(u * Math.PI * 1.7 + 0.4) * 190 + (i - N / 2) * spread + Math.sin(u * 9 + i * 0.12) * 5;
-    d += `${k ? 'L' : 'M'}${(u * W).toFixed(1)} ${y.toFixed(1)}`;
-  }
-  return d;
-});
+// monogram, the name and one line, on ink with two drifting hairline ribbons
+// and a faint construction dot grid behind the mark.
+const bands = ribbons.map((r) => Array.from({ length: r.n }, (_, i) => toPath(ribbonPoints(r, i, 0))));
+// A few strands in each band carry the accent.
+const accent = (b: number, i: number) => (b === 0 ? i === 9 || i === 17 : i === 5);
 ---
 <section id="top" class="hero" aria-labelledby="hero-title" data-hero>
-  <svg class="ribbon" viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
-    {lines.map((d) => <path d={d} />)}
+  <div class="dots" aria-hidden="true"></div>
+  <svg class="ribbon" viewBox={`0 0 ${RW} ${RH}`} preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+    {bands.map((paths, b) => (
+      <g class={`band band-${b}`}>
+        {paths.map((d, i) => <path class:list={{ hot: accent(b, i) }} d={d} />)}
+      </g>
+    ))}
   </svg>
   <div class="glow" aria-hidden="true"></div>
 
@@ -76,71 +76,65 @@ const lines = Array.from({ length: N }, (_, i) => {
 </section>
 
 <script>
-  // Cursor in the hero: the hairlines part around the pointer like a comb and a
-  // faint warm light follows it. Fine pointers only.
+  import { ribbons, ribbonPoints } from '../lib/ribbon';
+
+  // The ribbons drift slowly while the hero is on screen; with a mouse, the
+  // hairlines also part around the pointer like a comb and a faint warm light
+  // follows it. Reduced motion keeps the still render.
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   const ribbon = hero?.querySelector<SVGSVGElement>('.ribbon');
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (hero && ribbon && fine && !calm) {
-    // Same ribbon as the server render, kept as points so it can be bent.
-    const W = 1440, H = 900, N = 26, S = 72;
-    const base = Array.from({ length: N }, (_, i) => Array.from({ length: S + 1 }, (_, k) => {
-      const u = k / S;
-      const spread = 8 * (0.18 + Math.abs(Math.cos(u * Math.PI * 1.35 + 0.5)));
-      return [u * W, H * 0.62 + Math.sin(u * Math.PI * 1.7 + 0.4) * 190 + (i - N / 2) * spread + Math.sin(u * 9 + i * 0.12) * 5];
-    }));
-    const paths = [...ribbon.querySelectorAll('path')];
-
+  if (hero && ribbon && !calm) {
+    const bands = [...ribbon.querySelectorAll('.band')].map((g) => [...g.querySelectorAll('path')]);
     const target = { x: 0, y: 0, f: 0 }; // f: how strongly the lines part (0..1)
     const now = { x: 0, y: 0, f: 0 };
-    let raf = 0;
+    const sig2 = 2 * 130 * 130;
+    const start = performance.now();
+    let raf = 0, visible = false, last = 0;
+    // Phones get ~30fps; the drift is slow enough that it doesn't show.
+    const minGap = fine ? 0 : 30;
 
-    const draw = () => {
-      const k = 0.14;
-      let moving = false;
-      for (const key of ['x', 'y', 'f'] as const) {
-        const d = target[key] - now[key];
-        if (Math.abs(d) > 0.001) moving = true;
-        now[key] += d * k;
-      }
-      if (now.f > 0.002 || target.f > 0) {
-        const sig2 = 2 * 130 * 130;
-        paths.forEach((p, i) => {
-          let d = '';
-          for (const [x, y] of base[i]) {
-            const dx = x - now.x, dy = y - now.y;
-            const push = Math.exp(-(dx * dx + dy * dy) / sig2) * 70 * now.f;
-            const ny = y + Math.sign(dy || 1) * push;
-            d += `${d ? 'L' : 'M'}${x.toFixed(1)} ${ny.toFixed(1)}`;
-          }
-          p.setAttribute('d', d);
-        });
-      }
-      raf = moving ? requestAnimationFrame(draw) : 0;
+    const draw = (ts: number) => {
+      raf = visible && !document.hidden ? requestAnimationFrame(draw) : 0;
+      if (ts - last < minGap) return;
+      last = ts;
+      for (const key of ['x', 'y', 'f'] as const) now[key] += (target[key] - now[key]) * 0.14;
+      const t = (ts - start) / 1000;
+      ribbons.forEach((r, b) => bands[b].forEach((p, i) => {
+        let d = '';
+        for (const [x, y] of ribbonPoints(r, i, t)) {
+          const dx = x - now.x, dy = y - now.y;
+          const ny = now.f > 0.002 ? y + Math.tanh(dy / 40) * Math.exp(-(dx * dx + dy * dy) / sig2) * 70 * now.f : y;
+          d += `${d ? 'L' : 'M'}${x.toFixed(1)} ${ny.toFixed(1)}`;
+        }
+        p.setAttribute('d', d);
+      }));
     };
-    const kick = () => { if (!raf) raf = requestAnimationFrame(draw); };
+    const kick = () => { if (!raf && visible && !document.hidden) raf = requestAnimationFrame(draw); };
+    new IntersectionObserver(([e]) => { visible = e.isIntersecting; kick(); }).observe(hero);
+    document.addEventListener('visibilitychange', kick);
 
-    hero.addEventListener('pointermove', (e) => {
-      const ctm = ribbon.getScreenCTM();
-      if (ctm) {
-        const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(ctm.inverse());
-        target.x = pt.x; target.y = pt.y;
-        if (now.f < 0.01) { now.x = pt.x; now.y = pt.y; }
-      }
-      target.f = 1;
-      const hr = hero.getBoundingClientRect();
-      hero.style.setProperty('--gx', `${e.clientX - hr.left}px`);
-      hero.style.setProperty('--gy', `${e.clientY - hr.top}px`);
-      hero.setAttribute('data-pointer', '');
-      kick();
-    });
-    hero.addEventListener('pointerleave', () => {
-      target.f = 0;
-      hero.removeAttribute('data-pointer');
-      kick();
-    });
+    if (fine) {
+      hero.addEventListener('pointermove', (e) => {
+        const ctm = ribbon.getScreenCTM();
+        if (ctm) {
+          const pt = new DOMPoint(e.clientX, e.clientY).matrixTransform(ctm.inverse());
+          target.x = pt.x; target.y = pt.y;
+          if (now.f < 0.01) { now.x = pt.x; now.y = pt.y; }
+        }
+        target.f = 1;
+        const hr = hero.getBoundingClientRect();
+        hero.style.setProperty('--gx', `${e.clientX - hr.left}px`);
+        hero.style.setProperty('--gy', `${e.clientY - hr.top}px`);
+        hero.setAttribute('data-pointer', '');
+      });
+      hero.addEventListener('pointerleave', () => {
+        target.f = 0;
+        hero.removeAttribute('data-pointer');
+      });
+    }
   }
 </script>
 
@@ -163,7 +157,17 @@ const lines = Array.from({ length: N }, (_, i) => {
     background: radial-gradient(420px circle at var(--gx, 50%) var(--gy, 50%), color-mix(in srgb, var(--orange) 9%, transparent), transparent 70%);
   }
   .hero[data-pointer] .glow { opacity: 1; }
-  .ribbon path { fill: none; stroke: var(--on); stroke-opacity: 0.07; stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .ribbon path { fill: none; stroke: var(--on); stroke-opacity: 0.12; stroke-width: 1; vector-effect: non-scaling-stroke; }
+  .band-1 path { stroke-opacity: 0.07; }
+  .ribbon path.hot { stroke: var(--orange); stroke-opacity: 0.55; }
+  .band-1 path.hot { stroke-opacity: 0.35; }
+  /* Construction dot grid, strongest behind the mark and gone by the edges. */
+  .dots {
+    position: absolute; inset: 0; z-index: -1; pointer-events: none;
+    background: radial-gradient(circle, color-mix(in srgb, var(--on) 16%, transparent) 1px, transparent 1.5px) center / 26px 26px;
+    -webkit-mask: radial-gradient(ellipse 46% 52% at 50% 38%, #000, transparent);
+    mask: radial-gradient(ellipse 46% 52% at 50% 38%, #000, transparent);
+  }
 
   .hero-in { display: grid; justify-items: center; gap: 14px; }
   .hero-in :global(.hero-mark) { --jv-j: var(--on); width: clamp(110px, min(34vw, 21vh), 210px); height: auto; margin-bottom: 14px;

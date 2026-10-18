@@ -2,22 +2,22 @@
 @import "@fontsource-variable/figtree/wght.css";
 
 /*
-  Flat colour and organic shapes on a restrained palette: cream and sand
+  Flat colour and organic shapes on a restrained palette: bone and stone
   neutrals, ink for text and actions, orange as the single accent. The old
   sky/leaf/sun/blue tokens survive as sand tones so shapes keep their layers.
 */
 :root {
-  --bg: #FBF7F2;
-  --surface: #F1EADF;
-  --paper: #FFFDF8;
+  --bg: #F2F0EB;
+  --surface: #E8E5DE;
+  --paper: #FAF9F6;
   --ink: #1F1B17;
-  --muted: #5A5249;
-  --line: #E2D9CC;
+  --muted: #57534D;
+  --line: #DAD6CD;
 
   --orange: #F47B3B;
-  --sun: #E9E0D3;
-  --sky: #E3DACD;
-  --leaf: #DCD2C4;
+  --sun: #E4E0D7;
+  --sky: #E4E0D7;
+  --leaf: #DDD9D0;
   --leaf-ink: #2E8A4C;
   --blue: #1F1B17;
   --on-blue: #FFFFFF;

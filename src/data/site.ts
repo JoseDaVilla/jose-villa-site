@@ -21,11 +21,11 @@ export const site = {
   ],
 } as const;
 
-/** Sand tones the project bands and dialogs are painted with (one per colour key). */
+/** Stone tones the project bands and dialogs are painted with (one per colour key). */
 export const projectColors = {
-  orange: '#E9E1D5',
-  sky: '#E1D8CB',
-  sun: '#ECE5DA',
-  leaf: '#DDD3C5',
-  blue: '#E6DED2',
+  orange: '#E8E5DE',
+  sky: '#E2DED6',
+  sun: '#EBE8E2',
+  leaf: '#DEDAD2',
+  blue: '#E5E2DB',
 } as const;

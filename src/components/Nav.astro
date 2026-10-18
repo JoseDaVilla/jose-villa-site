@@ -104,9 +104,9 @@ import JVMark from './JVMark.astro';
   /* Over the dark hero: no fill, light text, and no logo (the hero carries it). */
   .logo { transition: opacity 260ms ease-out, visibility 0s; }
   .nav[data-dark]:not([data-open]) .logo { opacity: 0; visibility: hidden; transition: opacity 200ms ease-out, visibility 0s 200ms; }
-  .nav[data-dark] .nav-cta { background: #F4EFE7; color: var(--ink); }
-  .nav[data-dark] .menu-btn { background: color-mix(in srgb, #F4EFE7 14%, transparent); color: #F4EFE7; }
-  .nav[data-dark] :global(:focus-visible) { outline-color: #F4EFE7; }
+  .nav[data-dark] .nav-cta { background: #F2F0EB; color: var(--ink); }
+  .nav[data-dark] .menu-btn { background: color-mix(in srgb, #F2F0EB 14%, transparent); color: #F2F0EB; }
+  .nav[data-dark] :global(:focus-visible) { outline-color: #F2F0EB; }
 
   @media (max-width: 359px) { .nav-cta { display: none; } }
 
@@ -132,8 +132,8 @@ import JVMark from './JVMark.astro';
     nav a[aria-current="true"]::after { transform: translateX(-50%) scaleX(1); }
     .logo { margin-right: 0; }
     .nav-cta { margin-left: 0; padding: 0 20px; font-size: 1rem; }
-    .nav[data-dark] nav a { color: color-mix(in srgb, #F4EFE7 72%, transparent); }
-    .nav[data-dark] nav a:hover { color: #F4EFE7; }
+    .nav[data-dark] nav a { color: color-mix(in srgb, #F2F0EB 72%, transparent); }
+    .nav[data-dark] nav a:hover { color: #F2F0EB; }
   }
 </style>
 

@@ -1,6 +1,7 @@
 ---
 import Waves from './Waves.astro';
 import Blob from './Blob.astro';
+import AppMark from './AppMark.astro';
 import { site } from '../data/site';
 ---
 <section id="top" class="hero" aria-labelledby="hero-title">
@@ -8,20 +9,8 @@ import { site } from '../data/site';
     <div class="scene" data-hero-scene aria-hidden="true">
       <Blob class="backdrop" seed={11} fill="color-mix(in srgb, var(--sky) 55%, var(--bg))" points={7} vary={0.26} />
       <Blob class="backdrop-2" seed={29} fill="var(--sun)" points={6} vary={0.3} />
-      <!-- Flat "</>" shown until the 3D scene renders, and kept when motion is reduced or WebGL is unavailable. -->
-      <svg class="poster" viewBox="0 0 400 320" focusable="false">
-        <circle cx="70" cy="70" r="30" fill="var(--sky)" stroke="var(--ink)" stroke-width="5" />
-        <circle cx="338" cy="252" r="34" fill="var(--leaf)" stroke="var(--ink)" stroke-width="5" />
-        <circle cx="330" cy="72" r="16" fill="var(--orange)" stroke="var(--ink)" stroke-width="5" />
-        <g fill="none" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M150 110 L95 160 L150 210" stroke="var(--ink)" stroke-width="44" />
-          <path d="M150 110 L95 160 L150 210" stroke="var(--orange)" stroke-width="34" />
-          <path d="M222 92 L178 228" stroke="var(--ink)" stroke-width="44" />
-          <path d="M222 92 L178 228" stroke="var(--blue)" stroke-width="34" />
-          <path d="M250 110 L305 160 L250 210" stroke="var(--ink)" stroke-width="44" />
-          <path d="M250 110 L305 160 L250 210" stroke="var(--sun)" stroke-width="34" />
-        </g>
-      </svg>
+      <!-- Flat twin of the 3D window, shown until the scene renders and kept when motion is reduced or WebGL is unavailable. -->
+      <AppMark class="poster" />
       <canvas></canvas>
     </div>
 
@@ -130,18 +119,18 @@ import { site } from '../data/site';
   }
 
   /* The 3D mark sits above the headline on phones, beside it on wide screens. */
-  .scene { position: relative; order: -1; height: clamp(132px, 40vw, 220px); margin-inline: -8px; }
-  .scene .poster, .scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .scene { position: relative; order: -1; height: clamp(168px, 50vw, 260px); margin-inline: -8px; }
+  .scene :global(.poster), .scene canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
   /* Flat organic backdrop that gives the mark a colour mass to sit on. */
   .scene :global(.backdrop), .scene :global(.backdrop-2) {
     position: absolute; left: 50%; top: 50%; aspect-ratio: 1; width: auto; overflow: visible;
   }
   .scene :global(.backdrop) { height: 88%; translate: -50% -50%; }
   .scene :global(.backdrop-2) { height: 26%; translate: -250% 30%; }
-  .scene .poster { padding: 0 12%; transition: opacity 400ms ease-out; }
+  .scene :global(.poster) { padding: 0 12%; transition: opacity 400ms ease-out; }
   .scene canvas { opacity: 0; transition: opacity 500ms ease-out; }
   .scene[data-ready] canvas { opacity: 1; }
-  .scene[data-ready] .poster { opacity: 0; }
+  .scene[data-ready] :global(.poster) { opacity: 0; }
 
   @media (min-width: 560px) {
     .status { display: inline; }
@@ -165,7 +154,7 @@ import { site } from '../data/site';
     .scene { order: 1; height: auto; aspect-ratio: 1 / 1; margin: 0; }
     .scene :global(.backdrop) { height: 74%; }
     .scene :global(.backdrop-2) { height: 20%; translate: -235% 95%; }
-    .scene .poster { padding: 0; }
+    .scene :global(.poster) { padding: 0; }
   }
 </style>
 

@@ -48,6 +48,6 @@ Copy `.env.example` to `.env` locally, and set the same variables in Vercel:
 
 - Palette and type scale live as CSS variables at the top of `src/styles/global.css`.
 - Shapes come from `src/lib/shapes.ts` (seeded, generated at build time, zero client JS).
-- Fonts: Rubik (display) and Figtree (body), self-hosted via Fontsource. The social card uses static TTF instances in `src/assets/fonts/` (SIL OFL).
-- The social card background is `src/assets/og-bg.png`; regenerate it with `node scripts/og-background.mjs` (needs Playwright).
+- Fonts: Rubik (display) and Figtree (body), self-hosted via Fontsource.
+- The social card is `public/og/default.png`, drawn in the hero's look; regenerate it with `node scripts/og-card.mjs` (needs Playwright).
 - `.npmrc` sets `legacy-peer-deps` to work around an npm peer-resolution bug with this dependency set.

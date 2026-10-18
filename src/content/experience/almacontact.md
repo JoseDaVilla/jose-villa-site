@@ -6,4 +6,4 @@ order: 5
 group: "earlier"
 ---
 
-LATAM Airlines account. Managed bookings, changes, cancellations and baggage claims using Sabre GDS, Sabre Red 360 and Zendesk.
+Managed bookings, changes, cancellations and baggage claims using Sabre GDS, Sabre Red 360 and Zendesk.

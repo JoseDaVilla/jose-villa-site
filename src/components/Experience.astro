@@ -1,11 +1,30 @@
 ---
 import { blobPath } from '../lib/shapes';
 import { getCollection, render } from 'astro:content';
+import { Image } from 'astro:assets';
+import latam from '../assets/logos/latam.png';
+import spirit from '../assets/logos/spirit.png';
+import solvo from '../assets/logos/solvo.png';
+import travelperk from '../assets/logos/travelperk.png';
+import kaseya from '../assets/logos/kaseya.png';
+import igt from '../assets/logos/igt.png';
+import flagCo from '../assets/logos/co.svg';
+import flagUs from '../assets/logos/us.svg';
 
 const all = (await getCollection('experience')).sort((a, b) => a.data.order - b.data.order);
 const withContent = await Promise.all(all.map(async (e) => ({ ...e, Content: (await render(e)).Content })));
 const current = withContent.filter((e) => e.data.group === 'current');
 const earlier = withContent.filter((e) => e.data.group === 'earlier');
+
+// Brand marks. Employers without a public logo we can ship get a neutral monogram.
+const mono: Record<string, string> = { geeks5g: 'G5' };
+const employerLogo: Record<string, ImageMetadata> = { kaseya, solvo, igt };
+// The airline or company each bilingual role served.
+const client: Record<string, { name: string; logo: ImageMetadata }> = {
+  solvo: { name: 'Spirit Airlines', logo: spirit },
+  igt: { name: 'TravelPerk', logo: travelperk },
+  almacontact: { name: 'LATAM Airlines', logo: latam },
+};
 ---
 <section id="experience" class="section experience" aria-labelledby="exp-title">
   <div class="container">
@@ -61,14 +80,21 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
     </div>
 
     <ol class="roles">
-      {current.map(({ data, Content }) => (
+      {current.map(({ id, data, Content }) => (
         <li class="role">
           <p class="period">{data.period}</p>
           <div class="role-body">
-            <h3>{data.role}</h3>
-            <p class="company">
-              {data.url ? <a href={data.url} target="_blank" rel="noopener">{data.company}</a> : data.company}
-            </p>
+            <div class="role-head">
+              {employerLogo[id]
+                ? <span class="brand"><Image src={employerLogo[id]} alt={data.company} height={40} densities={[1, 2]} /></span>
+                : <span class="mono" aria-hidden="true">{mono[id] ?? data.company[0]}</span>}
+              <div>
+                <h3>{data.role}</h3>
+                <p class="company">
+                  {data.url ? <a href={data.url} target="_blank" rel="noopener">{data.company}</a> : data.company}
+                </p>
+              </div>
+            </div>
             <div class="desc"><Content /></div>
             {data.stack && (
               <ul class="tags" aria-label={`${data.company} stack`}>
@@ -81,62 +107,34 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
     </ol>
 
     <div class="extra">
-      <div class="panel earlier">
-        <h3>Bilingual client-facing roles</h3>
-        <ul>
-          {earlier.map(({ data, Content }) => (
-            <li>
-              <p class="e-role">{data.role}</p>
-              <p class="e-meta">{data.company} · {data.period}</p>
-              <div class="e-desc"><Content /></div>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div class="panel lang" aria-labelledby="lang-title">
-        <h3 id="lang-title">Languages</h3>
-        <ul class="langs">
-          <li class="lang-card">
-            <svg class="flag" viewBox="0 0 60 40" role="img" aria-label="Flag of Colombia">
-              <clipPath id="flag-co"><rect width="60" height="40" rx="7" /></clipPath>
-              <g clip-path="url(#flag-co)">
-                <rect width="60" height="20" fill="#FCD116" />
-                <rect y="20" width="60" height="10" fill="#003893" />
-                <rect y="30" width="60" height="10" fill="#CE1126" />
-              </g>
-              <rect x="1.25" y="1.25" width="57.5" height="37.5" rx="6" fill="none" stroke="var(--ink)" stroke-width="2.5" />
-            </svg>
-            <div class="lang-text">
-              <p class="lang-name">Spanish</p>
-              <p class="lang-note">First language</p>
+      <h3 class="extra-title">Bilingual client-facing roles</h3>
+      <p class="extra-sub">Four years on the front line for airlines and a travel platform, in English and Spanish.</p>
+      <ul class="clients">
+        {earlier.map(({ id, data, Content }) => (
+          <li class="client">
+            <div class="client-logo">
+              {client[id] && <Image src={client[id].logo} alt={client[id].name} height={56} densities={[1, 2]} />}
             </div>
-            <div class="level">
-              <p class="lvl">Native</p>
-              <span class="meter" aria-hidden="true">{[1, 2, 3, 4, 5].map(() => <i class="on"></i>)}</span>
+            <div class="client-text">
+              <p class="e-role">{data.role}</p>
+              <p class="e-meta">{client[id]?.name} account · via {data.company}</p>
+              <p class="e-period">{data.period}</p>
+              <div class="e-desc"><Content /></div>
             </div>
           </li>
-          <li class="lang-card">
-            <svg class="flag" viewBox="0 0 60 40" role="img" aria-label="Flag of the United States">
-              <clipPath id="flag-us"><rect width="60" height="40" rx="7" /></clipPath>
-              <g clip-path="url(#flag-us)">
-                <rect width="60" height="40" fill="#FFFFFF" />
-                {Array.from({ length: 7 }, (_, i) => <rect y={i * 6.16} width="60" height="3.08" fill="#B22234" />)}
-                <rect width="26" height="21.5" fill="#3C3B6E" />
-                {Array.from({ length: 4 }, (_, r) => Array.from({ length: 5 }, (_, c) => (
-                  <circle cx={3.4 + c * 4.8 + (r % 2) * 2.4} cy={3.2 + r * 5} r="1.05" fill="#FFFFFF" />
-                )))}
-              </g>
-              <rect x="1.25" y="1.25" width="57.5" height="37.5" rx="6" fill="none" stroke="var(--ink)" stroke-width="2.5" />
-            </svg>
-            <div class="lang-text">
-              <p class="lang-name">English</p>
-              <p class="lang-note">Daily work with US clients and teams</p>
-            </div>
-            <div class="level">
-              <p class="lvl">Advanced</p>
-              <span class="meter" aria-hidden="true">{[1, 2, 3, 4, 5].map((n) => <i class={n <= 4 ? 'on' : ''}></i>)}</span>
-            </div>
+        ))}
+      </ul>
+
+      <div class="langs" aria-labelledby="lang-title">
+        <h3 id="lang-title" class="langs-title">Languages</h3>
+        <ul>
+          <li>
+            <img src={flagCo.src} alt="" width="28" height="28" loading="lazy" />
+            <span><b>Spanish</b><small>Native</small></span>
+          </li>
+          <li>
+            <img src={flagUs.src} alt="" width="28" height="28" loading="lazy" />
+            <span><b>English</b><small>Advanced</small></span>
           </li>
         </ul>
       </div>
@@ -176,43 +174,58 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
   }
   .role .tags { margin-top: 16px; }
 
-  .extra { display: grid; gap: 20px; margin-top: clamp(40px, 6vw, 64px); }
-  .panel { padding: clamp(24px, 4vw, 40px); background: var(--surface); }
-  .panel h3 { font-size: var(--step-h3); margin-bottom: 18px; }
-  .earlier { border-radius: 56px 32px 64px 28px / 36px 60px 30px 56px; }
-  .earlier ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 22px; }
-  .e-role { font-weight: 600; }
-  .e-meta { color: var(--muted); font-size: var(--step-small); }
-  .e-desc { color: var(--muted); font-size: var(--step-small); max-width: 70ch; margin-top: 4px; }
+  .role-head { display: flex; align-items: center; gap: 16px; }
+  .brand {
+    display: grid; place-items: center; flex: none; width: 96px; height: 56px; padding: 8px 10px;
+    border-radius: 16px; background: #fff; box-shadow: 0 0 0 1px var(--line);
+  }
+  .brand :global(img) { max-width: 100%; max-height: 40px; width: auto; height: auto; object-fit: contain; }
+  .mono {
+    display: grid; place-items: center; flex: none; width: 96px; height: 56px; border-radius: 16px;
+    background: var(--ink); color: var(--bg);
+    font: 500 1.0625rem/1 var(--font-display); letter-spacing: -0.02em;
+  }
+
+  /* Bilingual roles: one compact card per client, logo first. */
+  .extra { margin-top: clamp(40px, 6vw, 64px); }
+  .extra-title { font-size: var(--step-h3); }
+  .extra-sub { color: var(--muted); margin: 6px 0 22px; max-width: 52ch; }
+  .clients { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+  .client {
+    display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 14px; align-items: start;
+    padding: 14px; background: var(--surface); border-radius: 22px;
+  }
+  .client-logo {
+    display: grid; place-items: center; height: 72px; padding: 10px; border-radius: 14px; background: #fff;
+  }
+  .client-logo :global(img) { max-width: 100%; max-height: 40px; width: auto; height: auto; object-fit: contain; }
+  .e-role { font-weight: 600; line-height: 1.3; }
+  .e-meta { margin-top: 4px; color: var(--muted); font-size: var(--step-small); }
+  .e-period { color: var(--muted); font-size: 0.8125rem; font-variant-numeric: tabular-nums; margin-top: 2px; }
+  .e-desc { color: var(--muted); font-size: var(--step-small); margin-top: 8px; line-height: 1.5; }
   .e-desc :global(p) { margin: 0; }
-  .lang { background: var(--leaf); border-radius: 48px 28px 52px 32px / 30px 52px 28px 48px; align-self: start; }
-  .langs { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
-  .lang-card {
-    display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; gap: 14px 18px;
-    padding: 18px 20px; background: var(--bg);
-    border-radius: 28px 18px 30px 16px / 18px 30px 16px 28px;
+
+  /* Languages: one quiet row. */
+  .langs {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px;
+    margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--line);
   }
-  .flag { width: 64px; height: auto; flex: none; transform: rotate(-4deg); transition: transform 300ms var(--ease-out); }
-  .lang-card:nth-child(2) .flag { transform: rotate(3deg); }
-  .lang-card:hover .flag { transform: rotate(0deg) scale(1.06); }
-  .lang-name { font-family: var(--font-display); font-weight: 500; font-size: 1.5rem; line-height: 1.1; letter-spacing: -0.02em; }
-  .lang-note { color: var(--muted); font-size: var(--step-small); }
-  .level { grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; gap: 12px;
-    padding-top: 12px; border-top: 1px solid var(--line); }
-  .lvl { font-weight: 600; }
-  .meter { display: inline-flex; gap: 6px; }
-  .meter i {
-    width: 16px; height: 16px; border: 2px solid var(--ink);
-    border-radius: 52% 48% 40% 60% / 60% 42% 58% 40%;
+  .langs-title { font-size: 1rem; font-family: var(--font-body); font-weight: 600; letter-spacing: 0; }
+  .langs ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px 28px; }
+  .langs li { display: flex; align-items: center; gap: 10px; }
+  .langs img { border-radius: 50%; box-shadow: 0 0 0 1px var(--line); }
+  .langs b { font-weight: 600; margin-right: 6px; }
+  .langs small { color: var(--muted); font-size: var(--step-small); }
+
+  @media (min-width: 900px) {
+    .clients { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .client { grid-template-columns: 1fr; padding: 16px; }
+    .client-logo { height: 96px; }
   }
-  .meter i.on { background: var(--blue); }
 
   @media (min-width: 860px) {
     .role { grid-template-columns: 220px minmax(0, 1fr); }
     .period { padding-top: 6px; }
-  }
-  @media (min-width: 1000px) {
-    .extra { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
   }
   @media (min-width: 860px) {
     .exp-head { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); }

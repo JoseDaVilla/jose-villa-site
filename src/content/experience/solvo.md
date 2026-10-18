@@ -6,4 +6,4 @@ order: 3
 group: "earlier"
 ---
 
-Spirit Airlines account. Handled bookings, flight changes, cancellations and refunds by chat, and helped lead the service team to meet KPIs and resolve complex cases.
+Handled bookings, flight changes, cancellations and refunds by chat, and helped lead the service team to meet KPIs and resolve complex cases.

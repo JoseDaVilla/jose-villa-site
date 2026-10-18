@@ -6,4 +6,4 @@ order: 4
 group: "earlier"
 ---
 
-TravelPerk account. Booked flights, hotels, trains, transfers and meeting rooms for business travelers using Amadeus GDS, NDC and supplier platforms.
+Booked flights, hotels, trains, transfers and meeting rooms for business travelers using Amadeus GDS, NDC and supplier platforms.

@@ -56,6 +56,7 @@ const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying h
 
       <form class="form" data-contact-form novalidate>
         <input type="checkbox" name="botcheck" class="visually-hidden" tabindex="-1" autocomplete="off" aria-hidden="true" />
+        <div class="fields" data-fields>
         <div class="row2">
           <label class="field">
             <span>Name</span>
@@ -86,6 +87,26 @@ const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying h
           Send message
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
+        </div>
+
+        <!-- Shown in place of the fields once the message is on its way. -->
+        <div class="sent" data-sent hidden>
+          <span class="sent-badge" aria-hidden="true">
+            <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M14 25l7 7 14-15" pathLength="1" /></svg>
+          </span>
+          <h3 class="sent-title" tabindex="-1" data-sent-title>Message sent.</h3>
+          <p class="sent-text" data-sent-text></p>
+          <div class="sent-recap">
+            <span class="sent-topic" data-sent-topic></span>
+            <p class="sent-msg" data-sent-msg></p>
+          </div>
+          <p class="sent-alt" data-sent-alt hidden>
+            Nothing opened? Write to <a href={`mailto:${site.email}`}>{site.email}</a>.
+          </p>
+          <button class="btn btn--ghost sent-again" type="button" data-again>
+            Send another message
+          </button>
+        </div>
       </form>
     </div>
   </div>
@@ -146,7 +167,46 @@ const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying h
   .status:empty { display: none; }
   .status[data-state="error"] { color: #B3261E; }
   .status[data-state="ok"] { color: #1F6B3A; }
+  .fields { display: grid; gap: 20px; }
+  .fields[hidden] { display: none; }
   .submit { justify-self: start; }
+
+  /* Success screen. */
+  .sent {
+    display: grid; justify-items: center; align-content: center; gap: 14px; text-align: center; height: 100%;
+    padding: clamp(16px, 4vw, 40px) 0;
+  }
+  .sent[hidden] { display: none; }
+  .sent-badge {
+    display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%;
+    background: var(--orange); color: #fff; margin-bottom: 6px;
+    box-shadow: 0 0 0 10px color-mix(in srgb, var(--orange) 14%, transparent);
+    animation: badge-in 520ms cubic-bezier(0.3, 1.5, 0.5, 1) both;
+  }
+  .sent-badge svg { width: 40px; height: 40px; }
+  .sent-badge path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: tick 420ms 280ms ease-out forwards; }
+  .sent-title { font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.25rem); letter-spacing: -0.03em; outline: none; }
+  .sent-text { color: var(--muted); max-width: 36ch; }
+  .sent-recap {
+    width: 100%; max-width: 420px; margin-top: 6px; padding: 16px 18px; text-align: left;
+    background: var(--surface); border-radius: 18px;
+  }
+  .sent-topic {
+    display: inline-block; margin-bottom: 8px; padding: 4px 10px; border-radius: 999px;
+    background: var(--ink); color: var(--bg); font-size: 0.8125rem; font-weight: 600;
+  }
+  .sent-msg {
+    color: var(--muted); font-size: var(--step-small); line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .sent-alt { font-size: var(--step-small); color: var(--muted); }
+  .sent-alt a { color: var(--ink); font-weight: 600; }
+  .sent-again { margin-top: 8px; }
+  .sent > :not(.sent-badge) { animation: sent-rise 520ms calc(200ms + var(--n, 0) * 70ms) var(--ease-out) both; }
+  .sent-title { --n: 1; } .sent-text { --n: 2; } .sent-recap { --n: 3; } .sent-alt { --n: 4; } .sent-again { --n: 5; }
+  @keyframes badge-in { from { transform: scale(0.4); opacity: 0; } }
+  @keyframes tick { to { stroke-dashoffset: 0; } }
+  @keyframes sent-rise { from { opacity: 0; transform: translateY(10px); } }
   .submit[disabled] { opacity: 0.6; cursor: progress; }
 
   @media (min-width: 640px) { .row2 { grid-template-columns: 1fr 1fr; } }
@@ -155,6 +215,7 @@ const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying h
 
 <script>
   const ACCESS_KEY = import.meta.env.PUBLIC_WEB3FORMS_KEY as string | undefined;
+  const CONTACT_EMAIL = 'josedvilla18@gmail.com';
 
   document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((b) =>
     b.addEventListener('click', async () => {
@@ -175,6 +236,13 @@ const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying h
       status.dataset.state = state;
       status.textContent = text;
     };
+    const fieldsEl = form.querySelector<HTMLElement>('[data-fields]')!;
+    const sent = form.querySelector<HTMLElement>('[data-sent]')!;
+    const title = form.querySelector<HTMLElement>('[data-sent-title]')!;
+    const text = form.querySelector<HTMLElement>('[data-sent-text]')!;
+    const topicEl = form.querySelector<HTMLElement>('[data-sent-topic]')!;
+    const msgEl = form.querySelector<HTMLElement>('[data-sent-msg]')!;
+    const alt = form.querySelector<HTMLElement>('[data-sent-alt]')!;
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -196,10 +264,21 @@ const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying h
         return;
       }
 
-      if (!ACCESS_KEY) {
-        say('error', "The form isn't connected yet. Please email me directly at josedvilla18@gmail.com.");
-        return;
-      }
+      const name = String(data.get('name')).trim();
+      const email = String(data.get('email')).trim();
+      const topic = String(data.get('topic') ?? '');
+      const message = String(data.get('message')).trim();
+      const subject = `[${topic}] Portfolio message from ${name}`;
+
+      // Without a form key, or if the service fails, hand the message to the
+      // visitor's email app, already written, so it still reaches the inbox.
+      const viaEmailApp = () => {
+        const body = `${message}\n\n${name}\n${email}`;
+        window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        showSent(name, email, topic, message, 'mailto');
+      };
+
+      if (!ACCESS_KEY) return viaEmailApp();
 
       submit.disabled = true;
       say('', 'Sending…');
@@ -209,26 +288,43 @@ const topics = ['Product build', 'Tech leadership', 'Automation', 'Just saying h
           headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
           body: JSON.stringify({
             access_key: ACCESS_KEY,
-            subject: `[${data.get('topic')}] Portfolio message from ${data.get('name')}`,
+            subject,
             from_name: 'Portfolio contact form',
-            name: data.get('name'),
-            email: data.get('email'),
-            replyto: data.get('email'),
-            topic: data.get('topic'),
-            message: data.get('message'),
+            name, email, replyto: email, topic, message,
           }),
         });
         const json = await res.json().catch(() => ({}));
         if (!res.ok || !json.success) throw new Error(json.message || 'Request failed');
-        form.reset();
-        fields.forEach((n) => (form.elements.namedItem(n) as HTMLElement).removeAttribute('aria-invalid'));
-        say('ok', "Thanks, your message is on its way. I'll reply within a day or two.");
-        window.dispatchEvent(new CustomEvent('contact:sent'));
+        showSent(name, email, topic, message, 'sent');
       } catch {
-        say('error', "Your message couldn't be sent. Please try again or email me directly.");
+        viaEmailApp();
       } finally {
         submit.disabled = false;
       }
+    });
+
+    const showSent = (name: string, email: string, topic: string, message: string, how: 'sent' | 'mailto') => {
+      say('', '');
+      title.textContent = how === 'sent' ? `Thanks, ${name.split(' ')[0]}.` : `Almost there, ${name.split(' ')[0]}.`;
+      text.textContent = how === 'sent'
+        ? `Your message is in my inbox. I'll reply to ${email} within a day or two.`
+        : 'Your email app just opened with the message written for you. Hit send there and it lands straight in my inbox.';
+      topicEl.textContent = topic;
+      msgEl.textContent = message;
+      alt.hidden = how === 'sent';
+      fieldsEl.hidden = true;
+      sent.hidden = false;
+      title.focus({ preventScroll: true });
+      form.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+      window.dispatchEvent(new CustomEvent('contact:sent'));
+    };
+
+    form.querySelector('[data-again]')!.addEventListener('click', () => {
+      form.reset();
+      (['name', 'email', 'message'] as const).forEach((n) => (form.elements.namedItem(n) as HTMLElement).removeAttribute('aria-invalid'));
+      sent.hidden = true;
+      fieldsEl.hidden = false;
+      (form.elements.namedItem('name') as HTMLInputElement).focus();
     });
   });
 </script>

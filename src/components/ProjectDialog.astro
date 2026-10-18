@@ -129,8 +129,16 @@ const titleId = `project-${id}-title`;
     border-radius: 20px; scrollbar-width: none;
   }
   .pd-track::-webkit-scrollbar { display: none; }
-  .pd-slide { flex: 0 0 100%; margin: 0; scroll-snap-align: start; border-radius: 20px; overflow: hidden; background: var(--surface); }
-  .pd-slide :global(img) { width: 100%; height: auto; display: block; }
+  /* Every slide shares one 16:10 frame; the whole screenshot fits inside it. */
+  .pd-slide {
+    flex: 0 0 100%; margin: 0; scroll-snap-align: start; border-radius: 20px; overflow: hidden;
+    display: grid; place-items: center; aspect-ratio: 16 / 10; padding: clamp(8px, 2vw, 18px);
+    background: var(--surface);
+  }
+  .pd-slide :global(img) {
+    display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain;
+    border-radius: 10px; box-shadow: 0 10px 30px -14px color-mix(in srgb, var(--ink) 40%, transparent);
+  }
   .pd-controls { display: flex; align-items: center; justify-content: flex-end; gap: 12px; }
   .pd-controls button {
     width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer;

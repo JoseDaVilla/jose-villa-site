@@ -101,12 +101,6 @@ import JVMark from './JVMark.astro';
   nav a { min-height: 52px; padding: 0 18px; font-size: 1.125rem; color: var(--ink); }
   nav a[aria-current="true"] { background: var(--surface); }
 
-  /* Over the dark hero: no fill, light text, and no logo (the hero carries it). */
-  .logo { transition: opacity 260ms ease-out, visibility 0s; }
-  .nav[data-dark]:not([data-open]) .logo { opacity: 0; visibility: hidden; transition: opacity 200ms ease-out, visibility 0s 200ms; }
-  .nav[data-dark] .nav-cta { background: #F2F0EB; color: var(--ink); }
-  .nav[data-dark] .menu-btn { background: color-mix(in srgb, #F2F0EB 14%, transparent); color: #F2F0EB; }
-  .nav[data-dark] :global(:focus-visible) { outline-color: #F2F0EB; }
 
   @media (max-width: 359px) { .nav-cta { display: none; } }
 
@@ -132,8 +126,6 @@ import JVMark from './JVMark.astro';
     nav a[aria-current="true"]::after { transform: translateX(-50%) scaleX(1); }
     .logo { margin-right: 0; }
     .nav-cta { margin-left: 0; padding: 0 20px; font-size: 1rem; }
-    .nav[data-dark] nav a { color: color-mix(in srgb, #F2F0EB 72%, transparent); }
-    .nav[data-dark] nav a:hover { color: #F2F0EB; }
   }
 </style>
 
@@ -142,27 +134,24 @@ import JVMark from './JVMark.astro';
   const menuBtn = header.querySelector<HTMLButtonElement>('[data-menu-btn]')!;
   const links = [...header.querySelectorAll<HTMLAnchorElement>('nav a')];
 
-  // Pill once scrolled; hide on the way down, show on the way up.
-  let lastY = window.scrollY;
-  let ticking = false;
+  // Hidden while the dark hero fills the screen (it carries the logo and its own
+  // actions); once the hero has scrolled past, the pill stays put in both directions.
   const hero = document.querySelector<HTMLElement>('[data-hero]');
+  let ticking = false;
   const update = () => {
-    const y = window.scrollY;
-    // Dark while the hero still sits under the bar; the light pill takes over after it.
-    const dark = !!hero && hero.getBoundingClientRect().bottom > header.offsetHeight;
-    header.toggleAttribute('data-dark', dark);
-    header.toggleAttribute('data-scrolled', !dark && y > 12);
-    if (y < 160 || y < lastY - 4) header.removeAttribute('data-hidden');
-    else if (y > lastY + 4) header.setAttribute('data-hidden', '');
-    if (Math.abs(y - lastY) > 4) lastY = y;
+    const inHero = !!hero && hero.getBoundingClientRect().bottom > header.offsetHeight + 8;
+    header.toggleAttribute('data-hidden', inHero);
+    header.toggleAttribute('data-scrolled', !inHero);
     ticking = false;
   };
   update();
   window.addEventListener('scroll', () => {
     if (!ticking) { ticking = true; requestAnimationFrame(update); }
   }, { passive: true });
+  window.addEventListener('resize', update, { passive: true });
   // Keyboard users tabbing into the bar always get it back.
   header.addEventListener('focusin', () => header.removeAttribute('data-hidden'));
+  header.addEventListener('focusout', () => requestAnimationFrame(update));
 
   // Mobile menu: toggle, close on link, Escape or a tap outside.
   const setOpen = (open: boolean) => {

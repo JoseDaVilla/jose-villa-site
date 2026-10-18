@@ -13,14 +13,16 @@ const hy = [0, 72, 100];
 ---
 <script is:inline>
   // Decide before first paint, so the page never flashes under the intro.
-  // Once per browser; ?intro forces it; skipped when motion is reduced.
+  // Plays on every load. Skipped when motion is reduced or when the link
+  // points straight at a section or project (e.g. #project-proaxis);
+  // ?intro forces it either way.
   (function () {
     var d = document.documentElement;
     try {
       var force = /[?&#]intro\b/.test(location.search + location.hash);
-      var seen = localStorage.getItem('jv-intro');
       var calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-      if (force || (!seen && !calm)) d.classList.add('intro-on', 'intro-mark');
+      var deep = location.hash.length > 1;
+      if (force || (!calm && !deep)) d.classList.add('intro-on', 'intro-mark');
     } catch (e) {}
   })();
 </script>
@@ -111,7 +113,6 @@ const hy = [0, 72, 100];
   const root = document.documentElement;
 
   if (intro && root.classList.contains('intro-on')) {
-    try { localStorage.setItem('jv-intro', '1'); } catch {}
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
 

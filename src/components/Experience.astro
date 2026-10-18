@@ -19,6 +19,15 @@ const earlier = withContent.filter((e) => e.data.group === 'earlier');
 // Brand marks. Employers without a public logo we can ship get a neutral monogram.
 const mono: Record<string, string> = {};
 const employerLogo: Record<string, ImageMetadata> = { kaseya, geeks5g };
+// Cards that cycle in the illustration, newest first.
+const deck: { logo?: ImageMetadata; role: string; meta: string }[] = [
+  { logo: kaseya, role: 'Professional Services Consultant', meta: 'Kaseya · 2026' },
+  { logo: geeks5g, role: 'Full Stack Developer', meta: 'Geeks5G · 2025' },
+  { role: 'Freelance Full-Stack Developer', meta: 'Independent clients' },
+  { logo: spirit, role: 'Customer Service, bilingual', meta: 'Spirit Airlines · 2023' },
+  { logo: travelperk, role: 'Executive Assistant, bilingual', meta: 'TravelPerk · 2022' },
+  { logo: latam, role: 'Customer Service, bilingual', meta: 'LATAM Airlines · 2021' },
+];
 const projectsById = new Map((await getCollection('projects')).map((p) => [p.id, p]));
 // The airline or company each bilingual role served.
 const client: Record<string, { name: string; logo: ImageMetadata }> = {
@@ -36,47 +45,22 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
       </div>
       <div class="scene" aria-hidden="true">
         <svg class="art" viewBox="0 0 400 300" focusable="false">
-          <path class="backdrop" d={blobPath(17, 7, 0.22)} transform="translate(92 6) scale(2.9)" fill="color-mix(in srgb, var(--sky) 45%, var(--bg))" />
-          <path class="sat" d={blobPath(3, 7, 0.22)} transform="translate(318 214) scale(0.5)" fill="var(--sun)" />
-          <g class="deck">
-            <g class="card card-1" transform="translate(236 118) rotate(9)">
-              <g class="card-in">
-                <rect x="-88" y="-58" width="176" height="116" rx="16" fill="var(--paper)" />
-                <rect x="-80" y="-50" width="160" height="32" rx="10" fill="var(--sky)" />
-                <circle cx="-61" cy="-34" r="9" fill="var(--paper)" />
-                <rect x="-70" y="-4" width="78" height="9" rx="4.5" fill="var(--ink)" />
-                <rect x="-70" y="12" width="112" height="7" rx="3.5" fill="var(--line)" />
-                <rect x="-70" y="25" width="84" height="7" rx="3.5" fill="var(--line)" />
-                <rect x="-70" y="40" width="34" height="11" rx="5.5" fill="var(--surface)" />
-                <rect x="-31" y="40" width="28" height="11" rx="5.5" fill="var(--surface)" />
-              </g>
-            </g>
-            <g class="card card-2" transform="translate(208 136) rotate(-2)">
-              <g class="card-in">
-                <rect x="-88" y="-58" width="176" height="116" rx="16" fill="var(--paper)" />
-                <rect x="-80" y="-50" width="160" height="32" rx="10" fill="var(--leaf)" />
-                <circle cx="-61" cy="-34" r="9" fill="var(--paper)" />
-                <rect x="-70" y="-4" width="78" height="9" rx="4.5" fill="var(--ink)" />
-                <rect x="-70" y="12" width="112" height="7" rx="3.5" fill="var(--line)" />
-                <rect x="-70" y="25" width="84" height="7" rx="3.5" fill="var(--line)" />
-                <rect x="-70" y="40" width="34" height="11" rx="5.5" fill="var(--surface)" />
-                <rect x="-31" y="40" width="28" height="11" rx="5.5" fill="var(--surface)" />
-              </g>
-            </g>
-            <g class="card card-3" transform="translate(176 156) rotate(-10)">
-              <g class="card-in">
-                <rect x="-88" y="-58" width="176" height="116" rx="16" fill="var(--paper)" />
-                <rect x="-80" y="-50" width="160" height="32" rx="10" fill="var(--orange)" />
-                <circle cx="-61" cy="-34" r="9" fill="var(--paper)" />
-                <rect x="-70" y="-4" width="78" height="9" rx="4.5" fill="var(--ink)" />
-                <rect x="-70" y="12" width="112" height="7" rx="3.5" fill="var(--line)" />
-                <rect x="-70" y="25" width="84" height="7" rx="3.5" fill="var(--line)" />
-                <rect x="-70" y="40" width="34" height="11" rx="5.5" fill="var(--surface)" />
-                <rect x="-31" y="40" width="28" height="11" rx="5.5" fill="var(--surface)" />
-              </g>
-            </g>
-          </g>
+          <path d={blobPath(17, 7, 0.22)} transform="translate(92 6) scale(2.9)" fill="var(--surface)" />
+          <path d={blobPath(3, 7, 0.22)} transform="translate(318 214) scale(0.5)" fill="var(--orange)" />
         </svg>
+        <!-- A deck of role cards, one per company; the front card flies off and rejoins at the back. -->
+        <div class="deck" style={`--n: ${deck.length}`}>
+          {deck.map((c, i) => (
+            <div class="dcard" style={`--k: ${i}`}>
+              <span class="dlogo">
+                {c.logo ? <Image src={c.logo} alt="" height={44} densities={[1, 2]} /> : <JVMark id={`jv-deck-${i}`} class="dlogo-jv" />}
+              </span>
+              <span class="drole">{c.role}</span>
+              <span class="dmeta">{c.meta}</span>
+              <span class="dbar"><i></i><i></i></span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
 
@@ -167,15 +151,38 @@ const client: Record<string, { name: string; logo: ImageMetadata }> = {
   .exp-head .section-head { margin-bottom: 0; }
   .scene { position: relative; height: clamp(220px, 58vw, 380px); }
   .art { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  .deck { filter: drop-shadow(0 14px 18px color-mix(in srgb, var(--ink) 16%, transparent)); }
-  /* The fan slowly opens and closes; the front card lifts a little. */
-  .card-in { transform-box: fill-box; transform-origin: 50% 100%; animation: fan 7s ease-in-out infinite; }
-  .card-1 .card-in { --r: 4deg; }
-  .card-2 .card-in { --r: 1deg; animation-delay: -0.4s; }
-  .card-3 .card-in { --r: -4deg; --y: -8px; animation-delay: -0.8s; }
-  @keyframes fan { 50% { transform: rotate(var(--r, 0deg)) translateY(var(--y, 0px)); } }
-  .backdrop, .sat { transform-box: fill-box; }
-  @media (prefers-reduced-motion: reduce) { .card-in { animation: none; } }
+
+  /* Rotating deck. Each card runs the same loop, offset by --k slots: hold at the
+     front, fly off, wait hidden at the back, then step forward through slots 2 and 1. */
+  .deck { position: absolute; left: 50%; top: 50%; width: min(62%, 280px); aspect-ratio: 1.6; translate: -54% -46%; }
+  .dcard {
+    position: absolute; inset: 0; display: grid; align-content: start; gap: 4px;
+    padding: 18px 20px; border-radius: 18px; background: var(--paper);
+    box-shadow: var(--shadow-card-hover);
+    animation: deal calc(var(--n) * 2.4s) calc((var(--n) - var(--k)) * -2.4s) cubic-bezier(0.6, 0, 0.2, 1) infinite;
+    opacity: 0;
+  }
+  .dlogo { display: flex; align-items: center; height: 40px; margin-bottom: 10px; }
+  .dlogo :global(img) { max-height: 36px; max-width: 70%; width: auto; height: auto; object-fit: contain; }
+  .dlogo :global(.dlogo-jv) { height: 34px; width: auto; }
+  .drole { font-weight: 600; font-size: 0.9375rem; line-height: 1.25; }
+  .dmeta { color: var(--muted); font-size: 0.8125rem; }
+  .dbar { display: flex; gap: 6px; margin-top: 10px; }
+  .dbar i { height: 6px; border-radius: 3px; background: var(--surface); }
+  .dbar i:first-child { width: 42%; } .dbar i:last-child { width: 24%; }
+
+  @keyframes deal {
+    0%, 12.5% { transform: translate(0, 0) rotate(-5deg); opacity: 1; z-index: 3; }
+    16.6% { transform: translate(-70%, 22%) rotate(-18deg); opacity: 0; z-index: 3; }
+    16.7%, 62.5% { transform: translate(16%, -22%) rotate(9deg) scale(0.9); opacity: 0; z-index: 1; }
+    66.6%, 79.1% { transform: translate(16%, -22%) rotate(9deg) scale(0.9); opacity: 1; z-index: 1; }
+    83.3%, 95.8% { transform: translate(8%, -11%) rotate(2deg) scale(0.95); opacity: 1; z-index: 2; }
+    100% { transform: translate(0, 0) rotate(-5deg); opacity: 1; z-index: 3; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dcard { animation: none; opacity: 0; }
+    .dcard:first-child { opacity: 1; transform: rotate(-5deg); }
+  }
   .exp-head { margin-bottom: clamp(24px, 4vw, 48px); }
   .roles { list-style: none; margin: 0; padding: 0; display: grid; }
   .role { display: grid; gap: 8px 40px; padding: clamp(24px, 3vw, 36px) 0; border-top: 1px solid var(--line); }
